@@ -1,0 +1,108 @@
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:shrinkColumns="1" >
+
+    <TableRow>
+
+        <TextView
+            style="@style/CodeFont"
+            android:layout_marginBottom="1dp"
+            android:layout_span="2"
+            android:background="#fff"
+            android:text="画像だよ" />
+    </TableRow>
+
+    <TableRow android:background="#000000" >
+
+        <TextView
+            style="@style/CodeFont"
+            android:layout_marginBottom="1dp"
+            android:layout_span="2"
+
+            android:background="#fff"
+            android:text="Cafe en" />
+    </TableRow>
+
+    <TableRow
+        android:background="#000000" >
+
+        <TextView
+            style="@style/CodeFont"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="1dp"
+            android:layout_span="2"
+            android:layout_weight="1"
+            android:background="#fff"
+            android:text="時に野生のキジやキタキツネも来訪する、のどかで落ち着いた空間。裏夜景スポットでもある。新鮮な地元の食材を使用した食事を味わいながら、ゆったりと贅沢なひとときを。" />
+
+    </TableRow>
+
+    <TableRow android:background="#000000" >
+
+        <TextView
+            style="@style/CodeFont"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="1dp"
+            android:layout_marginTop="1dp"
+            android:background="#fff"
+            android:text="所在地" />
+
+        <TextView
+            style="@style/CodeFont"
+            android:layout_marginBottom="1dp"
+            android:layout_marginTop="1dp"
+            android:background="#fff"
+            android:text="函館市赤川町365-5" />
+    </TableRow>
+
+    <TableRow android:background="#000000" >
+
+        <TextView
+            style="@style/CodeFont"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="1dp"
+            android:background="#fff"
+            android:text="電話番号" />
+
+        <TextView
+            style="@style/CodeFont"
+            android:layout_marginBottom="1dp"
+            android:background="#fff"
+            android:text="0138-47-4333" />
+    </TableRow>
+
+    <TableRow android:background="#000000" >
+
+        <TextView
+            style="@style/CodeFont"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="1dp"
+            android:background="#fff"
+            android:text="アクセス" />
+
+        <TextView
+            style="@style/CodeFont"
+            android:layout_marginBottom="1dp"
+            android:background="#fff"
+            android:text="「はだこて未来大学」バス停下車　徒歩5分" />
+    </TableRow>
+
+    <TableRow android:background="#000000" >
+
+        <TextView
+            style="@style/CodeFont"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="1dp"
+            android:background="#fff"
+            android:text="エリア" />
+
+        <TextView
+            style="@style/CodeFont"
+            android:layout_marginBottom="1dp"
+            android:background="#fff"
+            android:text="美原・桔梗エリア" />
+    </TableRow>
+    
+</TableLayout>

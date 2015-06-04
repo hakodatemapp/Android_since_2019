@@ -1,0 +1,41 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="ac.fun.hakodatemapplus.TopActivity" >
+
+	<ImageView
+	    android:id="@+id/ImageView"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:layout_alignParentLeft="true"
+	    android:layout_alignParentRight="true"
+	    android:scaleType="fitXY"
+	    android:src="@drawable/top_image" />
+		         
+	<Button
+	    android:id="@+id/button_info"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true"
+		android:layout_alignParentRight="true"
+		android:text="info" />
+
+         <Button
+             android:id="@+id/button_main"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_above="@+id/button_info"
+             android:layout_centerHorizontal="true"
+             android:text="周辺の地図を表示" />
+
+         <Button
+             android:id="@+id/button_course"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_above="@+id/button_main"
+             android:layout_alignLeft="@+id/button_main"
+             android:layout_marginBottom="32dp"
+             android:text="コース一覧を表示" />
+ 
+</RelativeLayout>
