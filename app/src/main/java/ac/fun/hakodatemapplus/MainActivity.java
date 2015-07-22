@@ -34,7 +34,7 @@ public class MainActivity extends FragmentActivity {
 		ActionBar actionBar = getActionBar();
 		actionBar.setHomeButtonEnabled(true);
 		actionBar.setDisplayShowTitleEnabled(true);
-		actionBar.setTitle("周辺地図");
+		actionBar.setTitle("周辺の地図");
 		actionBar.setLogo(R.drawable.mapplus_icon);
 
 		actionBar.setDisplayHomeAsUpEnabled(true);
