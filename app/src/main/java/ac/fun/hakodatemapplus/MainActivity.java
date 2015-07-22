@@ -4,6 +4,7 @@ import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.model.*;
 
+
 import android.app.*;
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,12 +25,40 @@ public class MainActivity extends FragmentActivity {
 		ft.add(android.R.id.content, mf);
 		ft.commit();	
 	}
-	
+
 	//add menu
 	public boolean onCreateOptionsMenu(Menu menu){
 		menu.add(Menu.NONE, 0, 0, "公立はこだて未来大学 FUN");
+
+
+		ActionBar actionBar = getActionBar();
+		actionBar.setHomeButtonEnabled(true);
+		actionBar.setDisplayShowTitleEnabled(true);
+		actionBar.setTitle("周辺地図");
+		actionBar.setLogo(R.drawable.mapplus_icon);
+
+		actionBar.setDisplayHomeAsUpEnabled(true);
+
+
+		
+
 		return super.onCreateOptionsMenu(menu);
 	}
+
+	public boolean onOptionsItemSelected(MenuItem item) {
+		int id = item.getItemId();
+		if (id == R.id.action_settings) {
+			return true;
+		}
+		//アクションバーの戻るを押したときの処理
+		else if(id==android.R.id.home){
+			finish();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+
+
 
 	public void onResume(){
 		super.onResume();

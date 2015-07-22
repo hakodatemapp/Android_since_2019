@@ -1,16 +1,25 @@
 package ac.fun.hakodatemapplus;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.text.method.MovementMethod;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 public class InfoActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+		//アクションバーの編集
+		ActionBar actionBar = getActionBar();
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		actionBar.setIcon(R.drawable.mapplus_icon);
+		actionBar.setTitle("Information");
+
         setContentView(R.layout.activity_info);
 
         TextView textview = (TextView) findViewById(R.id.textview);
@@ -128,4 +137,18 @@ public class InfoActivity extends Activity {
 
         		));
     }
+
+	public boolean onOptionsItemSelected(MenuItem item) {
+		int id = item.getItemId();
+		if (id == R.id.action_settings) {
+			return true;
+		}
+		//アクションバーの戻るを押したときの処理
+		else if(id==android.R.id.home){
+			finish();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+
 }

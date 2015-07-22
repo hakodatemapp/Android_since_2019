@@ -1,8 +1,10 @@
 package ac.fun.hakodatemapplus;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -34,8 +36,19 @@ public class CourseActivity extends Activity implements OnItemClickListener{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //アクションバーの編集
+        ActionBar actionBar = getActionBar();
+        actionBar.setHomeButtonEnabled(false);
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setLogo(R.drawable.mapplus_icon);
+        actionBar.setDisplayUseLogoEnabled(true);
+        actionBar.setTitle("コース選択");
+
         setContentView(R.layout.activity_course);
-  
+
+
         //基礎のレイアウトを作成
         LinearLayout oLayout = new LinearLayout(getApplicationContext());
         //今回の主役リストビューの生成
@@ -83,8 +96,24 @@ public class CourseActivity extends Activity implements OnItemClickListener{
         oLayout.addView(oListView);
         //基礎のレイアウトを画面に設定
         setContentView(oLayout);
+
+
+
     }
-  
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            return true;
+        }
+        //アクションバーの戻るを押したときの処理
+        else if(id==android.R.id.home){
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     public class ListAdapter extends BaseAdapter{
  
         private Context mContext;
@@ -159,7 +188,11 @@ public class CourseActivity extends Activity implements OnItemClickListener{
         //押された時のパラメーターを表示
     	startActivity(new Intent(this, DetailActivity.class));
     }
+
 }
+
+
+
 
 /*
 public class CourseActivity extends Activity implements OnItemClickListener {
