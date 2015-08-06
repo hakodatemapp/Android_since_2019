@@ -185,8 +185,11 @@ public class CourseActivity extends Activity implements OnItemClickListener{
  
     @Override
     public void onItemClick(AdapterView parent, View view, int position, long id) {
-        //押された時のパラメーターを表示
-    	startActivity(new Intent(this, DetailActivity.class));
+        //コース詳細画面へ移動するときに値を渡す
+        Intent intent = new Intent(this, DetailActivity.class);
+        intent.putExtra("title", dataList.get(position).Get_Text());//第一引数呼び出すときのkey、第二引数:コース名
+        intent.putExtra("image", dataList.get(position).Get_Res());//第二引数：画像番号
+    	startActivity(intent);
     }
 
 }
