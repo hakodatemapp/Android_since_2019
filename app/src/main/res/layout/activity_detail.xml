@@ -6,12 +6,11 @@
 
     <TableRow>
 
-        <TextView
-            style="@style/CodeFont"
-            android:layout_marginBottom="1dp"
-            android:layout_span="2"
-            android:background="#fff"
-            android:text="画像だよ" />
+        <ImageView
+            android:id="@+id/image_view"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+
     </TableRow>
 
     <TableRow android:background="#000000" >

@@ -7,20 +7,28 @@ import android.view.MenuItem;
 import android.view.View;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.view.View.OnClickListener;
  
 public class DetailActivity extends Activity implements OnClickListener {
 	
     private Button button_main;
-    
+    private String title;
+    private int image;
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //CourseActivityの値を呼び出す
+        Intent intent = getIntent();
+        title = intent.getExtras().getString("title");
+        image = intent.getExtras().getInt("image");
         //アクションバーの編集
         ActionBar actionBar = getActionBar();
         actionBar.setHomeButtonEnabled(true);
-        actionBar.setTitle("コース");
+        actionBar.setTitle(title);
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setIcon(R.drawable.mapplus_icon);
@@ -28,6 +36,9 @@ public class DetailActivity extends Activity implements OnClickListener {
         setContentView(R.layout.activity_detail);
         button_main=(Button)findViewById(R.id.button_main);
         button_main.setOnClickListener(this);
+
+        ImageView imageView = (ImageView)findViewById(R.id.image_view);
+        imageView.setImageResource(image);
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -47,6 +58,7 @@ public class DetailActivity extends Activity implements OnClickListener {
  
         if(v==button_main){
             Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("title", title);//第一引数呼び出すときのkey、第二引数:コース名
             startActivityForResult(intent, 0);
         }
     }

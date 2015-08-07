@@ -14,6 +14,7 @@ import android.view.*;
 public class MainActivity extends FragmentActivity {
 
 	MapFragment mf;
+	private String title;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -23,24 +24,30 @@ public class MainActivity extends FragmentActivity {
 		FragmentManager fm = getFragmentManager();
 		FragmentTransaction ft = fm.beginTransaction();
 		ft.add(android.R.id.content, mf);
-		ft.commit();	
+		ft.commit();
+
+		//DetailActivityの値を呼び出す
+		Intent intent = getIntent();
+
+		if (intent.getExtras() != null) {  //取得した値がnullじゃなかったら
+			title = intent.getStringExtra("title");
+		}
+		else {
+			title = "周辺の地図";
+		}
 	}
 
 	//add menu
-	public boolean onCreateOptionsMenu(Menu menu){
+	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(Menu.NONE, 0, 0, "公立はこだて未来大学 FUN");
-
 
 		ActionBar actionBar = getActionBar();
 		actionBar.setHomeButtonEnabled(true);
 		actionBar.setDisplayShowTitleEnabled(true);
-		actionBar.setTitle("周辺の地図");
+		actionBar.setTitle(title);
 		actionBar.setLogo(R.drawable.mapplus_icon);
 
 		actionBar.setDisplayHomeAsUpEnabled(true);
-
-
-		
 
 		return super.onCreateOptionsMenu(menu);
 	}
