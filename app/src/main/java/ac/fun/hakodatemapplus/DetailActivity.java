@@ -15,6 +15,7 @@ public class DetailActivity extends Activity implements OnClickListener {
     private Button button_main;
     private String title;
     private int image;
+    private int course_id;
 
 
     @Override
@@ -25,6 +26,7 @@ public class DetailActivity extends Activity implements OnClickListener {
         Intent intent = getIntent();
         title = intent.getExtras().getString("title");
         image = intent.getExtras().getInt("image");
+        course_id = intent.getExtras().getInt("course_id");
         //アクションバーの編集
         ActionBar actionBar = getActionBar();
         actionBar.setHomeButtonEnabled(true);
@@ -59,6 +61,7 @@ public class DetailActivity extends Activity implements OnClickListener {
         if(v==button_main){
             Intent intent = new Intent(this, MainActivity.class);
             intent.putExtra("title", title);//第一引数呼び出すときのkey、第二引数:コース名
+            intent.putExtra("course_id", course_id);
             startActivityForResult(intent, 0);
         }
     }
