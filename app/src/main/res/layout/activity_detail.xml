@@ -1,106 +1,124 @@
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:shrinkColumns="1" >
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_weight="1">
 
-    <TableRow>
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:shrinkColumns="1">
 
-        <ImageView
-            android:id="@+id/image_view"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent" />
+        <TableRow>
 
-    </TableRow>
+            <ImageView
+                android:id="@+id/image_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scaleType="fitStart"
+                android:adjustViewBounds="true"
+                android:layout_span="2" />
 
-    <TableRow android:background="#000000" >
+        </TableRow>
 
-        <TextView
-            style="@style/CodeFont"
-            android:layout_marginBottom="1dp"
-            android:layout_span="2"
+        <TableRow android:background="#000000" >
 
-            android:background="#fff"
-            android:text="協会、ハイカラ洋館、坂道・・・・・・異国情緒満点の元町を満喫" />
-    </TableRow>
+            <TextView
+                style="@style/CodeFont"
+                android:layout_marginBottom="1dp"
+                android:layout_span="2"
 
-    <TableRow
-        android:layout_width="wrap_content"
-        android:background="#000000" >
+                android:background="#fff"
+                android:text="教会、ハイカラ洋館、坂道・・・・・・異国情緒満点の元町を満喫"
+                android:id="@+id/description_text" />
+        </TableRow>
 
-        <TextView
-            style="@style/CodeFont"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="1dp"
-            android:layout_weight="1"
-            android:background="#fff"
-            android:text="コース内容" />
+        <TableRow
+            android:layout_width="wrap_content"
+            android:background="#000000" >
 
-        <TextView
-            style="@style/CodeFont"
-            android:layout_weight="2"
-            android:layout_marginBottom="1dp"
-            android:background="#fff"
-            android:text="末広町電停、元町公園、函館市旧イギリス領時間（開港記念館）、ペリー提督来航記念碑、旧函館区公会堂、八幡坂、函館ハリストス正教会、函館聖ヨハネ教会、カトリック元町協会、二十間坂、東本願寺函館別院" />
-    </TableRow>
+            <TextView
+                style="@style/CodeFont"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="1dp"
+                android:layout_weight="1"
+                android:background="#fff"
+                android:text="コース内容"
+                android:id="@+id/course_content" />
 
-    <TableRow>
+            <TextView
+                style="@style/CodeFont"
+                android:layout_weight="2"
+                android:layout_marginBottom="1dp"
+                android:background="#fff"
+                android:text="末広町電停、元町公園、函館市旧イギリス領時間（開港記念館）、ペリー提督来航記念碑、旧函館区公会堂、八幡坂、函館ハリストス正教会、函館聖ヨハネ教会、カトリック元町協会、二十間坂、東本願寺函館別院"
+                android:id="@+id/contents_text" />
+        </TableRow>
 
-        <Button
-            android:id="@+id/button_main"
-            android:layout_above="@+id/button_info"
-            android:layout_span="2"
-            android:text="コースを選ぶ" />
-    </TableRow>
+        <TableRow>
 
-    <TableRow android:background="#000000" >
+            <Button
+                android:id="@+id/button_main"
+                android:layout_above="@+id/button_info"
+                android:layout_span="2"
+                android:text="コースを選ぶ" />
+        </TableRow>
 
-        <TextView
-            style="@style/CodeFont"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="1dp"
-            android:layout_marginTop="1dp"
-            android:background="#fff"
-            android:text="時間" />
+        <TableRow android:background="#000000" >
 
-        <TextView
-            style="@style/CodeFont"
-            android:layout_marginBottom="1dp"
-            android:layout_marginTop="1dp"
-            android:background="#fff"
-            android:text="60分" />
-    </TableRow>
+            <TextView
+                style="@style/CodeFont"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="1dp"
+                android:layout_marginTop="1dp"
+                android:background="#fff"
+                android:text="時間"
+                android:id="@+id/course_time" />
 
-    <TableRow android:background="#000000" >
+            <TextView
+                style="@style/CodeFont"
+                android:layout_marginBottom="1dp"
+                android:layout_marginTop="1dp"
+                android:background="#fff"
+                android:text="60分"
+                android:id="@+id/time_text" />
+        </TableRow>
 
-        <TextView
-            style="@style/CodeFont"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="1dp"
-            android:background="#fff"
-            android:text="移動距離" />
+        <TableRow android:background="#000000" >
 
-        <TextView
-            style="@style/CodeFont"
-            android:layout_marginBottom="1dp"
-            android:background="#fff"
-            android:text="1.5km" />
-    </TableRow>
+            <TextView
+                style="@style/CodeFont"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="1dp"
+                android:background="#fff"
+                android:text="移動距離"
+                android:id="@+id/course_length" />
 
-    <TableRow android:background="#000000" >
+            <TextView
+                style="@style/CodeFont"
+                android:layout_marginBottom="1dp"
+                android:background="#fff"
+                android:text="1.5km"
+                android:id="@+id/length_text" />
+        </TableRow>
 
-        <TextView
-            style="@style/CodeFont"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="1dp"
-            android:background="#fff"
-            android:text="消費カロリー" />
+        <TableRow android:background="#000000" >
 
-        <TextView
-            style="@style/CodeFont"
-            android:layout_marginBottom="1dp"
-            android:background="#fff"
-            android:text="180kcal" />
-    </TableRow>
+            <TextView
+                style="@style/CodeFont"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="1dp"
+                android:background="#fff"
+                android:text="消費カロリー"
+                android:id="@+id/course_calorie" />
 
-</TableLayout>
+            <TextView
+                style="@style/CodeFont"
+                android:layout_marginBottom="1dp"
+                android:background="#fff"
+                android:text="180kcal"
+                android:id="@+id/calorie_text" />
+        </TableRow>
+
+    </TableLayout>
+</ScrollView>
