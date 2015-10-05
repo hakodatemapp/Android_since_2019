@@ -142,7 +142,7 @@ public class CourseActivity extends Activity implements OnItemClickListener{
         }
  
         @Override
-        public View getView(int position, View view, ViewGroup parent) {
+            public View getView(int position, View view, ViewGroup parent) {
             TextView title;
             ImageView imag;
             View v = view;
@@ -187,9 +187,11 @@ public class CourseActivity extends Activity implements OnItemClickListener{
     public void onItemClick(AdapterView parent, View view, int position, long id) {
         //コース詳細画面へ移動するときに値を渡す
         Intent intent = new Intent(this, DetailActivity.class);
-        intent.putExtra("title", dataList.get(position).Get_Text());//第一引数呼び出すときのkey、第二引数:コース名
-        intent.putExtra("image", dataList.get(position).Get_Res());//第二引数：画像番号
-    	startActivity(intent);
+        intent.putExtra("title", dataList.get(position).Get_Text());    // 第一引数：呼び出すときのkey、第二引数:コース名
+        intent.putExtra("image", dataList.get(position).Get_Res());     // 第二引数：呼び出す画像ID
+        int course_id = position + 1;
+        intent.putExtra("course_id", course_id);    // 第二引数：呼び出すコースID
+        startActivity(intent);
     }
 
 }
