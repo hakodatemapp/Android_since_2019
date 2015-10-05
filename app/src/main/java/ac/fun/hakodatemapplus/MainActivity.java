@@ -863,7 +863,7 @@ public class MainActivity extends FragmentActivity {
                         .position(location)
                         .title("五稜郭公園")
                         .snippet(location.toString())
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.miru_1));
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.miru));
 
                 // add Marker
                 gm.addMarker(options);
