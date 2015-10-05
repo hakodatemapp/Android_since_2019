@@ -88,7 +88,10 @@ public class CourseActivity extends Activity implements OnItemClickListener{
 	    dataList.add(new ListItem(String.valueOf("しあわせの隠れ場所を探しに"), R.drawable.matiaruki21));
 	    dataList.add(new ListItem(String.valueOf("再生した「蔵」めぐり"), R.drawable.matiaruki22));
 	    dataList.add(new ListItem(String.valueOf("はこだて小路めぐり"), R.drawable.matiaruki23));
-	    
+        dataList.add(new ListItem(String.valueOf("近代の函館を想う"), R.drawable.matiaruki24));
+        dataList.add(new ListItem(String.valueOf("防火・防災のまち十字街"), R.drawable.matiaruki25));
+
+
         //Adapteの中身を更新
         oAdp.notifyDataSetChanged();
  
@@ -160,7 +163,7 @@ public class CourseActivity extends Activity implements OnItemClickListener{
                 oImage.setTag("CellImage");
                 oText.setTag("CellTitle");
                 //グリットビュー用のレイアウトに追加
-                oListLayout.addView(oImage);
+                oListLayout.addView(oImage, new LinearLayout.LayoutParams(190, 140));
                 oListLayout.addView(oText);
                 v = oListLayout;
             }
