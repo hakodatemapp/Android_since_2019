@@ -14,6 +14,19 @@ GitHubのアカウントでログインする必要があります．
  * Android SDK (API 14)
  * Android端末 **実機**
   * Android Emulatorでも動きますが，**設定がつらいです．**
+
+## Caution
+
+プロジェクトで使うリソース(画像など…)のファイル名には **半角の小文字英数字とアンダースコア(_)のみとし、ドットを含めないでください．**  
+ビルド時に次のエラーが発生する原因となります．
+
+```
+Error:Execution failed for task ':app:mergeDebugResources'.
+> /Users/yoshida/hmp4android/app/src/main/res/drawable-hdpi/miru_1.2.png: Error: '.' is not a valid file-based resource name character: File-based resource names must contain only lowercase a-z, 0-9, or underscore
+```
+
+ * わるい例: miru_1.2.png
+ * よい例: miru_12.png
  
 ## See also
 
