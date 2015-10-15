@@ -5,22 +5,22 @@
     android:shrinkColumns="1" >
 
     <TableRow>
-
-        <TextView
-            style="@style/CodeFont"
-            android:layout_marginBottom="1dp"
+        <ImageView
+            android:id="@+id/image_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_span="2"
-            android:background="#fff"
-            android:text="画像だよ" />
+            android:adjustViewBounds="true"
+            android:scaleType="fitStart" />
     </TableRow>
 
     <TableRow android:background="#000000" >
 
         <TextView
+            android:id="@+id/name_text"
             style="@style/CodeFont"
             android:layout_marginBottom="1dp"
             android:layout_span="2"
-
             android:background="#fff"
             android:text="Cafe en" />
     </TableRow>
@@ -29,6 +29,7 @@
         android:background="#000000" >
 
         <TextView
+            android:id="@+id/description_text"
             style="@style/CodeFont"
             android:layout_height="match_parent"
             android:layout_marginBottom="1dp"
@@ -42,6 +43,7 @@
     <TableRow android:background="#000000" >
 
         <TextView
+            android:id="@+id/spot_address"
             style="@style/CodeFont"
             android:layout_height="match_parent"
             android:layout_marginBottom="1dp"
@@ -50,6 +52,7 @@
             android:text="所在地" />
 
         <TextView
+            android:id="@+id/address_text"
             style="@style/CodeFont"
             android:layout_marginBottom="1dp"
             android:layout_marginTop="1dp"
@@ -60,6 +63,7 @@
     <TableRow android:background="#000000" >
 
         <TextView
+            android:id="@+id/spot_tel"
             style="@style/CodeFont"
             android:layout_height="match_parent"
             android:layout_marginBottom="1dp"
@@ -67,6 +71,7 @@
             android:text="電話番号" />
 
         <TextView
+            android:id="@+id/tel_text"
             style="@style/CodeFont"
             android:layout_marginBottom="1dp"
             android:background="#fff"
@@ -76,6 +81,7 @@
     <TableRow android:background="#000000" >
 
         <TextView
+            android:id="@+id/spot_access"
             style="@style/CodeFont"
             android:layout_height="match_parent"
             android:layout_marginBottom="1dp"
@@ -83,6 +89,7 @@
             android:text="アクセス" />
 
         <TextView
+            android:id="@+id/access_text"
             style="@style/CodeFont"
             android:layout_marginBottom="1dp"
             android:background="#fff"
@@ -92,6 +99,7 @@
     <TableRow android:background="#000000" >
 
         <TextView
+            android:id="@+id/spot_area"
             style="@style/CodeFont"
             android:layout_height="match_parent"
             android:layout_marginBottom="1dp"
@@ -99,10 +107,11 @@
             android:text="エリア" />
 
         <TextView
+            android:id="@+id/area_text"
             style="@style/CodeFont"
             android:layout_marginBottom="1dp"
             android:background="#fff"
             android:text="美原・桔梗エリア" />
     </TableRow>
-    
+
 </TableLayout>

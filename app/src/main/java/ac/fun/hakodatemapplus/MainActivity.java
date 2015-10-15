@@ -105,7 +105,7 @@ public class MainActivity extends FragmentActivity {
 		gm.setOnInfoWindowClickListener(new OnInfoWindowClickListener(){
 			@Override
 			public void onInfoWindowClick(Marker arg0) {
-				Intent intent = new Intent(MainActivity.this, PingActivity.class);
+				Intent intent = new Intent(MainActivity.this, SpotDetailActivity.class);
 				MainActivity.this.startActivity(intent);
 			}});
 
