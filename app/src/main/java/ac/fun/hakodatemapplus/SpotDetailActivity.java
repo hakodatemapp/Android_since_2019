@@ -3,7 +3,7 @@ package ac.fun.hakodatemapplus;
 import android.app.Activity;
 import android.os.Bundle;
 
-public class PingActivity extends Activity {
+public class SpotDetailActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
