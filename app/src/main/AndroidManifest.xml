@@ -39,7 +39,7 @@
         <uses-library android:name="com.google.android.maps" />
 
         <activity
-            android:name=".TopActivity"
+            android:name=".SpotDetailActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" > <!-- 画面を縦長で固定 -->
@@ -66,7 +66,7 @@
             android:label="@string/app_name"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".SpotDetailActivity"
+            android:name=".TopActivity"
             android:label="@string/app_name" />
     </application>
 
