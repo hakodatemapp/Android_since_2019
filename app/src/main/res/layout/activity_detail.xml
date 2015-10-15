@@ -15,44 +15,44 @@
                 android:id="@+id/image_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:scaleType="fitStart"
+                android:layout_span="2"
                 android:adjustViewBounds="true"
-                android:layout_span="2" />
+                android:scaleType="fitStart" />
 
         </TableRow>
 
-        <TableRow android:background="#000000" >
+        <TableRow android:background="#000000">
 
             <TextView
+                android:id="@+id/description_text"
                 style="@style/CodeFont"
                 android:layout_marginBottom="1dp"
                 android:layout_span="2"
-
+                android:layout_weight="1"
                 android:background="#fff"
-                android:text="教会、ハイカラ洋館、坂道・・・・・・異国情緒満点の元町を満喫"
-                android:id="@+id/description_text" />
+                android:text="読み込み中..." />
         </TableRow>
 
         <TableRow
             android:layout_width="wrap_content"
-            android:background="#000000" >
+            android:background="#000000">
 
             <TextView
+                android:id="@+id/course_content"
                 style="@style/CodeFont"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="1dp"
                 android:layout_weight="1"
                 android:background="#fff"
-                android:text="コース内容"
-                android:id="@+id/course_content" />
+                android:text="コース内容" />
 
             <TextView
+                android:id="@+id/contents_text"
                 style="@style/CodeFont"
-                android:layout_weight="2"
                 android:layout_marginBottom="1dp"
+                android:layout_weight="2"
                 android:background="#fff"
-                android:text="末広町電停、元町公園、函館市旧イギリス領時間（開港記念館）、ペリー提督来航記念碑、旧函館区公会堂、八幡坂、函館ハリストス正教会、函館聖ヨハネ教会、カトリック元町協会、二十間坂、東本願寺函館別院"
-                android:id="@+id/contents_text" />
+                android:text="読み込み中..." />
         </TableRow>
 
         <TableRow>
@@ -61,63 +61,73 @@
                 android:id="@+id/button_main"
                 android:layout_above="@+id/button_info"
                 android:layout_span="2"
+                android:layout_weight="1"
                 android:text="コースを選ぶ" />
         </TableRow>
 
-        <TableRow android:background="#000000" >
+        <TableRow
+            android:layout_width="wrap_content"
+            android:background="#000000">
 
             <TextView
+                android:id="@+id/course_time"
                 style="@style/CodeFont"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="1dp"
                 android:layout_marginTop="1dp"
+                android:layout_weight="1"
                 android:background="#fff"
-                android:text="時間"
-                android:id="@+id/course_time" />
+                android:text="時間" />
 
             <TextView
+                android:id="@+id/time_text"
                 style="@style/CodeFont"
                 android:layout_marginBottom="1dp"
                 android:layout_marginTop="1dp"
                 android:background="#fff"
-                android:text="60分"
-                android:id="@+id/time_text" />
+                android:text="--分" />
         </TableRow>
 
-        <TableRow android:background="#000000" >
+        <TableRow
+            android:layout_width="wrap_content"
+            android:background="#000000">
 
             <TextView
+                android:id="@+id/course_distance"
                 style="@style/CodeFont"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="1dp"
+                android:layout_weight="1"
                 android:background="#fff"
-                android:text="移動距離"
-                android:id="@+id/course_length" />
+                android:text="移動距離" />
 
             <TextView
+                android:id="@+id/distance_text"
                 style="@style/CodeFont"
                 android:layout_marginBottom="1dp"
                 android:background="#fff"
-                android:text="1.5km"
-                android:id="@+id/length_text" />
+                android:text="--.-km" />
         </TableRow>
 
-        <TableRow android:background="#000000" >
+        <TableRow
+            android:layout_width="wrap_content"
+            android:background="#000000">
 
             <TextView
+                android:id="@+id/course_calorie"
                 style="@style/CodeFont"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="1dp"
+                android:layout_weight="1"
                 android:background="#fff"
-                android:text="消費カロリー"
-                android:id="@+id/course_calorie" />
+                android:text="消費カロリー" />
 
             <TextView
+                android:id="@+id/calorie_text"
                 style="@style/CodeFont"
                 android:layout_marginBottom="1dp"
                 android:background="#fff"
-                android:text="180kcal"
-                android:id="@+id/calorie_text" />
+                android:text="180kcal" />
         </TableRow>
 
     </TableLayout>
