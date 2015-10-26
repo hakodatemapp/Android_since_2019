@@ -153,6 +153,10 @@ public class SpotDetailActivity extends Activity {
                         // TextViewへ設定
                         System.out.println("UI Setting ...");
 
+                        // スポット画像。はこぶら取得したデータを反映する
+                        ImageGetThread hakoburaimg_thread = new ImageGetThread(image_str);
+                        hakoburaimg_thread.start();
+
                         // スポット名
                         TextView name_text = (TextView) findViewById(R.id.name_text);
                         name_text.setText(queue_title);

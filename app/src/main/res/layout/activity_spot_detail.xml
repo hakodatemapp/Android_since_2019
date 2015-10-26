@@ -1,8 +1,8 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="#EFEFF4"
-    android:layout_weight="1">
+    android:layout_weight="1"
+    android:background="#EFEFF4">
 
     <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
@@ -12,6 +12,7 @@
         android:shrinkColumns="1">
 
         <TableRow>
+
             <ImageView
                 android:id="@+id/image_view"
                 android:layout_width="match_parent"
@@ -29,8 +30,8 @@
                 android:layout_marginBottom="1dp"
                 android:layout_span="2"
                 android:background="#FFF"
-                android:textStyle="bold"
-                android:text="Cafe en" />
+                android:text="Cafe en"
+                android:textStyle="bold" />
         </TableRow>
 
         <TableRow android:background="#000000">
@@ -43,8 +44,8 @@
                 android:layout_span="2"
                 android:layout_weight="1"
                 android:background="#fff"
-                android:textStyle="bold"
-                android:text="時に野生のキジやキタキツネも来訪する、のどかで落ち着いた空間。裏夜景スポットでもある。新鮮な地元の食材を使用した食事を味わいながら、ゆったりと贅沢なひとときを。" />
+                android:text="時に野生のキジやキタキツネも来訪する、のどかで落ち着いた空間。裏夜景スポットでもある。新鮮な地元の食材を使用した食事を味わいながら、ゆったりと贅沢なひとときを。"
+                android:textStyle="bold" />
 
         </TableRow>
 
@@ -57,8 +58,8 @@
                 android:layout_marginBottom="1dp"
                 android:layout_marginTop="1dp"
                 android:background="#fff"
-                android:textStyle="bold"
-                android:text="所在地" />
+                android:text="所在地"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/address_text"
@@ -77,8 +78,8 @@
                 android:layout_height="match_parent"
                 android:layout_marginBottom="1dp"
                 android:background="#fff"
-                android:textStyle="bold"
-                android:text="電話番号" />
+                android:text="電話番号"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tel_text"
@@ -96,8 +97,8 @@
                 android:layout_height="match_parent"
                 android:layout_marginBottom="1dp"
                 android:background="#fff"
-                android:textStyle="bold"
-                android:text="アクセス" />
+                android:text="アクセス"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/access_text"
@@ -115,8 +116,8 @@
                 android:layout_height="match_parent"
                 android:layout_marginBottom="1dp"
                 android:background="#fff"
-                android:textStyle="bold"
-                android:text="エリア" />
+                android:text="エリア"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/area_text"
@@ -126,5 +127,33 @@
                 android:text="美原・桔梗エリア" />
         </TableRow>
 
+        <TableRow android:background="#000000">
+
+            <TextView
+                android:id="@+id/spot_hakoburalink"
+                style="@style/CodeFont"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="1dp"
+                android:background="#fff"
+                android:text="もっと見る"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/hakoburalink_text"
+                style="@style/CodeFont"
+                android:layout_marginBottom="1dp"
+                android:background="#fff"
+                android:text="→" />
+        </TableRow>
+        <TableRow android:background="#000000">
+
+            <TextView
+                android:id="@+id/powered_hakobura"
+                style="@style/CodeFont"
+                android:layout_marginBottom="1dp"
+                android:layout_weight="1"
+                android:background="#fff"
+                android:text="powered by 函館市公式観光情報サイト「はこぶら」" />
+        </TableRow>
     </TableLayout>
 </ScrollView>
