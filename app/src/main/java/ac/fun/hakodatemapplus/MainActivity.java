@@ -13,8 +13,18 @@ import android.support.v4.app.FragmentActivity;
 import android.view.*;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONException;
+
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+
+import static ac.fun.hakodatemapplus.DetailActivity.InputStreamToString;
 
 //
 // はこだてMap+ Android
@@ -83,7 +93,11 @@ public class MainActivity extends FragmentActivity {
 	}
 
     public void createMatiarukiMapWithStart(GoogleMap gm, List<LatLng> course_list) {
-        gm.addMarker(new MarkerOptions().position(course_list.get(0)).title("スタート"));
+		LatLng start_position = course_list.get(0);	//スタート地点の緯度経度
+        gm.addMarker(new MarkerOptions().position(start_position).title("スタート")); //スタート地点にピンをたてる
+		gm.moveCamera(CameraUpdateFactory.newLatLngZoom(start_position, 16));	//スタート地点へズーム
+
+		//コースの線を描く
         for(int i=0; i<course_list.size() - 1; i++) {
             // 直線
             PolylineOptions straight = new PolylineOptions()
@@ -93,7 +107,94 @@ public class MainActivity extends FragmentActivity {
                     .width(6);
             gm.addPolyline(straight);
         }
+
+		// SPARQLのクエリを実行して取得したデータを反映する
+		SparqlGetThread st = new SparqlGetThread(gm, title);
+		st.start();
     }
+
+	// SPARQLのクエリを実行して取得したデータを反映する
+	class SparqlGetThread extends Thread {
+		GoogleMap gm;
+		String queue_title;
+
+		SparqlGetThread(GoogleMap gm, String name) {
+			this.gm = gm;
+			this.queue_title = name;
+		}
+
+		public void run() {
+			// コース名をURLエンコードする
+			String encoded_course = "";
+			try {
+				encoded_course = URLEncoder.encode(queue_title, "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+
+			// SPARQLのクエリを準備する
+			String queue_parts1 = "http://lod.per.c.fun.ac.jp:8000/sparql/?query=PREFIX%20rdf%3a%20%3chttp%3a%2f%2fwww%2ew3%2eorg%2f1999%2f02%2f22%2drdf%2dsyntax%2dns%23%3e%0d%0aPREFIX%20rdfs%3a%20%3chttp%3a%2f%2fwww%2ew3%2eorg%2f2000%2f01%2frdf%2dschema%23%3e%0d%0aPREFIX%20schema%3a%20%3chttp%3a%2f%2fschema%2eorg%2f%3e%0d%0aPREFIX%20dc%3a%20%3chttp%3a%2f%2fpurl%2eorg%2fdc%2felements%2f1%2e1%2f%3e%0d%0aPREFIX%20geo%3a%20%3chttp%3a%2f%2fwww%2ew3%2eorg%2f2003%2f01%2fgeo%2fwgs84_pos%23%3e%0d%0aPREFIX%20xsd%3a%20%3chttp%3a%2f%2fwww%2ew3%2eorg%2f2001%2fXMLSchema%23%3e%0d%0aPREFIX%20dcterms%3a%20%3chttp%3a%2f%2fpurl%2eorg%2fdc%2fterms%2f%3e%0d%0aPREFIX%20foaf%3a%20%3chttp%3a%2f%2fxmlns%2ecom%2ffoaf%2f0%2e1%2f%3e%0d%0a%0d%0aSELECT%20DISTINCT%20%3fcourseName%20%3frootNum%20%3fspotName%20%3fcategory%20%3flat%20%3flong%20%3furl%20%0d%0a%0d%0aFROM%20%3cfile%3a%2f%2f%2fvar%2flib%2f4store%2fmachiaruki_akiba%2erdf%3e%0d%0aFROM%20%3cfile%3a%2f%2f%2fvar%2flib%2f4store%2fhakobura_akiba%2erdf%3e%0d%0a%0d%0a%0d%0aWHERE%20%7b%0d%0a%0d%0aGRAPH%20%3cfile%3a%2f%2f%2fvar%2flib%2f4store%2fhakobura_akiba%2erdf%3e%20%7b%0d%0a%20%3fhs%20rdfs%3alabel%20%3fspotName%3b%0d%0a%20rdfs%3acomment%20%3fcategory%3b%0d%0a%20geo%3alat%20%3flat%3b%0d%0a%20geo%3along%20%3flong%3b%0d%0a%7d%0d%0a%0d%0aOPTIONAL%20%7b%0d%0aGRAPH%20%3cfile%3a%2f%2f%2fvar%2flib%2f4store%2fmachiaruki_akiba%2erdf%3e%20%7b%0d%0a%3fmss%20schema%3aname%20%3fspotName%3b%0d%0adc%3asubject%20%3frootNum%2e%0d%0a%3fms%20dc%3arelation%20%3fmss%3b%0d%0ardfs%3alabel%20%3fcourseName%2e%0d%0a%7d%0d%0aFILTER%28%3fms%20%3d%20%3curn%3a";
+			String queue_parts2 = "%3e%29%0d%0a%7d%0d%0a%0d%0a%7d&output=json";
+			String queue_url = queue_parts1 + encoded_course + queue_parts2;
+
+			try {
+				URL url = new URL(queue_url);
+				HttpURLConnection con = (HttpURLConnection) url.openConnection();
+				String str = InputStreamToString(con.getInputStream());
+
+				ArrayList<ArrayList<String>> spot_list =new ArrayList<ArrayList<String>>();
+
+				// 受け取ったJSONをパースする
+				JSONObject json = new JSONObject(str);
+				JSONObject json_results = json.getJSONObject("results");
+				JSONArray bindings = json_results.getJSONArray("bindings");
+
+				for(int i = 0; i < bindings.length() ; i++) {
+					JSONObject binding = bindings.getJSONObject(i);
+					ArrayList spot_detail = new ArrayList<>();
+
+					try{
+						spot_detail.add(0, binding.getJSONObject("courseName").getString("value"));
+					} catch (JSONException e) {
+						spot_detail.add(0, null);
+					}
+					try {
+						spot_detail.add(1, binding.getJSONObject("rootNum").getString("value"));
+					} catch (JSONException e){
+						spot_detail.add(1, null);
+					}
+					spot_detail.add(2, binding.getJSONObject("spotName").getString("value"));
+					spot_detail.add(3, binding.getJSONObject("category").getString("value"));
+					spot_detail.add(4, binding.getJSONObject("lat").getString("value"));
+					spot_detail.add(5, binding.getJSONObject("long").getString("value"));
+
+					spot_list.add(spot_detail);
+				}
+
+				final ArrayList<ArrayList<String>> final_list = spot_list;
+
+
+			// 受け取った結果を地図へ反映
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					// スポットのピンを地図上に表示
+					for (int i = 0; i < final_list.size(); i++) {
+						LatLng spot = new LatLng(Double.parseDouble(final_list.get(i).get(4)),
+								Double.parseDouble(final_list.get(i).get(5)));
+						gm.addMarker(new MarkerOptions().position(spot).title(final_list.get(i).get(2)));
+						}
+					}
+				});
+
+
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+
+		}
+
+	}
 
 	public void onResume(){
 		super.onResume();
