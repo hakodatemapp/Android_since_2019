@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.os.Bundle;
+import android.text.Html;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -184,6 +185,7 @@ public class SpotDetailActivity extends Activity {
 //                        // URL
 //                        TextView calorie_text = (TextView) findViewById(R.id.calorie_text);
 //                        calorie_text.setText(calorie_str);
+
 
                     }
                 });
