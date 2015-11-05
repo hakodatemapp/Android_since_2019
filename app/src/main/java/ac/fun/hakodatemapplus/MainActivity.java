@@ -956,21 +956,9 @@ public class MainActivity extends FragmentActivity {
 				break;
 
 			default:
-                // 五稜郭公園の位置
-                LatLng location = new LatLng(41.797595, 140.755849);
-
-                // Option of Marker
-                MarkerOptions options = new MarkerOptions()
-                        .position(location)
-                        .title("五稜郭公園")
-                        .snippet(location.toString())
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.miru));
-
-                // add Marker
-                gm.addMarker(options);
-
-                // written in a single line
-                gm.addMarker(new MarkerOptions().position(new LatLng(41.84183489999999, 140.7669978)).title("公立はこだて未来大学"));
+                // SPARQLのクエリを実行して取得したデータを反映する
+                SparqlGetThread st = new SparqlGetThread(gm, "");
+                st.start();
         }
 
 
