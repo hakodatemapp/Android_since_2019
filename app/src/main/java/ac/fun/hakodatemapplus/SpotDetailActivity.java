@@ -5,7 +5,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.Html;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,16 +24,26 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 
 public class SpotDetailActivity extends Activity {
+
+    private JSONArray bindings = new JSONArray();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spot_detail);
 
-
         // SPARQLのクエリを実行して取得したデータを反映する
-        SparqlGetThread st = new SparqlGetThread("松原家住宅");
+        SparqlGetThread st = new SparqlGetThread("元町配水場");
         st.start();
     }
 
@@ -116,26 +128,42 @@ public class SpotDetailActivity extends Activity {
                 // 受け取ったJSONをパースする
                 JSONObject json = new JSONObject(str);
                 JSONObject json_results = json.getJSONObject("results");
-                JSONArray bindings = json_results.getJSONArray("bindings");
-                JSONObject binding = bindings.getJSONObject(0);
+                bindings = json_results.getJSONArray("bindings");
+                JSONObject binding = bindings.getJSONObject(0);     // bindingはbindingsのゼロ番目であることに注意
                 System.out.println(binding);
 
 
                 // 映画ロケ地である場合はその情報をパース
+                List<String> film_spots = new ArrayList<String>();
+                Collection<String> film_spots_distinct = new LinkedHashSet<String>();
+
                 if (!binding.getJSONObject("filmName").isNull("value")) {
-                    final String director_str = binding.getJSONObject("director").getString("value");
-                    final String actor_str = binding.getJSONObject("actor").getString("value");
-                    final String filmdescription_str = binding.getJSONObject("filmdescription").getString("value");
-                    final String filmurl_str = binding.getJSONObject("filmurl").getString("value");
+                    // 映画名リスト
+                    for (int i = 0; i < bindings.length(); i++) {
+                        String film_spot = bindings.getJSONObject(i).getJSONObject("filmName").getString("value");
+                        film_spots.add(film_spot);
+                    }
+                    // 重複を排除する
+                    film_spots_distinct.addAll(film_spots);
                 }
 
-                // 土木遺産である場合はその情報をパース
-                if (!binding.getJSONObject("dobokuurl").isNull("value")) {
-                    final String borndate_str = binding.getJSONObject("bornDate").getString("value");
-                    final String dobokudescription_str = binding.getJSONObject("dobokudescription").getString("value");
-                    final String filmdescription_str = binding.getJSONObject("filmdescription").getString("value");
-                    final String creator_str = binding.getJSONObject("creator").getString("value");
+
+                // 土木遺産である場合はその情報をパース。名前を取得する
+                List<String> doboku_spots = new ArrayList<String>();
+                Collection<String> doboku_spots_distinct = new LinkedHashSet<String>();
+
+                if (!binding.getJSONObject("dobokuname").isNull("value")) {
+                    // 土木遺産名リスト
+                    for (int i = 0; i < bindings.length(); i++) {
+                        String doboku_spot = bindings.getJSONObject(i).getJSONObject("dobokuname").getString("value");
+                        doboku_spots.add(doboku_spot);
+                    }
+                    // 重複を排除する
+                    doboku_spots_distinct.addAll(doboku_spots);
                 }
+
+                final Collection<String> film_collection = film_spots_distinct;
+                final Collection<String> doboku_collection = doboku_spots_distinct;
 
                 final String description_str = binding.getJSONObject("description").getString("value");
                 System.out.println(description_str);
@@ -181,10 +209,15 @@ public class SpotDetailActivity extends Activity {
                         // エリア
                         TextView area_text = (TextView) findViewById(R.id.area_text);
                         area_text.setText(area_str);
+                        Log.d("FILM_COUNT", String.format("%d", film_collection.size()));
+                        Log.d("DOBOKU_COUNT", String.format("%d", doboku_collection.size()));
+
 
 //                        // URL
 //                        TextView calorie_text = (TextView) findViewById(R.id.calorie_text);
 //                        calorie_text.setText(calorie_str);
+
+                        // 映画ロケ地・土木遺産
 
 
                     }
