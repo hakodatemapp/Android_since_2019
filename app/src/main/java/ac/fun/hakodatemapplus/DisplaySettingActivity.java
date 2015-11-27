@@ -33,7 +33,7 @@ public class DisplaySettingActivity extends Activity {
         if (id == R.id.action_settings) {
             return true;
         }
-        //ƒAƒNƒVƒ‡ƒ“ƒo[‚Ì–ß‚é‚ð‰Ÿ‚µ‚½‚Æ‚«‚Ìˆ—
+        // ã‚¢ã‚¯ã‚·ãƒ§ãƒ³ãƒãƒ¼ã®æˆ»ã‚‹ã‚’æŠ¼ã—ãŸã¨ãã®å‡¦ç†
         else if (id == android.R.id.home) {
             finish();
             return true;
