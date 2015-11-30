@@ -8,6 +8,7 @@ import com.google.android.gms.maps.model.*;
 import android.app.*;
 import android.content.Intent;
 import android.graphics.Color;
+import android.location.*;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.*;
@@ -38,9 +39,14 @@ public class MainActivity extends FragmentActivity {
 	private String title;
     private int course_id;
 
+	private LocationManager mLocationManager;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		mLocationManager = (LocationManager)this.getSystemService(Service.LOCATION_SERVICE);
+		Location myLocate = mLocationManager.getLastKnownLocation("gps");
 
 		mf = MapFragment.newInstance();
 		FragmentManager fm = getFragmentManager();
@@ -178,11 +184,134 @@ public class MainActivity extends FragmentActivity {
 			runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
+					BitmapDescriptor taberu = BitmapDescriptorFactory.fromResource(R.drawable.taberu);
+					BitmapDescriptor miru = BitmapDescriptorFactory.fromResource(R.drawable.miru);
+					BitmapDescriptor asobu = BitmapDescriptorFactory.fromResource(R.drawable.asobu);
+					BitmapDescriptor kaimono = BitmapDescriptorFactory.fromResource(R.drawable.kaimono);
+					BitmapDescriptor onsen = BitmapDescriptorFactory.fromResource(R.drawable.onsen);
+					BitmapDescriptor event = BitmapDescriptorFactory.fromResource(R.drawable.event);
+
+					BitmapDescriptor pin01 = BitmapDescriptorFactory.fromResource(R.drawable.pin01);
+					BitmapDescriptor pin02 = BitmapDescriptorFactory.fromResource(R.drawable.pin02);
+					BitmapDescriptor pin03 = BitmapDescriptorFactory.fromResource(R.drawable.pin03);
+					BitmapDescriptor pin04 = BitmapDescriptorFactory.fromResource(R.drawable.pin04);
+					BitmapDescriptor pin05 = BitmapDescriptorFactory.fromResource(R.drawable.pin05);
+					BitmapDescriptor pin06 = BitmapDescriptorFactory.fromResource(R.drawable.pin06);
+					BitmapDescriptor pin07 = BitmapDescriptorFactory.fromResource(R.drawable.pin07);
+					BitmapDescriptor pin08 = BitmapDescriptorFactory.fromResource(R.drawable.pin08);
+					BitmapDescriptor pin09 = BitmapDescriptorFactory.fromResource(R.drawable.pin09);
+					BitmapDescriptor pin10 = BitmapDescriptorFactory.fromResource(R.drawable.pin10);
+					BitmapDescriptor pin11 = BitmapDescriptorFactory.fromResource(R.drawable.pin11);
+					BitmapDescriptor pin12 = BitmapDescriptorFactory.fromResource(R.drawable.pin12);
+					BitmapDescriptor pin13 = BitmapDescriptorFactory.fromResource(R.drawable.pin13);
+					BitmapDescriptor pin14 = BitmapDescriptorFactory.fromResource(R.drawable.pin14);
+					BitmapDescriptor pin15 = BitmapDescriptorFactory.fromResource(R.drawable.pin15);
+					BitmapDescriptor pin16 = BitmapDescriptorFactory.fromResource(R.drawable.pin16);
+					BitmapDescriptor pin17 = BitmapDescriptorFactory.fromResource(R.drawable.pin17);
+					BitmapDescriptor pin18 = BitmapDescriptorFactory.fromResource(R.drawable.pin18);
+					BitmapDescriptor pin19 = BitmapDescriptorFactory.fromResource(R.drawable.pin19);
+					BitmapDescriptor pin20 = BitmapDescriptorFactory.fromResource(R.drawable.pin20);
+
 					// スポットのピンを地図上に表示
 					for (int i = 0; i < final_list.size(); i++) {
-						LatLng spot = new LatLng(Double.parseDouble(final_list.get(i).get(4)),
+
+						LatLng location = new LatLng(Double.parseDouble(final_list.get(i).get(4)),
 								Double.parseDouble(final_list.get(i).get(5)));
-						gm.addMarker(new MarkerOptions().position(spot).title(final_list.get(i).get(2)));
+
+						// マーカーの設定
+						MarkerOptions options = new MarkerOptions();
+						options.position(location);
+						options.title(final_list.get(i).get(2));
+
+						if (final_list.get(i).get(0) != null) {
+							switch(final_list.get(i).get(1)){
+								case "1":
+									options.icon(pin01);
+									break;
+								case "2":
+									options.icon(pin02);
+									break;
+								case "3":
+									options.icon(pin03);
+									break;
+								case "4":
+									options.icon(pin04);
+									break;
+								case "5":
+									options.icon(pin05);
+									break;
+								case "6":
+									options.icon(pin06);
+									break;
+								case "7":
+									options.icon(pin07);
+									break;
+								case "8":
+									options.icon(pin08);
+									break;
+								case "9":
+									options.icon(pin09);
+									break;
+								case "10":
+									options.icon(pin10);
+									break;
+								case "11":
+									options.icon(pin11);
+									break;
+								case "12":
+									options.icon(pin12);
+									break;
+								case "13":
+									options.icon(pin13);
+									break;
+								case "14":
+									options.icon(pin14);
+									break;
+								case "15":
+									options.icon(pin15);
+									break;
+								case "16":
+									options.icon(pin16);
+									break;
+								case "17":
+									options.icon(pin17);
+									break;
+								case "18":
+									options.icon(pin18);
+									break;
+								case "19":
+									options.icon(pin19);
+									break;
+								case "20":
+									options.icon(pin20);
+									break;
+							}
+						} else {
+							switch (final_list.get(i).get(3)) {
+								case "食べる":
+									options.icon(taberu);
+									break;
+								case "見る":
+									options.icon(miru);
+									break;
+								case "遊ぶ":
+									options.icon(asobu);
+									break;
+								case "買う":
+									options.icon(kaimono);
+									break;
+								case "温泉":
+									options.icon(onsen);
+									break;
+								case "観光カレンダー":
+									options.icon(event);
+									break;
+							}
+						}
+
+						// マップにマーカーを追加
+						gm.addMarker(options);
+
 						}
 					}
 				});
