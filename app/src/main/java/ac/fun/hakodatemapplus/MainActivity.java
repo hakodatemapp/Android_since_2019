@@ -114,11 +114,8 @@ public class MainActivity extends FragmentActivity {
             gm.addPolyline(straight);
         }
 
-		// SPARQLのクエリで使う形式に変換する(半角・全角スペース除去)
-		String search_title = title.replaceAll("[ 　]", "");
-
 		// SPARQLのクエリを実行して取得したデータを反映する
-		SparqlGetThread st = new SparqlGetThread(gm, search_title);
+		SparqlGetThread st = new SparqlGetThread(gm, title);
 		st.start();
     }
 
@@ -146,22 +143,41 @@ public class MainActivity extends FragmentActivity {
 			String queue_parts2 = "%3e%29%0d%0a%7d%0d%0a%0d%0a%7d&output=json";
 			String queue_url = queue_parts1 + encoded_course + queue_parts2;
 
-			ArrayList<ArrayList<String>> spot_list = new ArrayList<>();
+			try {
+				URL url = new URL(queue_url);
+				HttpURLConnection con = (HttpURLConnection) url.openConnection();
+				String str = InputStreamToString(con.getInputStream());
 
-			//観光スポットの取得
-			setSparqlRsulets(spot_list, queue_url);
+				ArrayList<ArrayList<String>> spot_list =new ArrayList<ArrayList<String>>();
 
-			//まちあるきマップにしかないスポットの取得
-			if (encoded_course != null) {
+				// 受け取ったJSONをパースする
+				JSONObject json = new JSONObject(str);
+				JSONObject json_results = json.getJSONObject("results");
+				JSONArray bindings = json_results.getJSONArray("bindings");
 
-				String queue_machi1 = "http://lod.per.c.fun.ac.jp:8000/sparql/?query=PREFIX%20rdfs%3a%20%3chttp%3a%2f%2fwww%2ew3%2eorg%2f2000%2f01%2frdf%2dschema%23%3e%0d%0aPREFIX%20schema%3a%20%3chttp%3a%2f%2fschema%2eorg%2f%3e%0d%0aPREFIX%20dc%3a%20%3chttp%3a%2f%2fpurl%2eorg%2fdc%2felements%2f1%2e1%2f%3e%0d%0aPREFIX%20geo%3a%20%3chttp%3a%2f%2fwww%2ew3%2eorg%2f2003%2f01%2fgeo%2fwgs84_pos%23%3e%0d%0a%0d%0aSELECT%20DISTINCT%20%3fcourseName%20%3frootNum%20%3fspotName%20%3fcategory%20%3flat%20%3flong%0d%0a%0d%0aFROM%20%3cfile%3a%2f%2f%2fvar%2flib%2f4store%2fmachiaruki_akiba%2erdf%3e%0d%0a%0d%0aWHERE%20%7b%0d%0a%7b%0d%0a%20%20%20%20%3curn%3a";
-				String queue_machi2 = "%3e%20rdfs%3alabel%20%3fcourseName%3b%0d%0a%20%20%20%20dc%3arelation%20%3fmspotURI%2e%0d%0a%20%20%20%20%3fmspotURI%20dc%3asubject%20%3frootNum%3b%0d%0a%20%20%20%20schema%3aname%20%3fspotName%3b%0d%0a%20%20%20%20geo%3alat%20%3flat%3b%0d%0a%20%20%20%20geo%3along%20%3flong%2e%0d%0a%7d%0d%0a%7d&output=json";
-				String queue_machi_url = queue_machi1 + encoded_course + queue_machi2;
+				for(int i = 0; i < bindings.length() ; i++) {
+					JSONObject binding = bindings.getJSONObject(i);
+					ArrayList spot_detail = new ArrayList<>();
 
-				setSparqlRsulets(spot_list, queue_machi_url);
-			}
+					try{
+						spot_detail.add(0, binding.getJSONObject("courseName").getString("value"));
+					} catch (JSONException e) {
+						spot_detail.add(0, null);
+					}
+					try {
+						spot_detail.add(1, binding.getJSONObject("rootNum").getString("value"));
+					} catch (JSONException e){
+						spot_detail.add(1, null);
+					}
+					spot_detail.add(2, binding.getJSONObject("spotName").getString("value"));
+					spot_detail.add(3, binding.getJSONObject("category").getString("value"));
+					spot_detail.add(4, binding.getJSONObject("lat").getString("value"));
+					spot_detail.add(5, binding.getJSONObject("long").getString("value"));
 
-			final ArrayList<ArrayList<String>> final_list = spot_list;
+					spot_list.add(spot_detail);
+				}
+
+				final ArrayList<ArrayList<String>> final_list = spot_list;
 
 
 			// 受け取った結果を地図へ反映
@@ -300,48 +316,11 @@ public class MainActivity extends FragmentActivity {
 					}
 				});
 
-		}
 
-		//指定されたクエリを投げて指定されたリストにスポットを追加する
-		public void setSparqlRsulets(ArrayList<ArrayList<String>> spot_list, String queue_url){
-				try {
-					URL url = new URL(queue_url);
-					HttpURLConnection con = (HttpURLConnection) url.openConnection();
-					String str = InputStreamToString(con.getInputStream());
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 
-					// 受け取ったJSONをパースする
-					JSONObject json = new JSONObject(str);
-					JSONObject json_results = json.getJSONObject("results");
-					JSONArray bindings = json_results.getJSONArray("bindings");
-
-					for(int i = 0; i < bindings.length() ; i++) {
-						JSONObject binding = bindings.getJSONObject(i);
-						ArrayList spot_detail = new ArrayList<>();
-
-						try {
-							spot_detail.add(0, binding.getJSONObject("courseName").getString("value"));
-						} catch (JSONException e) {
-							spot_detail.add(0, null);
-						}
-						try {
-							spot_detail.add(1, binding.getJSONObject("rootNum").getString("value"));
-						} catch (JSONException e) {
-							spot_detail.add(1, null);
-						}
-						spot_detail.add(2, binding.getJSONObject("spotName").getString("value"));
-						try {
-							spot_detail.add(3, binding.getJSONObject("category").getString("value"));
-						} catch (JSONException e) {
-							spot_detail.add(3, null);
-						}
-						spot_detail.add(4, binding.getJSONObject("lat").getString("value"));
-						spot_detail.add(5, binding.getJSONObject("long").getString("value"));
-
-						spot_list.add(spot_detail);
-					}
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
 		}
 
 	}
