@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -173,8 +174,8 @@ public class SpotDetailActivity extends Activity {
                 JSONObject json = new JSONObject(str);
                 JSONObject json_results = json.getJSONObject("results");
                 bindings = json_results.getJSONArray("bindings");
-                JSONObject binding = bindings.getJSONObject(0);     // bindingはbindingsのゼロ番目であることに注意
-                System.out.println(binding);
+                final JSONObject binding = bindings.getJSONObject(0);     // bindingはbindingsのゼロ番目であることに注意
+//                System.out.println(binding);
 
 
                 // 映画ロケ地である場合はその情報をパース
@@ -224,7 +225,6 @@ public class SpotDetailActivity extends Activity {
                     @Override
                     public void run() {
                         // TextViewへ設定
-                        System.out.println("UI Setting ...");
 
                         // スポット画像。はこぶら取得したデータを反映する
                         ImageGetThread hakoburaimg_thread = new ImageGetThread(image_str);
@@ -259,7 +259,6 @@ public class SpotDetailActivity extends Activity {
                         // URL
                         findViewById(R.id.hakoburalink_row).setOnClickListener(new View.OnClickListener() {
                             public void onClick(View v) {
-                                Log.d("CLICKED_HAKOBURA", url_str);
                                 intentSpotWebBrowser(url_str, spot_title);
                             }
                         });
@@ -267,7 +266,6 @@ public class SpotDetailActivity extends Activity {
                         // powered by はこぶら
                         findViewById(R.id.powered_hakobura).setOnClickListener(new View.OnClickListener() {
                             public void onClick(View v) {
-                                Log.d("CLICKED_HAKOBURA", "http://www.hakobura.jp/");
                                 intentSpotWebBrowser("http://www.hakobura.jp/", "はこぶら");
                             }
                         });
@@ -289,7 +287,7 @@ public class SpotDetailActivity extends Activity {
                                 final String tmp2 = tmp;
                                 tr.setOnClickListener(new View.OnClickListener() {
                                     public void onClick(View v) {
-                                        Log.d("CLICKED_FILM", tmp2);
+                                        moveDetailFilmDoboku(tmp2, 0, binding);
                                     }
                                 });
                                 i++;
@@ -299,7 +297,6 @@ public class SpotDetailActivity extends Activity {
                         // powered by はこだてフィルムコミッション
                         findViewById(R.id.powered_hakodatefilm).setOnClickListener(new View.OnClickListener() {
                             public void onClick(View v) {
-                                Log.d("CLICKED_FILM", "http://www.hakodate-fc.com/");
                                 intentSpotWebBrowser("http://www.hakodate-fc.com/", "はこだてフィルムコミッション");
                             }
                         });
@@ -321,7 +318,7 @@ public class SpotDetailActivity extends Activity {
                                 final String tmp2 = tmp;
                                 tr.setOnClickListener(new View.OnClickListener() {
                                     public void onClick(View v) {
-                                        Log.d("CLICKED_DOBOKU", tmp2);
+                                        moveDetailFilmDoboku(tmp2, 1, binding);
                                     }
                                 });
                                 i++;
@@ -331,7 +328,6 @@ public class SpotDetailActivity extends Activity {
                         // powered by 函館近代化遺産ポータルサイト
                         findViewById(R.id.powered_doboku).setOnClickListener(new View.OnClickListener() {
                             public void onClick(View v) {
-                                Log.d("CLICKED_DOBOKU", "http://hnct-pbl.jimdo.com/");
                                 intentSpotWebBrowser("http://hnct-pbl.jimdo.com/", "函館近代化遺産ポータルサイト");
                             }
                         });
@@ -341,6 +337,78 @@ public class SpotDetailActivity extends Activity {
                 ex.printStackTrace();
             }
         }
+    }
+
+
+    private void moveDetailFilmDoboku(String target_title, Integer target_type, JSONObject binding) {
+        String description_str = "";
+        String first_str = "";
+        String second_str = "";
+        String url = "";
+        String image_url = "";
+        Boolean is_found = false;
+
+        try {
+            // 映画ロケ地である場合はその情報をパース。名前を取得する
+            if (target_type == 0) {
+                if (!binding.getJSONObject("filmName").isNull("value")) {
+                    // 映画名リスト
+                    for (int i = 0; i < bindings.length(); i++) {
+                        // 求めるタイトルと検索して見つかったら終了
+                        String film_spot = bindings.getJSONObject(i).getJSONObject("filmName").getString("value");
+                        if (film_spot.equals(target_title)) {
+                            description_str = bindings.getJSONObject(i).getJSONObject("filmdescription").getString("value");
+                            first_str = bindings.getJSONObject(i).getJSONObject("director").getString("value");
+                            second_str = bindings.getJSONObject(i).getJSONObject("actor").getString("value");
+                            url = bindings.getJSONObject(i).getJSONObject("filmurl").getString("value");
+                            image_url = bindings.getJSONObject(i).getJSONObject("image").getString("value");
+                            is_found = true;
+                            break;
+                        }
+                    }
+                }
+
+                // 土木遺産である場合はその情報をパース。名前を取得する
+            } else if (target_type == 1) {
+
+                List<String> doboku_spots = new ArrayList<String>();
+                Collection<String> doboku_spots_distinct = new LinkedHashSet<String>();
+
+                if (!binding.getJSONObject("dobokuname").isNull("value")) {
+                    // 土木遺産名リスト
+                    for (int i = 0; i < bindings.length(); i++) {
+                        // 求めるタイトルと検索して見つかったら終了
+                        String doboku_spot = bindings.getJSONObject(i).getJSONObject("dobokuname").getString("value");
+                        if (doboku_spot.equals(target_title)) {
+                            description_str = bindings.getJSONObject(i).getJSONObject("dobokudescription").getString("value");
+                            first_str = bindings.getJSONObject(i).getJSONObject("bornDate").getString("value");
+                            second_str = bindings.getJSONObject(i).getJSONObject("creator").getString("value");
+                            url = bindings.getJSONObject(i).getJSONObject("dobokuurl").getString("value");
+                            image_url = bindings.getJSONObject(i).getJSONObject("image").getString("value");
+                            is_found = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        if (is_found == true) {
+            Intent intent = new Intent(this, FilmDoboku.class);
+            intent.putExtra("title_str", target_title);
+            intent.putExtra("target_type", target_type);
+            intent.putExtra("description_str", description_str);
+            intent.putExtra("first_str", first_str);
+            intent.putExtra("second_str", second_str);
+            intent.putExtra("url", url);
+            intent.putExtra("image_url", image_url);
+            startActivityForResult(intent, 0);
+        } else {
+            Log.d("ERROR", "指定されたターゲットは見つかりませんでした");
+        }
+
     }
 
     // InputStream -> String

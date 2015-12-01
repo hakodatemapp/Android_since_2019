@@ -1,0 +1,177 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:background="#EFEFF4">
+
+    <LinearLayout
+        android:id="@+id/spot_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#EFEFF4"
+        android:orientation="vertical">
+
+        <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/spot_table"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#EFEFF4"
+            android:shrinkColumns="1">
+
+            <TableRow
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/image_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_span="2"
+                    android:layout_weight="1"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitStart" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#000000">
+
+                <TextView
+                    android:id="@+id/name_text"
+                    style="@style/CodeFont"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="1dp"
+                    android:layout_span="2"
+                    android:layout_weight="1"
+                    android:background="#EFEFF4"
+                    android:text="読み込み中…"
+                    android:textStyle="bold" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#000000">
+
+                <TextView
+                    android:id="@+id/description_text"
+                    style="@style/CodeFont"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="1dp"
+                    android:layout_span="2"
+                    android:layout_weight="1"
+                    android:background="#fff"
+                    android:text="読み込み中…"
+                    android:textStyle="bold" />
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#000000">
+
+                <TextView
+                    android:id="@+id/first_title"
+                    style="@style/CodeFont"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="1dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_weight="1"
+                    android:background="#fff"
+                    android:text="所在地"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/first_text"
+                    style="@style/CodeFont"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="1dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_weight="1"
+                    android:background="#fff"
+                    android:text="函館市赤川町365-5" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#000000">
+
+                <TextView
+                    android:id="@+id/second_title"
+                    style="@style/CodeFont"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="1dp"
+                    android:layout_weight="1"
+                    android:background="#fff"
+                    android:text="電話番号"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/second_text"
+                    style="@style/CodeFont"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="1dp"
+                    android:layout_weight="1"
+                    android:background="#fff"
+                    android:text="0138-47-4333" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/filmdobokulink_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#FFF">
+
+                <TextView
+                    android:id="@+id/spot_filmdobokulink"
+                    style="@style/CodeFont"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="1dp"
+                    android:layout_weight="1"
+                    android:background="#fff"
+                    android:gravity="left"
+                    android:text="もっと見る"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|right"
+                    android:layout_marginBottom="1dp"
+                    android:background="#fff"
+                    android:padding="25dip"
+                    android:src="@drawable/gray_arrow" />
+            </TableRow>
+        </TableLayout>
+
+        <!-- はこぶらへのリンク -->
+        <TextView
+            android:id="@+id/powered_filmdoboku"
+            style="@style/CodeFont"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="1dp"
+            android:background="#EFEFF4"
+            android:gravity="right"
+            android:text="powered by はこだてフィルムコミッション"
+            android:textAlignment="textEnd"
+            android:textColor="#0000ff"
+            android:textSize="10sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</ScrollView>

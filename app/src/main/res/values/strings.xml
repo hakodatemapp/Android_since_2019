@@ -6,5 +6,6 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_spot_detail">SpotDetailActivity</string>
     <string name="title_activity_spot_web_browser">SpotWebBrowser</string>
+    <string name="title_activity_film_doboku">FilmDoboku</string>
 
 </resources>
