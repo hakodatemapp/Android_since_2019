@@ -28,6 +28,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_span="2"
+                    android:layout_weight="1"
                     android:adjustViewBounds="true"
                     android:scaleType="fitStart" />
             </TableRow>
@@ -44,6 +45,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
                     android:layout_span="2"
+                    android:layout_weight="1"
                     android:background="#EFEFF4"
                     android:text="Cafe en"
                     android:textStyle="bold" />
@@ -111,6 +113,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginBottom="1dp"
                     android:background="#fff"
+                    android:layout_weight="1"
                     android:text="電話番号"
                     android:textStyle="bold" />
 
@@ -121,6 +124,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
                     android:background="#fff"
+                    android:layout_weight="1"
                     android:text="0138-47-4333" />
             </TableRow>
 
@@ -137,6 +141,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginBottom="1dp"
                     android:background="#fff"
+                    android:layout_weight="1"
                     android:text="アクセス"
                     android:textStyle="bold" />
 
@@ -147,6 +152,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
                     android:background="#fff"
+                    android:layout_weight="1"
                     android:text="「はだこて未来大学」バス停下車　徒歩5分" />
             </TableRow>
 
@@ -163,6 +169,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginBottom="1dp"
                     android:background="#fff"
+                    android:layout_weight="1"
                     android:text="エリア"
                     android:textStyle="bold" />
 
@@ -173,6 +180,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
                     android:background="#fff"
+                    android:layout_weight="1"
                     android:text="美原・桔梗エリア" />
             </TableRow>
 
@@ -191,7 +199,7 @@
                     android:layout_marginBottom="1dp"
                     android:layout_weight="1"
                     android:background="#fff"
-                    android:gravity="right"
+                    android:gravity="left"
                     android:text="もっと見る"
                     android:textStyle="bold" />
 

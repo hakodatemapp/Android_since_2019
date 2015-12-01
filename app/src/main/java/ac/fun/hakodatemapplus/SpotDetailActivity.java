@@ -221,14 +221,12 @@ public class SpotDetailActivity extends Activity {
                         Log.d("FILM_COUNT", String.format("%d", film_collection.size()));
                         Log.d("DOBOKU_COUNT", String.format("%d", doboku_collection.size()));
 
-
                         // URL
                         findViewById(R.id.hakoburalink_row).setOnClickListener(new View.OnClickListener() {
                             public void onClick(View v) {
                                 Log.d("CLICKED_HAKOBURA", url_str);
                             }
                         });
-
 
                         // powered by はこぶら
                         findViewById(R.id.powered_hakobura).setOnClickListener(new View.OnClickListener() {
@@ -244,21 +242,19 @@ public class SpotDetailActivity extends Activity {
                             findViewById(R.id.powered_hakodatefilm).setVisibility(View.GONE);
                         } else {
                             // TableLayoutのグループを取得
-                            ViewGroup film_vg = (ViewGroup)findViewById(R.id.film_table);
-                            int i=1;
-                            for(String tmp: film_collection) {
+                            ViewGroup film_vg = (ViewGroup) findViewById(R.id.film_table);
+                            int i = 1;
+                            for (String tmp : film_collection) {
                                 getLayoutInflater().inflate(R.layout.film_doboku_row, film_vg);
-                                TableRow tr = (TableRow)film_vg.getChildAt(i);
-                                ((TextView)(tr.getChildAt(0))).setText(tmp);
+                                TableRow tr = (TableRow) film_vg.getChildAt(i);
+                                ((TextView) (tr.getChildAt(0))).setText(tmp);
 
                                 final String tmp2 = tmp;
-
                                 tr.setOnClickListener(new View.OnClickListener() {
                                     public void onClick(View v) {
                                         Log.d("CLICKED_FILM", tmp2);
                                     }
                                 });
-
                                 i++;
                             }
 
@@ -271,27 +267,26 @@ public class SpotDetailActivity extends Activity {
                             }
                         });
 
+
                         // 土木遺産
                         if (doboku_collection.size() == 0) {
                             findViewById(R.id.doboku_table).setVisibility(View.GONE);
                             findViewById(R.id.powered_doboku).setVisibility(View.GONE);
                         } else {
                             // TableLayoutのグループを取得
-                            ViewGroup film_vg = (ViewGroup)findViewById(R.id.doboku_table);
-                            int i=1;
-                            for(String tmp: doboku_collection) {
+                            ViewGroup film_vg = (ViewGroup) findViewById(R.id.doboku_table);
+                            int i = 1;
+                            for (String tmp : doboku_collection) {
                                 getLayoutInflater().inflate(R.layout.film_doboku_row, film_vg);
-                                TableRow tr = (TableRow)film_vg.getChildAt(i);
-                                ((TextView)(tr.getChildAt(0))).setText(tmp);
+                                TableRow tr = (TableRow) film_vg.getChildAt(i);
+                                ((TextView) (tr.getChildAt(0))).setText(tmp);
 
                                 final String tmp2 = tmp;
-
                                 tr.setOnClickListener(new View.OnClickListener() {
                                     public void onClick(View v) {
                                         Log.d("CLICKED_DOBOKU", tmp2);
                                     }
                                 });
-
                                 i++;
                             }
                         }
@@ -323,6 +318,4 @@ public class SpotDetailActivity extends Activity {
         br.close();
         return sb.toString();
     }
-
-
 }
