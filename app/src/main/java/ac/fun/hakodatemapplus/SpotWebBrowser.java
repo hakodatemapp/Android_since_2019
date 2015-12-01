@@ -56,14 +56,16 @@ public class SpotWebBrowser extends Activity {
         webview.loadUrl(browser_url);
     }
 
+
+    // メニューを読み込む
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // メニューを読み込む
         getMenuInflater().inflate(R.menu.menu_spot_webbrowser, menu);
         return true;
     }
 
 
+    // メニューをタップしたとき
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         WebView webview = (WebView) findViewById(R.id.webView);
@@ -85,9 +87,10 @@ public class SpotWebBrowser extends Activity {
         return super.onMenuItemSelected(featureId, item);
     }
 
+
+    //アクションバーの戻るを押したときの処理
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        //アクションバーの戻るを押したときの処理
         if (id == android.R.id.home) {
             finish();
             return true;
