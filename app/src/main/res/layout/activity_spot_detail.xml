@@ -5,9 +5,9 @@
     android:background="#EFEFF4">
 
     <LinearLayout
+        android:id="@+id/spot_layout"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:id="@+id/spot_layout"
         android:background="#EFEFF4"
         android:orientation="vertical">
 
@@ -47,7 +47,7 @@
                     android:layout_span="2"
                     android:layout_weight="1"
                     android:background="#EFEFF4"
-                    android:text="Cafe en"
+                    android:text="読み込み中…"
                     android:textStyle="bold" />
             </TableRow>
 
@@ -112,8 +112,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="1dp"
-                    android:background="#fff"
                     android:layout_weight="1"
+                    android:background="#fff"
                     android:text="電話番号"
                     android:textStyle="bold" />
 
@@ -123,8 +123,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
-                    android:background="#fff"
                     android:layout_weight="1"
+                    android:background="#fff"
                     android:text="0138-47-4333" />
             </TableRow>
 
@@ -140,8 +140,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="1dp"
-                    android:background="#fff"
                     android:layout_weight="1"
+                    android:background="#fff"
                     android:text="アクセス"
                     android:textStyle="bold" />
 
@@ -151,8 +151,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
-                    android:background="#fff"
                     android:layout_weight="1"
+                    android:background="#fff"
                     android:text="「はだこて未来大学」バス停下車　徒歩5分" />
             </TableRow>
 
@@ -168,8 +168,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="1dp"
-                    android:background="#fff"
                     android:layout_weight="1"
+                    android:background="#fff"
                     android:text="エリア"
                     android:textStyle="bold" />
 
@@ -179,8 +179,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
-                    android:background="#fff"
                     android:layout_weight="1"
+                    android:background="#fff"
                     android:text="美原・桔梗エリア" />
             </TableRow>
 
