@@ -8,8 +8,16 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.Html;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,6 +39,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Locale;
 import java.util.Map;
 
 public class SpotDetailActivity extends Activity {
@@ -213,13 +222,86 @@ public class SpotDetailActivity extends Activity {
                         Log.d("DOBOKU_COUNT", String.format("%d", doboku_collection.size()));
 
 
-//                        // URL
-//                        TextView calorie_text = (TextView) findViewById(R.id.calorie_text);
-//                        calorie_text.setText(calorie_str);
+                        // URL
+                        findViewById(R.id.hakoburalink_row).setOnClickListener(new View.OnClickListener() {
+                            public void onClick(View v) {
+                                Log.d("CLICKED_HAKOBURA", url_str);
+                            }
+                        });
 
-                        // 映画ロケ地・土木遺産
+
+                        // powered by はこぶら
+                        findViewById(R.id.powered_hakobura).setOnClickListener(new View.OnClickListener() {
+                            public void onClick(View v) {
+                                Log.d("CLICKED_HAKOBURA", "http://www.hakobura.jp/");
+                            }
+                        });
 
 
+                        // 映画ロケ地
+                        if (film_collection.size() == 0) {
+                            findViewById(R.id.film_table).setVisibility(View.GONE);
+                            findViewById(R.id.powered_hakodatefilm).setVisibility(View.GONE);
+                        } else {
+                            // TableLayoutのグループを取得
+                            ViewGroup film_vg = (ViewGroup)findViewById(R.id.film_table);
+                            int i=1;
+                            for(String tmp: film_collection) {
+                                getLayoutInflater().inflate(R.layout.film_doboku_row, film_vg);
+                                TableRow tr = (TableRow)film_vg.getChildAt(i);
+                                ((TextView)(tr.getChildAt(0))).setText(tmp);
+
+                                final String tmp2 = tmp;
+
+                                tr.setOnClickListener(new View.OnClickListener() {
+                                    public void onClick(View v) {
+                                        Log.d("CLICKED_FILM", tmp2);
+                                    }
+                                });
+
+                                i++;
+                            }
+
+                        }
+
+                        // powered by はこだてフィルムコミッション
+                        findViewById(R.id.powered_hakodatefilm).setOnClickListener(new View.OnClickListener() {
+                            public void onClick(View v) {
+                                Log.d("CLICKED_FILM", "http://www.hakodate-fc.com/");
+                            }
+                        });
+
+                        // 土木遺産
+                        if (doboku_collection.size() == 0) {
+                            findViewById(R.id.doboku_table).setVisibility(View.GONE);
+                            findViewById(R.id.powered_doboku).setVisibility(View.GONE);
+                        } else {
+                            // TableLayoutのグループを取得
+                            ViewGroup film_vg = (ViewGroup)findViewById(R.id.doboku_table);
+                            int i=1;
+                            for(String tmp: doboku_collection) {
+                                getLayoutInflater().inflate(R.layout.film_doboku_row, film_vg);
+                                TableRow tr = (TableRow)film_vg.getChildAt(i);
+                                ((TextView)(tr.getChildAt(0))).setText(tmp);
+
+                                final String tmp2 = tmp;
+
+                                tr.setOnClickListener(new View.OnClickListener() {
+                                    public void onClick(View v) {
+                                        Log.d("CLICKED_DOBOKU", tmp2);
+                                    }
+                                });
+
+                                i++;
+                            }
+                        }
+
+                        // powered by 函館近代化遺産ポータルサイト
+                        findViewById(R.id.powered_doboku).setOnClickListener(new View.OnClickListener() {
+                            public void onClick(View v) {
+                                Log.d("CLICKED_DOBOKU", "http://hnct-pbl.jimdo.com/%E8%BF%91%E4%BB%A3%E5%8C%96%E9%81%BA%E7%94%A3/");
+                            }
+                        });
                     }
                 });
 
