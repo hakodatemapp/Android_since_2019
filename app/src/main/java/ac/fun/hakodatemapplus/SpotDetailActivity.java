@@ -55,7 +55,6 @@ public class SpotDetailActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         //CourseActivityの値を呼び出す
         Intent intent = getIntent();
         spot_title = intent.getExtras().getString("spot_title");
@@ -74,9 +73,9 @@ public class SpotDetailActivity extends Activity {
         st.start();
     }
 
+    // アクションバーの戻るを押したときの処理
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        //アクションバーの戻るを押したときの処理
         if (id == android.R.id.home) {
             finish();
             return true;
@@ -84,7 +83,15 @@ public class SpotDetailActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    // WebブラウザのActivityを開く
+    private void intentSpotWebBrowser(String url, String title) {
+        Intent intent = new Intent(this, SpotWebBrowser.class);
+        intent.putExtra("browser_url", url);
+        intent.putExtra("browser_title", title);
+        startActivityForResult(intent, 0);
+    }
 
+    // スポットの画像を取得して設定
     class ImageGetThread extends Thread {
         private String imageurl_str;
 
@@ -253,6 +260,7 @@ public class SpotDetailActivity extends Activity {
                         findViewById(R.id.hakoburalink_row).setOnClickListener(new View.OnClickListener() {
                             public void onClick(View v) {
                                 Log.d("CLICKED_HAKOBURA", url_str);
+                                intentSpotWebBrowser(url_str, spot_title);
                             }
                         });
 
@@ -260,6 +268,7 @@ public class SpotDetailActivity extends Activity {
                         findViewById(R.id.powered_hakobura).setOnClickListener(new View.OnClickListener() {
                             public void onClick(View v) {
                                 Log.d("CLICKED_HAKOBURA", "http://www.hakobura.jp/");
+                                intentSpotWebBrowser("http://www.hakobura.jp/", "はこぶら");
                             }
                         });
 
@@ -285,13 +294,13 @@ public class SpotDetailActivity extends Activity {
                                 });
                                 i++;
                             }
-
                         }
 
                         // powered by はこだてフィルムコミッション
                         findViewById(R.id.powered_hakodatefilm).setOnClickListener(new View.OnClickListener() {
                             public void onClick(View v) {
                                 Log.d("CLICKED_FILM", "http://www.hakodate-fc.com/");
+                                intentSpotWebBrowser("http://www.hakodate-fc.com/", "はこだてフィルムコミッション");
                             }
                         });
 
@@ -322,16 +331,15 @@ public class SpotDetailActivity extends Activity {
                         // powered by 函館近代化遺産ポータルサイト
                         findViewById(R.id.powered_doboku).setOnClickListener(new View.OnClickListener() {
                             public void onClick(View v) {
-                                Log.d("CLICKED_DOBOKU", "http://hnct-pbl.jimdo.com/%E8%BF%91%E4%BB%A3%E5%8C%96%E9%81%BA%E7%94%A3/");
+                                Log.d("CLICKED_DOBOKU", "http://hnct-pbl.jimdo.com/");
+                                intentSpotWebBrowser("http://hnct-pbl.jimdo.com/", "函館近代化遺産ポータルサイト");
                             }
                         });
                     }
                 });
-
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-
         }
     }
 
