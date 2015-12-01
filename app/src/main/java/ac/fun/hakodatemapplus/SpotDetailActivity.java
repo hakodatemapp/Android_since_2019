@@ -1,6 +1,8 @@
 package ac.fun.hakodatemapplus;
 
+import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
@@ -9,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -46,14 +49,39 @@ public class SpotDetailActivity extends Activity {
 
     private JSONArray bindings = new JSONArray();
 
+    private String spot_title;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        //CourseActivityの値を呼び出す
+        Intent intent = getIntent();
+        spot_title = intent.getExtras().getString("spot_title");
+        //アクションバーの編集
+        ActionBar actionBar = getActionBar();
+        actionBar.setHomeButtonEnabled(true);
+        actionBar.setTitle(spot_title);
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setIcon(R.drawable.mapplus_icon);
+
         setContentView(R.layout.activity_spot_detail);
 
         // SPARQLのクエリを実行して取得したデータを反映する
-        SparqlGetThread st = new SparqlGetThread("元町配水場");
+        SparqlGetThread st = new SparqlGetThread(spot_title);
         st.start();
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        //アクションバーの戻るを押したときの処理
+        if (id == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 
