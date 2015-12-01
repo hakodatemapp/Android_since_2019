@@ -85,7 +85,7 @@ public class SpotDetailActivity extends Activity {
     }
 
     // WebブラウザのActivityを開く
-    public void intentSpotWebBrowser(String url, String title) {
+    private void intentSpotWebBrowser(String url, String title) {
         Intent intent = new Intent(this, SpotWebBrowser.class);
         intent.putExtra("browser_url", url);
         intent.putExtra("browser_title", title);
