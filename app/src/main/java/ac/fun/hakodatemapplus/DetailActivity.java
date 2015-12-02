@@ -31,6 +31,7 @@ public class DetailActivity extends Activity implements OnClickListener {
     private int course_id;
 
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <TableRow
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/hakoburalink_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+    android:background="#000000">
+
+        <TextView
+            android:id="@+id/film_doboku_name"
+            style="@style/CodeFont"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="1dp"
+            android:layout_weight="1"
+            android:background="#fff"
+            android:text="もっと見る"
+            android:textStyle="bold"
+            android:gravity="left"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|right"
+            android:background="#fff"
+            android:padding="25dip"
+            android:layout_marginBottom="1dp"
+            android:src="@drawable/gray_arrow" />
+    </TableRow>

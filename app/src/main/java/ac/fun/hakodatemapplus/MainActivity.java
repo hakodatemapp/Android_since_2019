@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.location.*;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.*;
 import android.widget.Toast;
 
@@ -335,8 +336,13 @@ public class MainActivity extends FragmentActivity {
 		gm.setOnInfoWindowClickListener(new OnInfoWindowClickListener(){
 			@Override
 			public void onInfoWindowClick(Marker arg0) {
-				Intent intent = new Intent(MainActivity.this, PingActivity.class);
-				MainActivity.this.startActivity(intent);
+				String marker_title = arg0.getTitle();
+				Log.d("MARKER", marker_title);
+				if(!marker_title.equals("スタート")) {
+					Intent intent = new Intent(MainActivity.this, SpotDetailActivity.class);
+					intent.putExtra("spot_title", marker_title);    // 第二引数：呼び出すコースID
+					MainActivity.this.startActivity(intent);
+				}
 			}});
 
 		// 地図の初期表示位置を設定する
