@@ -162,7 +162,7 @@ public class CourseActivity extends Activity implements OnItemClickListener {
                 oText.setTag("CellTitle");
                 //グリットビュー用のレイアウトに追加
                 oListLayout.addView(oImage, new LinearLayout.LayoutParams(190, 140));
-                oListLayout.addView(oText, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                oListLayout.addView(oText, new LinearLayout.LayoutParams(MP, MP));
                 v = oListLayout;
             }
             //配列から、アイテムを取得
