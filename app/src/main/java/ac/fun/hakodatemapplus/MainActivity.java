@@ -110,6 +110,12 @@ public class MainActivity extends FragmentActivity
             course_id = 0;
         }
 
+        // まちあるきコースを表示して、地図の中心をコースのスタートにする
+        if (course_id != 0) {
+            createMatiarukiMapWithStart(MatiarukiCourse.getMatiarukiCourse(course_id), true);
+        }
+
+        // 観光スポットのピンを表示
         getSPARQLInvoke();
 
     }
@@ -147,8 +153,23 @@ public class MainActivity extends FragmentActivity
                 is_show_onsen = intent.getExtras().getBoolean("is_show_onsen");
                 is_show_event = intent.getExtras().getBoolean("is_show_event");
                 System.out.println(is_show_taberu);
-                getSPARQLInvoke();
 
+                // 表示するピンを反映するために地図上のOverlayを全消去
+                try {
+                    // GoogleMapオブジェクトの取得
+                    gMap.clear();
+                }
+                // GoogleMapが使用不可のときのためにtry catchで囲っています。
+                catch (Exception e) {
+                    System.out.println("古いOverlayをクリアできませんでした");
+                    e.printStackTrace();
+                }
+
+                // まちあるきコースを表示して、地図の中心をコースのスタートにしない
+                createMatiarukiMapWithStart(MatiarukiCourse.getMatiarukiCourse(course_id), false);
+
+                // 更新された設定で観光スポットのピンを表示
+                getSPARQLInvoke();
             }
         }
 
@@ -200,10 +221,10 @@ public class MainActivity extends FragmentActivity
         return super.onOptionsItemSelected(item);
     }
 
-    public void createMatiarukiMapWithStart(GoogleMap gm, List<LatLng> course_list) {
+    public void createMatiarukiMapWithStart(List<LatLng> course_list, boolean isDoReset) {
         LatLng start_position = course_list.get(0);    //スタート地点の緯度経度
-        gm.addMarker(new MarkerOptions().position(start_position).title("スタート")); //スタート地点にピンをたてる
-        gm.moveCamera(CameraUpdateFactory.newLatLngZoom(start_position, 16));    //スタート地点へズーム
+        gMap.addMarker(new MarkerOptions().position(start_position).title("スタート")); //スタート地点にピンをたてる
+        if(isDoReset) gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(start_position, 16));    //スタート地点へカメラを調整
 
         //コースの線を描く
         for (int i = 0; i < course_list.size() - 1; i++) {
@@ -213,52 +234,8 @@ public class MainActivity extends FragmentActivity
                     .geodesic(false)    // 直線
                     .color(Color.RED)
                     .width(6);
-            gm.addPolyline(straight);
+            gMap.addPolyline(straight);
         }
-    }
-
-    // SPARQLのクエリを実行して結果をArrayList形式で取得する
-    public void setSparqlResultFromQueue(ArrayList<ArrayList<String>> spot_list, String queue_url) {
-        try {
-            URL url = new URL(queue_url);
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            String str = InputStreamToString(con.getInputStream());
-
-            // 受け取ったJSONをパースする
-            JSONObject json = new JSONObject(str);
-            JSONObject json_results = json.getJSONObject("results");
-            JSONArray bindings = json_results.getJSONArray("bindings");
-
-            for (int i = 0; i < bindings.length(); i++) {
-                JSONObject binding = bindings.getJSONObject(i);
-                ArrayList spot_detail = new ArrayList<>();
-
-                try {
-                    spot_detail.add(0, binding.getJSONObject("courseName").getString("value"));
-                } catch (JSONException e) {
-                    spot_detail.add(0, null);
-                }
-                try {
-                    spot_detail.add(1, binding.getJSONObject("rootNum").getString("value"));
-                } catch (JSONException e) {
-                    spot_detail.add(1, null);
-                }
-                spot_detail.add(2, binding.getJSONObject("spotName").getString("value"));
-                try {
-                    spot_detail.add(3, binding.getJSONObject("category").getString("value"));
-                } catch (JSONException e) {
-                    spot_detail.add(3, null);
-                }
-                spot_detail.add(4, binding.getJSONObject("lat").getString("value"));
-                spot_detail.add(5, binding.getJSONObject("long").getString("value"));
-
-                spot_list.add(spot_detail);
-            }
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
     }
 
     // SPARQLのクエリを実行して取得したデータを反映する
@@ -331,25 +308,6 @@ public class MainActivity extends FragmentActivity
                     BitmapDescriptor pin18 = BitmapDescriptorFactory.fromResource(R.drawable.pin18);
                     BitmapDescriptor pin19 = BitmapDescriptorFactory.fromResource(R.drawable.pin19);
                     BitmapDescriptor pin20 = BitmapDescriptorFactory.fromResource(R.drawable.pin20);
-
-
-                    // 表示するピンを反映するために地図上のOverlayを全消去
-                    try {
-                        // GoogleMapオブジェクトの取得
-                        gm.clear();
-                        System.out.println("クリアしました");
-                    }
-                    // GoogleMapが使用不可のときのためにtry catchで囲っています。
-                    catch (Exception e) {
-                        System.out.println("クリアできませんでした");
-                        e.printStackTrace();
-
-                    }
-
-                    // まちあるきコースを表示
-                    if (course_id != 0) {
-                        createMatiarukiMapWithStart(gm, MatiarukiCourse.getMatiarukiCourse(course_id));
-                    }
 
                     // スポットのピンを地図上に表示
                     for (int i = 0; i < final_list.size(); i++) {
@@ -455,7 +413,6 @@ public class MainActivity extends FragmentActivity
                                     break;
                             }
                         }
-                        if (is_taberu) System.out.println(is_pin_show);
                         Marker marker = gm.addMarker(options);
                         marker.setVisible(is_pin_show);
                     }
@@ -464,8 +421,50 @@ public class MainActivity extends FragmentActivity
                     progressDialog.dismiss();
                 }
             });
+        }
 
+    }
 
+    // SPARQLのクエリを実行して結果をArrayList形式で取得する
+    public void setSparqlResultFromQueue(ArrayList<ArrayList<String>> spot_list, String queue_url) {
+        try {
+            URL url = new URL(queue_url);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            String str = InputStreamToString(con.getInputStream());
+
+            // 受け取ったJSONをパースする
+            JSONObject json = new JSONObject(str);
+            JSONObject json_results = json.getJSONObject("results");
+            JSONArray bindings = json_results.getJSONArray("bindings");
+
+            for (int i = 0; i < bindings.length(); i++) {
+                JSONObject binding = bindings.getJSONObject(i);
+                ArrayList spot_detail = new ArrayList<>();
+
+                try {
+                    spot_detail.add(0, binding.getJSONObject("courseName").getString("value"));
+                } catch (JSONException e) {
+                    spot_detail.add(0, null);
+                }
+                try {
+                    spot_detail.add(1, binding.getJSONObject("rootNum").getString("value"));
+                } catch (JSONException e) {
+                    spot_detail.add(1, null);
+                }
+                spot_detail.add(2, binding.getJSONObject("spotName").getString("value"));
+                try {
+                    spot_detail.add(3, binding.getJSONObject("category").getString("value"));
+                } catch (JSONException e) {
+                    spot_detail.add(3, null);
+                }
+                spot_detail.add(4, binding.getJSONObject("lat").getString("value"));
+                spot_detail.add(5, binding.getJSONObject("long").getString("value"));
+
+                spot_list.add(spot_detail);
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
 
     }
