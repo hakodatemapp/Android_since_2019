@@ -37,11 +37,13 @@ import static ac.fun.hakodatemapplus.DetailActivity.InputStreamToString;
 // コース地図画面・地図画面用
 //
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity
+        implements OnMapReadyCallback {
 
     MapFragment mf;
     private String title;
     private int course_id;
+    private GoogleMap gMap;
 
     // スポット表示の初期設定
     private boolean is_show_taberu = true;
@@ -58,66 +60,22 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
+        SupportMapFragment mapFragment =
+                (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap map) {
+        gMap = map;
         mLocationManager = (LocationManager) this.getSystemService(Service.LOCATION_SERVICE);
         Location myLocate = mLocationManager.getLastKnownLocation("gps");
 
-        mf = MapFragment.newInstance();
-        FragmentManager fm = getFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.add(android.R.id.content, mf);
-        ft.commit();
-
-        //DetailActivityの値を呼び出す
-        Intent intent = getIntent();
-
-        if (intent.getExtras() != null) {  //取得した値がnullじゃなかったら
-            title = intent.getStringExtra("title");
-            course_id = intent.getExtras().getInt("course_id");
-        } else {
-            title = "周辺の地図";
-            course_id = 0;
-        }
-
-        Toast toast = Toast.makeText(this, "selected course: " + course_id, Toast.LENGTH_SHORT);
-        toast.show();
-    }
-
-    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        System.out.println("onActivityResult");
-
-        if (requestCode == 1002) {
-            // 返却結果ステータスとの比較
-            if (resultCode == Activity.RESULT_OK) {
-                // 表示設定画面からの値を取得
-                is_show_taberu = intent.getExtras().getBoolean("is_show_taberu");
-                is_show_miru = intent.getExtras().getBoolean("is_show_miru");
-                is_show_asobu = intent.getExtras().getBoolean("is_show_asobu");
-                is_show_kaimono = intent.getExtras().getBoolean("is_show_kaimono");
-                is_show_onsen = intent.getExtras().getBoolean("is_show_onsen");
-                is_show_event = intent.getExtras().getBoolean("is_show_event");
-                System.out.println(is_show_taberu);
-            }
-        }
-
-    }
-
-    public void onResume() {
-        System.out.println("onResume");
-        super.onResume();
-
-        // 地図読み込み中のダイアログを表示する
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setMessage("地図を読み込んでいます…");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
-
-        GoogleMap gm;
-        gm = mf.getMap();
-        gm.setTrafficEnabled(true);
-        gm.setMyLocationEnabled(true);
-        gm.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
+        map.setTrafficEnabled(true);
+        map.setMyLocationEnabled(true);
+        map.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker arg0) {
                 String marker_title = arg0.getTitle();
@@ -139,18 +97,66 @@ public class MainActivity extends FragmentActivity {
                 .zoom(13)
                 .build();
 
-        gm.moveCamera(CameraUpdateFactory.newCameraPosition(Hakodate));    // 初期表示位置へ移動
+        map.moveCamera(CameraUpdateFactory.newCameraPosition(Hakodate));    // 初期表示位置へ移動
+
+        //DetailActivityの値を呼び出す
+        Intent intent = getIntent();
+
+        if (intent.getExtras() != null) {  //取得した値がnullじゃなかったら
+            title = intent.getStringExtra("title");
+            course_id = intent.getExtras().getInt("course_id");
+        } else {
+            title = "周辺の地図";
+            course_id = 0;
+        }
+
+        getSPARQLInvoke();
+
+    }
+
+    public void getSPARQLInvoke () {
+        // 地図読み込み中のダイアログを表示する
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setMessage("地図を読み込んでいます…");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
 
         // SPARQLのクエリで使う形式に変換する(半角・全角スペース除去)
         String search_title = title.replaceAll("[ 　]", "");
 
         if (course_id != 0) {
-            SparqlGetThread st = new SparqlGetThread(gm, search_title);
+            SparqlGetThread st = new SparqlGetThread(gMap, search_title);
             st.start();
         } else {
-            SparqlGetThread st = new SparqlGetThread(gm, "");
+            SparqlGetThread st = new SparqlGetThread(gMap, "");
             st.start();
         }
+    }
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        System.out.println("onActivityResult");
+
+        if (requestCode == 1002) {
+            // 返却結果ステータスとの比較
+            if (resultCode == Activity.RESULT_OK) {
+                // 表示設定画面からの値を取得
+                is_show_taberu = intent.getExtras().getBoolean("is_show_taberu");
+                is_show_miru = intent.getExtras().getBoolean("is_show_miru");
+                is_show_asobu = intent.getExtras().getBoolean("is_show_asobu");
+                is_show_kaimono = intent.getExtras().getBoolean("is_show_kaimono");
+                is_show_onsen = intent.getExtras().getBoolean("is_show_onsen");
+                is_show_event = intent.getExtras().getBoolean("is_show_event");
+                System.out.println(is_show_taberu);
+                getSPARQLInvoke();
+
+            }
+        }
+
+    }
+
+    public void onResume() {
+        System.out.println("onResume");
+        super.onResume();
     }
 
     // メニューを読み込む
@@ -184,7 +190,6 @@ public class MainActivity extends FragmentActivity {
             // 遷移先から返却されてくる際の識別コード
             int requestCode = 1002;// 返却値を考慮したActivityの起動を行う
             startActivityForResult(intent, requestCode);
-
             return true;
         }
         //アクションバーの戻るを押したときの処理
