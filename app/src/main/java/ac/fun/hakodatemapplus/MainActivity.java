@@ -73,7 +73,7 @@ public class MainActivity extends FragmentActivity
         mLocationManager = (LocationManager) this.getSystemService(Service.LOCATION_SERVICE);
         Location myLocate = mLocationManager.getLastKnownLocation("gps");
 
-        map.setTrafficEnabled(true);
+        map.setTrafficEnabled(false);
         map.setMyLocationEnabled(true);
         map.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
             @Override
