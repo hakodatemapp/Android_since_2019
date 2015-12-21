@@ -78,6 +78,12 @@ public class SpotDetailActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
+            // intentの作成
+            Intent intent = new Intent();
+
+            // 返却したい結果ステータスをセットする
+            setResult(Activity.RESULT_OK, intent);
+
             finish();
             return true;
         }
