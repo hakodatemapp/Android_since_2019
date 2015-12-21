@@ -97,7 +97,7 @@
                     android:layout_marginTop="1dp"
                     android:layout_weight="1"
                     android:background="#fff"
-                    android:text="函館市赤川町365-5" />
+                    android:text="読み込み中…" />
             </TableRow>
 
             <TableRow
@@ -125,7 +125,7 @@
                     android:layout_marginBottom="1dp"
                     android:layout_weight="1"
                     android:background="#fff"
-                    android:text="0138-47-4333" />
+                    android:text="読み込み中…" />
             </TableRow>
 
             <TableRow
@@ -153,7 +153,7 @@
                     android:layout_marginBottom="1dp"
                     android:layout_weight="1"
                     android:background="#fff"
-                    android:text="「はだこて未来大学」バス停下車　徒歩5分" />
+                    android:text="読み込み中…" />
             </TableRow>
 
             <TableRow
@@ -181,7 +181,7 @@
                     android:layout_marginBottom="1dp"
                     android:layout_weight="1"
                     android:background="#fff"
-                    android:text="美原・桔梗エリア" />
+                    android:text="読み込み中…" />
             </TableRow>
 
             <TableRow
