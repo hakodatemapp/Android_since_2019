@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -146,6 +147,7 @@ public class CourseActivity extends Activity implements OnItemClickListener {
             TextView title;
             ImageView imag;
             View v = view;
+
             if (v == null) {
                 //グリットビューの1マス内のレイアウトを作成
                 LinearLayout oListLayout = new LinearLayout(mContext);
@@ -160,7 +162,7 @@ public class CourseActivity extends Activity implements OnItemClickListener {
                 oText.setTag("CellTitle");
                 //グリットビュー用のレイアウトに追加
                 oListLayout.addView(oImage, new LinearLayout.LayoutParams(190, 140));
-                oListLayout.addView(oText);
+                oListLayout.addView(oText, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 v = oListLayout;
             }
             //配列から、アイテムを取得
@@ -172,6 +174,8 @@ public class CourseActivity extends Activity implements OnItemClickListener {
                 title.setText(oList.Get_Text());
                 title.setTextColor(Color.BLACK);
                 title.setTextSize(14);
+                title.setGravity(Gravity.CENTER_VERTICAL);
+
                 //title.setTextAlignment(1);
                 //タグからイメージビューを取得
                 imag = (ImageView) v.findViewWithTag("CellImage");
