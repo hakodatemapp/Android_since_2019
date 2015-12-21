@@ -35,6 +35,7 @@
             <TableRow
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:id="@+id/eat_row"
                 android:background="#000">
 
                 <ImageView
@@ -69,6 +70,7 @@
             <TableRow
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:id="@+id/look_row"
                 android:background="#000">
 
                 <ImageView
@@ -103,6 +105,7 @@
             <TableRow
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:id="@+id/play_row"
                 android:background="#000">
 
                 <ImageView
@@ -137,6 +140,7 @@
             <TableRow
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:id="@+id/buy_row"
                 android:background="#000">
 
                 <ImageView
@@ -172,6 +176,7 @@
             <TableRow
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:id="@+id/spa_row"
                 android:background="#000">
 
                 <ImageView
@@ -206,6 +211,7 @@
             <TableRow
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:id="@+id/event_row"
                 android:background="#000000">
 
                 <ImageView
