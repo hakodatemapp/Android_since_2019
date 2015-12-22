@@ -16,6 +16,8 @@ import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.*;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -53,6 +55,9 @@ public class MainActivity extends FragmentActivity
     private boolean is_show_onsen = true;
     private boolean is_show_event = true;
 
+    // GooglePlay開発者サービスの準備ができていないときは表示設定を操作できないようにする
+    private boolean isMapReady = false;
+
     ProgressDialog progressDialog;
 
     private LocationManager mLocationManager;
@@ -89,6 +94,26 @@ public class MainActivity extends FragmentActivity
                 }
             }
         });
+        map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+            @Override
+            public View getInfoContents(Marker marker) {
+                View view = getLayoutInflater().inflate(R.layout.spot_info_window, null);
+                // タイトルを設定
+                TextView title = (TextView) view.findViewById(R.id.spot_info_title);
+                title.setText(marker.getTitle());
+
+                // 画像を設定
+                ImageView img = (ImageView)view.findViewById(R.id.spot_info_icon);
+                img.setImageResource(R.drawable.infomark);
+                return view;
+            }
+
+            @Override
+            public View getInfoWindow(Marker marker) {
+                return null;
+            }
+        });
+
 
         // 地図の初期表示位置を設定する
         CameraPosition Hakodate = new CameraPosition
@@ -102,25 +127,31 @@ public class MainActivity extends FragmentActivity
         //DetailActivityの値を呼び出す
         Intent intent = getIntent();
 
-        if (intent.getExtras() != null) {  //取得した値がnullじゃなかったら
+        if (intent.getExtras() != null)
+
+        {  //取得した値がnullじゃなかったら
             title = intent.getStringExtra("title");
             course_id = intent.getExtras().getInt("course_id");
-        } else {
+        } else
+
+        {
             title = "周辺の地図";
             course_id = 0;
         }
 
         // まちあるきコースを表示して、地図の中心をコースのスタートにする
-        if (course_id != 0) {
+        if (course_id != 0)
+
+        {
             createMatiarukiMapWithStart(MatiarukiCourse.getMatiarukiCourse(course_id), true);
         }
 
         // 観光スポットのピンを表示
         getSPARQLInvoke();
-
+        isMapReady = true;
     }
 
-    public void getSPARQLInvoke () {
+    public void getSPARQLInvoke() {
         // 地図読み込み中のダイアログを表示する
         progressDialog = new ProgressDialog(this);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -139,6 +170,7 @@ public class MainActivity extends FragmentActivity
             st.start();
         }
     }
+
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         System.out.println("onActivityResult");
 
@@ -198,19 +230,24 @@ public class MainActivity extends FragmentActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.menu_displaysetting) {
-            Intent intent = new Intent(MainActivity.this, DisplaySettingActivity.class);
+            if(isMapReady == true) {
+                Intent intent = new Intent(MainActivity.this, DisplaySettingActivity.class);
 
-            // 現在の地図画面の状態をセットする
-            intent.putExtra("is_show_taberu", is_show_taberu);
-            intent.putExtra("is_show_miru", is_show_miru);
-            intent.putExtra("is_show_asobu", is_show_asobu);
-            intent.putExtra("is_show_kaimono", is_show_kaimono);
-            intent.putExtra("is_show_onsen", is_show_onsen);
-            intent.putExtra("is_show_event", is_show_event);
+                // 現在の地図画面の状態をセットする
+                intent.putExtra("is_show_taberu", is_show_taberu);
+                intent.putExtra("is_show_miru", is_show_miru);
+                intent.putExtra("is_show_asobu", is_show_asobu);
+                intent.putExtra("is_show_kaimono", is_show_kaimono);
+                intent.putExtra("is_show_onsen", is_show_onsen);
+                intent.putExtra("is_show_event", is_show_event);
 
-            // 遷移先から返却されてくる際の識別コード
-            int requestCode = 1002;// 返却値を考慮したActivityの起動を行う
-            startActivityForResult(intent, requestCode);
+                // 遷移先から返却されてくる際の識別コード
+                int requestCode = 1002;// 返却値を考慮したActivityの起動を行う
+                startActivityForResult(intent, requestCode);
+
+            } else {
+                Toast.makeText(this, "地図が読み込まれていません。Google Play開発者サービスが更新されていない場合は更新をお願いします。", Toast.LENGTH_LONG).show();
+            }
             return true;
         }
         //アクションバーの戻るを押したときの処理
@@ -224,7 +261,8 @@ public class MainActivity extends FragmentActivity
     public void createMatiarukiMapWithStart(List<LatLng> course_list, boolean isDoReset) {
         LatLng start_position = course_list.get(0);    //スタート地点の緯度経度
         gMap.addMarker(new MarkerOptions().position(start_position).title("スタート")); //スタート地点にピンをたてる
-        if(isDoReset) gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(start_position, 16));    //スタート地点へカメラを調整
+        if (isDoReset)
+            gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(start_position, 16));    //スタート地点へカメラを調整
 
         //コースの線を描く
         for (int i = 0; i < course_list.size() - 1; i++) {
