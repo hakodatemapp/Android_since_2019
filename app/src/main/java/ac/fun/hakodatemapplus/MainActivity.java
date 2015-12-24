@@ -265,7 +265,13 @@ public class MainActivity extends FragmentActivity
     // まちあるきコースをスタートと共に描画
     public void createMatiarukiMapWithStart(List<LatLng> course_list, boolean isDoReset) {
         LatLng start_position = course_list.get(0);    //スタート地点の緯度経度
-        gMap.addMarker(new MarkerOptions().position(start_position).title("スタート")); //スタート地点にピンをたてる
+
+        MarkerOptions options = new MarkerOptions();
+        options.position(start_position);
+        options.title("スタート");
+        options.snippet("まちあるきコース");
+
+        gMap.addMarker(options); //スタート地点にピンをたてる
         if (isDoReset)
             gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(start_position, 16));    //スタート地点へカメラを調整
 
@@ -402,15 +408,44 @@ public class MainActivity extends FragmentActivity
                         LatLng location = new LatLng(Double.parseDouble(final_list.get(i).get(4)),
                                 Double.parseDouble(final_list.get(i).get(5)));
 
-                        // マーカーの設定
+                        // マーカー(観光スポットのピン)の設定
                         MarkerOptions options = new MarkerOptions();
+
+                        // ピンの位置を緯度経度で設定
                         options.position(location);
+
+                        // 観光スポット名を設定
                         options.title(final_list.get(i).get(2));
 
                         boolean is_pin_show = true;
-                        boolean is_taberu = false;
+
+                        // ピンにcourseNameがセットされていればまちあるきコース
                         if (final_list.get(i).get(0) != null) {
-                            options.snippet("まちあるきコース");
+                            // カテゴリが設定されていなければはこぶらにない(詳細が出せない)
+                            if(final_list.get(i).get(3) == null) {
+                                options.snippet("まちあるきコース");
+                            } else {
+                                switch (final_list.get(i).get(3)) {
+                                    case "食べる":
+                                        options.snippet("まちあるきコース - 食べる");
+                                        break;
+                                    case "見る":
+                                        options.snippet("まちあるきコース - 見る");
+                                        break;
+                                    case "遊ぶ":
+                                        options.snippet("まちあるきコース - 遊ぶ");
+                                        break;
+                                    case "買う":
+                                        options.snippet("まちあるきコース - 買う");
+                                        break;
+                                    case "温泉":
+                                        options.snippet("まちあるきコース - 温泉");
+                                        break;
+                                    case "観光カレンダー":
+                                        options.snippet("まちあるきコース - 観光イベント");
+                                        break;
+                                }
+                            }
                             switch (final_list.get(i).get(1)) {
                                 case "1":
                                     options.icon(pin01);
@@ -473,13 +508,15 @@ public class MainActivity extends FragmentActivity
                                     options.icon(pin20);
                                     break;
                             }
+
+                            // courseNameが設定されていないピンは通常の観光スポットとして扱う
                         } else {
+                            // カテゴリを設定する
                             options.snippet(final_list.get(i).get(3));
                             switch (final_list.get(i).get(3)) {
                                 case "食べる":
                                     options.icon(taberu);
                                     is_pin_show = is_show_taberu;
-                                    is_taberu = true;
                                     break;
                                 case "見る":
                                     options.icon(miru);
@@ -499,7 +536,7 @@ public class MainActivity extends FragmentActivity
                                     break;
                                 case "観光カレンダー":
                                     options.icon(event);
-                                    options.snippet("観光スポット");
+                                    options.snippet("観光イベント");
                                     is_pin_show = is_show_event;
                                     break;
                             }
