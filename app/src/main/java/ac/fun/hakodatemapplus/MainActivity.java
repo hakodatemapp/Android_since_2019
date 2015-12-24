@@ -43,10 +43,10 @@ public class MainActivity extends FragmentActivity
         implements OnMapReadyCallback {
 
     MapFragment mf;
+    ProgressDialog progressDialog;
     private String title;
     private int course_id;
     private GoogleMap gMap;
-
     // スポット表示の初期設定
     private boolean is_show_taberu = true;
     private boolean is_show_miru = true;
@@ -54,12 +54,8 @@ public class MainActivity extends FragmentActivity
     private boolean is_show_kaimono = true;
     private boolean is_show_onsen = true;
     private boolean is_show_event = true;
-
     // GooglePlay開発者サービスの準備ができていないときは表示設定を操作できないようにする
     private boolean isMapReady = false;
-
-    ProgressDialog progressDialog;
-
     private LocationManager mLocationManager;
 
     @Override
@@ -80,12 +76,15 @@ public class MainActivity extends FragmentActivity
 
         map.setTrafficEnabled(false);
         map.setMyLocationEnabled(true);
+
+        // インフォウィンドウに触ったときの処理
         map.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker arg0) {
                 String marker_title = arg0.getTitle();
+                String marker_snippet = arg0.getSnippet();
                 Log.d("MARKER", marker_title);
-                if (!marker_title.equals("スタート")) {
+                if (!marker_title.equals("スタート") && !marker_snippet.equals("まちあるきコース")) {
                     Intent intent = new Intent(MainActivity.this, SpotDetailActivity.class);
                     intent.putExtra("spot_title", marker_title);    // 第二引数：マーカーのタイトル
                     // 遷移先から返却されてくる際の識別コード
@@ -94,6 +93,8 @@ public class MainActivity extends FragmentActivity
                 }
             }
         });
+
+        // インフォウィンドウの中身を設定する
         map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
             @Override
             public View getInfoContents(Marker marker) {
@@ -102,9 +103,15 @@ public class MainActivity extends FragmentActivity
                 TextView title = (TextView) view.findViewById(R.id.spot_info_title);
                 title.setText(marker.getTitle());
 
+                // スニペットを設定
+                TextView snippet = (TextView) view.findViewById(R.id.spot_info_snippet);
+                snippet.setText(marker.getSnippet());
+
                 // 画像を設定
-                ImageView img = (ImageView)view.findViewById(R.id.spot_info_icon);
-                img.setImageResource(R.drawable.infomark);
+                if(!marker.getSnippet().equals("まちあるきコース")) {
+                    ImageView img = (ImageView) view.findViewById(R.id.spot_info_icon);
+                    img.setImageResource(R.drawable.infomark);
+                }
                 return view;
             }
 
@@ -127,22 +134,16 @@ public class MainActivity extends FragmentActivity
         //DetailActivityの値を呼び出す
         Intent intent = getIntent();
 
-        if (intent.getExtras() != null)
-
-        {  //取得した値がnullじゃなかったら
+        if (intent.getExtras() != null) {  //取得した値がnullじゃなかったら
             title = intent.getStringExtra("title");
             course_id = intent.getExtras().getInt("course_id");
-        } else
-
-        {
+        } else {
             title = "周辺の地図";
             course_id = 0;
         }
 
         // まちあるきコースを表示して、地図の中心をコースのスタートにする
-        if (course_id != 0)
-
-        {
+        if (course_id != 0) {
             createMatiarukiMapWithStart(MatiarukiCourse.getMatiarukiCourse(course_id), true);
         }
 
@@ -151,6 +152,7 @@ public class MainActivity extends FragmentActivity
         isMapReady = true;
     }
 
+    // 読み込み中のダイアログを出しながら観光スポットのデータを問い合わせる
     public void getSPARQLInvoke() {
         // 地図読み込み中のダイアログを表示する
         progressDialog = new ProgressDialog(this);
@@ -171,6 +173,7 @@ public class MainActivity extends FragmentActivity
         }
     }
 
+    // 別のActivityから戻ってきた場合
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         System.out.println("onActivityResult");
 
@@ -227,10 +230,11 @@ public class MainActivity extends FragmentActivity
         return super.onCreateOptionsMenu(menu);
     }
 
+    // 画面左上の戻るボタン・表示設定が押されたとき
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.menu_displaysetting) {
-            if(isMapReady == true) {
+            if (isMapReady == true) {
                 Intent intent = new Intent(MainActivity.this, DisplaySettingActivity.class);
 
                 // 現在の地図画面の状態をセットする
@@ -258,6 +262,7 @@ public class MainActivity extends FragmentActivity
         return super.onOptionsItemSelected(item);
     }
 
+    // まちあるきコースをスタートと共に描画
     public void createMatiarukiMapWithStart(List<LatLng> course_list, boolean isDoReset) {
         LatLng start_position = course_list.get(0);    //スタート地点の緯度経度
         gMap.addMarker(new MarkerOptions().position(start_position).title("スタート")); //スタート地点にピンをたてる
@@ -274,6 +279,51 @@ public class MainActivity extends FragmentActivity
                     .width(6);
             gMap.addPolyline(straight);
         }
+    }
+
+    // SPARQLのクエリを実行して結果をArrayList形式で取得する
+    public void setSparqlResultFromQueue(ArrayList<ArrayList<String>> spot_list, String queue_url) {
+        try {
+            URL url = new URL(queue_url);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            String str = InputStreamToString(con.getInputStream());
+
+            // 受け取ったJSONをパースする
+            JSONObject json = new JSONObject(str);
+            JSONObject json_results = json.getJSONObject("results");
+            JSONArray bindings = json_results.getJSONArray("bindings");
+
+            for (int i = 0; i < bindings.length(); i++) {
+                JSONObject binding = bindings.getJSONObject(i);
+                ArrayList spot_detail = new ArrayList<>();
+
+                try {
+                    spot_detail.add(0, binding.getJSONObject("courseName").getString("value"));
+                } catch (JSONException e) {
+                    spot_detail.add(0, null);
+                }
+                try {
+                    spot_detail.add(1, binding.getJSONObject("rootNum").getString("value"));
+                } catch (JSONException e) {
+                    spot_detail.add(1, null);
+                }
+                spot_detail.add(2, binding.getJSONObject("spotName").getString("value"));
+                try {
+                    spot_detail.add(3, binding.getJSONObject("category").getString("value"));
+                } catch (JSONException e) {
+                    spot_detail.add(3, null);
+                }
+                spot_detail.add(4, binding.getJSONObject("lat").getString("value"));
+                spot_detail.add(5, binding.getJSONObject("long").getString("value"));
+
+                spot_list.add(spot_detail);
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            
+        }
+
     }
 
     // SPARQLのクエリを実行して取得したデータを反映する
@@ -360,6 +410,7 @@ public class MainActivity extends FragmentActivity
                         boolean is_pin_show = true;
                         boolean is_taberu = false;
                         if (final_list.get(i).get(0) != null) {
+                            options.snippet("まちあるきコース");
                             switch (final_list.get(i).get(1)) {
                                 case "1":
                                     options.icon(pin01);
@@ -423,6 +474,7 @@ public class MainActivity extends FragmentActivity
                                     break;
                             }
                         } else {
+                            options.snippet(final_list.get(i).get(3));
                             switch (final_list.get(i).get(3)) {
                                 case "食べる":
                                     options.icon(taberu);
@@ -447,6 +499,7 @@ public class MainActivity extends FragmentActivity
                                     break;
                                 case "観光カレンダー":
                                     options.icon(event);
+                                    options.snippet("観光スポット");
                                     is_pin_show = is_show_event;
                                     break;
                             }
@@ -460,51 +513,5 @@ public class MainActivity extends FragmentActivity
                 }
             });
         }
-
     }
-
-    // SPARQLのクエリを実行して結果をArrayList形式で取得する
-    public void setSparqlResultFromQueue(ArrayList<ArrayList<String>> spot_list, String queue_url) {
-        try {
-            URL url = new URL(queue_url);
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            String str = InputStreamToString(con.getInputStream());
-
-            // 受け取ったJSONをパースする
-            JSONObject json = new JSONObject(str);
-            JSONObject json_results = json.getJSONObject("results");
-            JSONArray bindings = json_results.getJSONArray("bindings");
-
-            for (int i = 0; i < bindings.length(); i++) {
-                JSONObject binding = bindings.getJSONObject(i);
-                ArrayList spot_detail = new ArrayList<>();
-
-                try {
-                    spot_detail.add(0, binding.getJSONObject("courseName").getString("value"));
-                } catch (JSONException e) {
-                    spot_detail.add(0, null);
-                }
-                try {
-                    spot_detail.add(1, binding.getJSONObject("rootNum").getString("value"));
-                } catch (JSONException e) {
-                    spot_detail.add(1, null);
-                }
-                spot_detail.add(2, binding.getJSONObject("spotName").getString("value"));
-                try {
-                    spot_detail.add(3, binding.getJSONObject("category").getString("value"));
-                } catch (JSONException e) {
-                    spot_detail.add(3, null);
-                }
-                spot_detail.add(4, binding.getJSONObject("lat").getString("value"));
-                spot_detail.add(5, binding.getJSONObject("long").getString("value"));
-
-                spot_list.add(spot_detail);
-            }
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-    }
-
 }

@@ -4,20 +4,35 @@
     android:layout_height="match_parent"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:padding="5dp"
+    android:padding="3dp"
     >
-    <TextView
-        android:id="@+id/spot_info_title"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
         android:gravity="center"
-        android:layout_weight="1"
-        android:layout_marginRight="3dp"
-        android:textStyle="bold" />
+        android:layout_weight="1">
+        <TextView
+            android:id="@+id/spot_info_title"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_marginRight="3dp"
+            android:textStyle="bold" />
+        <TextView
+            android:id="@+id/spot_info_snippet"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:textColor="#777777"
+            android:layout_marginRight="3dp"
+            />
+    </LinearLayout>
     <ImageView
         android:id="@+id/spot_info_icon"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:layout_weight="1"
-        />
+        android:layout_weight="1" />
 </LinearLayout>
