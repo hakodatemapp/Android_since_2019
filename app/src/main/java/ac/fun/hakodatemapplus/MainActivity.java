@@ -68,22 +68,14 @@ public class MainActivity extends FragmentActivity
         setContentView(R.layout.activity_main);
 
         // この時点でネットワークに接続できるかどうか調べる
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-        NetworkInfo ni = cm.getActiveNetworkInfo();
-        if (ni == null) {
-            DialogFragment dialog = new NoConnectionDialogFragment();
-            dialog.show(getFragmentManager(), null);
-        } else if (!ni.isConnected()) {
-            DialogFragment dialog = new NoConnectionDialogFragment();
-            dialog.show(getFragmentManager(), null);
-        } else {
+        if(checkNetworkStatus()) {
             SupportMapFragment mapFragment =
                     (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
             mapFragment.getMapAsync(this);
         }
-
     }
 
+    // Google Mapが利用できるとき
     @Override
     public void onMapReady(GoogleMap map) {
         gMap = map;
@@ -207,31 +199,34 @@ public class MainActivity extends FragmentActivity
         if (requestCode == 1002) {
             // 返却結果ステータスとの比較
             if (resultCode == Activity.RESULT_OK) {
-                // 表示設定画面からの値を取得
-                is_show_taberu = intent.getExtras().getBoolean("is_show_taberu");
-                is_show_miru = intent.getExtras().getBoolean("is_show_miru");
-                is_show_asobu = intent.getExtras().getBoolean("is_show_asobu");
-                is_show_kaimono = intent.getExtras().getBoolean("is_show_kaimono");
-                is_show_onsen = intent.getExtras().getBoolean("is_show_onsen");
-                is_show_event = intent.getExtras().getBoolean("is_show_event");
-                System.out.println(is_show_taberu);
+                // この時点でネットワークに接続できるかどうか調べる
+                if(checkNetworkStatus()) {
+                    // 表示設定画面からの値を取得
+                    is_show_taberu = intent.getExtras().getBoolean("is_show_taberu");
+                    is_show_miru = intent.getExtras().getBoolean("is_show_miru");
+                    is_show_asobu = intent.getExtras().getBoolean("is_show_asobu");
+                    is_show_kaimono = intent.getExtras().getBoolean("is_show_kaimono");
+                    is_show_onsen = intent.getExtras().getBoolean("is_show_onsen");
+                    is_show_event = intent.getExtras().getBoolean("is_show_event");
+                    System.out.println(is_show_taberu);
 
-                // 表示するピンを反映するために地図上のOverlayを全消去
-                try {
-                    // GoogleMapオブジェクトの取得
-                    gMap.clear();
+                    // 表示するピンを反映するために地図上のOverlayを全消去
+                    try {
+                        // GoogleMapオブジェクトの取得
+                        gMap.clear();
+                    }
+                    // GoogleMapが使用不可のときのためにtry catchで囲っています。
+                    catch (Exception e) {
+                        System.out.println("古いOverlayをクリアできませんでした");
+                        e.printStackTrace();
+                    }
+
+                    // まちあるきコースを表示して、地図の中心をコースのスタートにしない
+                    createMatiarukiMapWithStart(MatiarukiCourse.getMatiarukiCourse(course_id), false);
+
+                    // 更新された設定で観光スポットのピンを表示
+                    getSPARQLInvoke();
                 }
-                // GoogleMapが使用不可のときのためにtry catchで囲っています。
-                catch (Exception e) {
-                    System.out.println("古いOverlayをクリアできませんでした");
-                    e.printStackTrace();
-                }
-
-                // まちあるきコースを表示して、地図の中心をコースのスタートにしない
-                createMatiarukiMapWithStart(MatiarukiCourse.getMatiarukiCourse(course_id), false);
-
-                // 更新された設定で観光スポットのピンを表示
-                getSPARQLInvoke();
             }
         }
 
@@ -287,6 +282,24 @@ public class MainActivity extends FragmentActivity
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public boolean checkNetworkStatus() {
+        boolean result = false;
+
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo ni = cm.getActiveNetworkInfo();
+        if (ni == null) {
+            DialogFragment dialog = new NoConnectionDialogFragment();
+            dialog.show(getFragmentManager(), null);
+        } else if (!ni.isConnected()) {
+            DialogFragment dialog = new NoConnectionDialogFragment();
+            dialog.show(getFragmentManager(), null);
+        } else {
+            result = true;
+        }
+
+        return result;
     }
 
     // まちあるきコースをスタートと共に描画
