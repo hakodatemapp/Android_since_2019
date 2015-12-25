@@ -225,6 +225,9 @@ public class DisplaySettingActivity extends Activity {
         // intentの作成
         Intent intent = new Intent();
 
+        if(set_settings) Log.d("SETTING", "TRUE");
+        else  Log.d("SETTING", "FALSE");
+
         // 設定を反映させる場合
         if (set_settings) {
             // チェックボックスの状態をセットする
@@ -247,11 +250,16 @@ public class DisplaySettingActivity extends Activity {
             intent.putExtra("is_show_kaimono", is_show_kaimono);
             intent.putExtra("is_show_onsen", is_show_onsen);
             intent.putExtra("is_show_event", is_show_event);
+
+            // 返却したい結果ステータスをセットする
+            setResult(Activity.RESULT_OK, intent);
+            finish();
+        } else {
+            // 返却したい結果ステータスをセットする
+            setResult(Activity.RESULT_CANCELED, intent);
+            finish();
         }
 
-        // 返却したい結果ステータスをセットする
-        setResult(Activity.RESULT_CANCELED, intent);
-        finish();
     }
 
     // デバイスの戻るボタンを押したときのダイアログ
