@@ -52,7 +52,8 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name" />
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".CourseActivity"
             android:label="@string/app_name"
@@ -67,14 +68,17 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".SpotDetailActivity"
-            android:label="@string/app_name" />
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".SpotWebBrowser"
             android:label="@string/title_activity_spot_web_browser"
-            android:uiOptions="splitActionBarWhenNarrow" />
+            android:uiOptions="splitActionBarWhenNarrow"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".FilmDoboku"
-            android:label="@string/title_activity_film_doboku" />
+            android:label="@string/title_activity_film_doboku"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".DisplaySettingActivity"
             android:label="@string/app_name"
