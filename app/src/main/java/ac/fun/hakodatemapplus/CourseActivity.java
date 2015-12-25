@@ -3,6 +3,9 @@ package ac.fun.hakodatemapplus;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
+import android.media.Image;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -23,6 +26,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Space;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,7 +66,12 @@ public class CourseActivity extends Activity implements OnItemClickListener {
         oListView.setAdapter(oAdp);
         //リストビューをクリックした時の処理を設定
         oListView.setOnItemClickListener(this);
+        //リストビューの横の隙間の設定
+        oListView.setPadding(20, 0, 20, 0);
 
+        ColorDrawable separate_color = new ColorDrawable(this.getResources().getColor(R.color.separate_line));
+        oListView.setDivider(separate_color);
+        oListView.setDividerHeight(1);
 
         //配列にタイトルと画像を格納
         dataList.add(new ListItem(String.valueOf("これぞ王道！函館の魅力凝縮コース"), R.drawable.matiaruki01));
@@ -157,12 +166,20 @@ public class CourseActivity extends Activity implements OnItemClickListener {
                 ImageView oImage = new ImageView(mContext);
                 //テキストビューを生成
                 TextView oText = new TextView(mContext);
+                //矢印イメージビューを生成
+                ImageView yajirushi = new ImageView(mContext);
+                yajirushi.setImageResource(R.drawable.gray_arrow);
                 //判別用にタグをつける
                 oImage.setTag("CellImage");
                 oText.setTag("CellTitle");
+                //画像とタイトルの間のスペース
+                Space sp = new Space(mContext);
                 //グリットビュー用のレイアウトに追加
                 oListLayout.addView(oImage, new LinearLayout.LayoutParams(190, 140));
-                oListLayout.addView(oText, new LinearLayout.LayoutParams(MP, MP));
+                oListLayout.addView(sp, new LinearLayout.LayoutParams(30,0));
+                oListLayout.addView(oText, new LinearLayout.LayoutParams(MP, MP,1));
+                oListLayout.addView(yajirushi, new LinearLayout.LayoutParams(20,MP));
+                oText.setTypeface(Typeface.DEFAULT_BOLD);
                 v = oListLayout;
             }
             //配列から、アイテムを取得
