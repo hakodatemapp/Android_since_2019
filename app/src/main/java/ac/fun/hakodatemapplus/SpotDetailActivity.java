@@ -2,11 +2,18 @@ package ac.fun.hakodatemapplus;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.Image;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.Html;
@@ -51,6 +58,7 @@ public class SpotDetailActivity extends Activity {
     private JSONArray bindings = new JSONArray();
 
     private String spot_title;
+    ProgressDialog progressDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,9 +77,91 @@ public class SpotDetailActivity extends Activity {
 
         setContentView(R.layout.activity_spot_detail);
 
-        // SPARQLのクエリを実行して取得したデータを反映する
-        SparqlGetThread st = new SparqlGetThread(spot_title);
-        st.start();
+        // この時点でネットワークに接続できるかどうか調べる
+        if (checkNetworkStatus(true)) {
+            // 観光スポット読み込み中のダイアログを表示する
+            progressDialog = new ProgressDialog(this);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setMessage("観光スポットを読み込んでいます…");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+
+            // SPARQLのクエリを実行して取得したデータを反映する
+            SparqlGetThread st = new SparqlGetThread(spot_title);
+            st.start();
+        }
+
+    }
+
+    public boolean checkNetworkStatus(boolean back_needed) {
+        boolean result = false;
+
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo ni = cm.getActiveNetworkInfo();
+        if (ni != null && ni.isConnected()) {
+            result = true;
+        }
+
+        if(!result) {
+            DialogFragment dialog;
+            if(back_needed) {
+                dialog = new NoConnectionDialogFragment();
+            } else {
+                dialog = new NoConnectionDialogFragmentWithoutBack();
+            }
+            dialog.show(getFragmentManager(), null);
+        }
+
+        return result;
+    }
+
+    // ネットワーク接続がないときのダイアログ
+    public static class NoConnectionDialogFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage("ネットワーク接続がないため、データを取得できません。").setTitle("ネットワークオフライン")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            SpotDetailActivity calling_activity = (SpotDetailActivity) getActivity();
+                            calling_activity.finish();
+                        }
+                    });
+            this.setCancelable(false);
+            return builder.create();
+        }
+    }
+
+    // ネットワーク接続がないときのダイアログ
+    public static class NoConnectionDialogFragmentWithoutBack extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage("ネットワーク接続がないため、Webサイトを表示できません。").setTitle("ネットワークオフライン")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                        }
+                    });
+            this.setCancelable(false);
+            return builder.create();
+        }
+    }
+
+    // 接続できなかったときのダイアログ
+    public static class ConnectionErrorDialogFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage("データを取得できませんでした。しばらく待ってから再度試して下さい。").setTitle("ネットワークオフライン")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            SpotDetailActivity calling_activity = (SpotDetailActivity) getActivity();
+                            calling_activity.finish();
+                        }
+                    });
+            this.setCancelable(false);
+            return builder.create();
+        }
     }
 
     // アクションバーの戻るを押したときの処理
@@ -92,10 +182,13 @@ public class SpotDetailActivity extends Activity {
 
     // WebブラウザのActivityを開く
     private void intentSpotWebBrowser(String url, String title) {
-        Intent intent = new Intent(this, SpotWebBrowser.class);
-        intent.putExtra("browser_url", url);
-        intent.putExtra("browser_title", title);
-        startActivityForResult(intent, 0);
+        // この時点でネットワークに接続できるかどうか調べる
+        if (checkNetworkStatus(false)) {
+            Intent intent = new Intent(this, SpotWebBrowser.class);
+            intent.putExtra("browser_url", url);
+            intent.putExtra("browser_title", title);
+            startActivityForResult(intent, 0);
+        }
     }
 
     // スポットの画像を取得して設定
@@ -181,8 +274,6 @@ public class SpotDetailActivity extends Activity {
                 JSONObject json_results = json.getJSONObject("results");
                 bindings = json_results.getJSONArray("bindings");
                 final JSONObject binding = bindings.getJSONObject(0);     // bindingはbindingsのゼロ番目であることに注意
-//                System.out.println(binding);
-
 
                 // 映画ロケ地である場合はその情報をパース
                 List<String> film_spots = new ArrayList<String>();
@@ -337,10 +428,15 @@ public class SpotDetailActivity extends Activity {
                                 intentSpotWebBrowser("http://hnct-pbl.jimdo.com/", "函館近代化遺産ポータルサイト");
                             }
                         });
+
+                        // 読み込み中のダイアログを閉じる
+                        progressDialog.dismiss();
                     }
                 });
             } catch (Exception ex) {
                 ex.printStackTrace();
+                DialogFragment dialog = new ConnectionErrorDialogFragment();
+                dialog.show(getFragmentManager(), null);
             }
         }
     }
