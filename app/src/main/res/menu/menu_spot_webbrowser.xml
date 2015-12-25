@@ -3,7 +3,7 @@
         android:id="@+id/menu_back"
         android:orderInCategory="100"
         android:showAsAction="ifRoom"
-        android:title="前のページへ" />
+        android:title="戻る" />
 
     <item
         android:id="@+id/menu_reload"
@@ -15,7 +15,7 @@
         android:id="@+id/menu_forward"
         android:orderInCategory="200"
         android:showAsAction="ifRoom"
-        android:title="次のページへ" />
+        android:title="進む" />
 
 
 </menu>
