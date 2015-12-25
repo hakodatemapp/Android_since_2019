@@ -16,6 +16,10 @@ public class MatiarukiCourse {
         course_list = new ArrayList<LatLng>();
 
         switch (course_id) {
+            // まちあるきコース未指定
+            case 0:
+                course_list = null;
+                break;
             // 1. これぞ王道！函館の魅力凝縮コース
             case 1:
                 course_list.add(new LatLng(41.76653550555116, 140.71242928504944));

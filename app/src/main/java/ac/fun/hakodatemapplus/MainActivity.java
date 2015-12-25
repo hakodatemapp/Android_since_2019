@@ -6,6 +6,7 @@ import com.google.android.gms.maps.model.*;
 
 
 import android.app.*;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -85,6 +86,16 @@ public class MainActivity extends FragmentActivity
     @Override
     public void onMapReady(GoogleMap map) {
         gMap = map;
+
+        // 位置情報が取得できるかどうか確認する
+        LocationManager locationManager =
+                (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        final boolean gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+        if (!gpsEnabled) {
+        } else {
+
+        }
 
         mLocationManager = (LocationManager) this.getSystemService(Service.LOCATION_SERVICE);
         Location myLocate = mLocationManager.getLastKnownLocation("gps");
@@ -279,26 +290,28 @@ public class MainActivity extends FragmentActivity
 
     // まちあるきコースをスタートと共に描画
     public void createMatiarukiMapWithStart(List<LatLng> course_list, boolean isDoReset) {
-        LatLng start_position = course_list.get(0);    //スタート地点の緯度経度
+        if(course_list != null) {
+            LatLng start_position = course_list.get(0);    //スタート地点の緯度経度
 
-        MarkerOptions options = new MarkerOptions();
-        options.position(start_position);
-        options.title("スタート");
-        options.snippet("まちあるきコース");
+            MarkerOptions options = new MarkerOptions();
+            options.position(start_position);
+            options.title("スタート");
+            options.snippet("まちあるきコース");
 
-        gMap.addMarker(options); //スタート地点にピンをたてる
-        if (isDoReset)
-            gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(start_position, 16));    //スタート地点へカメラを調整
+            gMap.addMarker(options); //スタート地点にピンをたてる
+            if (isDoReset)
+                gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(start_position, 16));    //スタート地点へカメラを調整
 
-        //コースの線を描く
-        for (int i = 0; i < course_list.size() - 1; i++) {
-            // 直線
-            PolylineOptions straight = new PolylineOptions()
-                    .add(course_list.get(i), course_list.get(i + 1))
-                    .geodesic(false)    // 直線
-                    .color(Color.RED)
-                    .width(6);
-            gMap.addPolyline(straight);
+            //コースの線を描く
+            for (int i = 0; i < course_list.size() - 1; i++) {
+                // 直線
+                PolylineOptions straight = new PolylineOptions()
+                        .add(course_list.get(i), course_list.get(i + 1))
+                        .geodesic(false)    // 直線
+                        .color(Color.RED)
+                        .width(6);
+                gMap.addPolyline(straight);
+            }
         }
     }
 
