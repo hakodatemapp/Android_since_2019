@@ -4,10 +4,16 @@ package ac.fun.hakodatemapplus;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -55,6 +61,21 @@ public class DisplaySettingActivity extends Activity {
         actionBar.setTitle("表示設定");
     }
 
+    // デバイスの物理キーが押されたとき
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // 戻るボタン
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            // ダイアログを表示する
+            DialogFragment newFragment = new ConfirmDialogFragment();
+            newFragment.show(getFragmentManager(), "confirm");
+            return false;
+        } else {
+            return super.onKeyDown(keyCode, event);
+        }
+    }
+
+    // 現在の状態をチェックボックスへ反映させる
     private void setCheckBoxFromIntent() {
         // 地図画面の値を呼び出す
         Intent intent = getIntent();
@@ -168,9 +189,8 @@ public class DisplaySettingActivity extends Activity {
         });
     }
 
-
     // 表示設定のRowに指を付けたときの処理
-    private void optionsTouchDownListener (int targetTableRowId, int targetCheckBoxId) {
+    private void optionsTouchDownListener(int targetTableRowId, int targetCheckBoxId) {
         TableRow targetTableRow = (TableRow) findViewById(targetTableRowId);
         CheckBox targetCheckBox = (CheckBox) findViewById(targetCheckBoxId);
         targetCheckBox.setChecked(!targetCheckBox.isChecked());
@@ -180,12 +200,13 @@ public class DisplaySettingActivity extends Activity {
     }
 
     // 表示設定のRowを指で離したときの処理
-    private void optionsTouchUpListener (int targetTableRowId) {
+    private void optionsTouchUpListener(int targetTableRowId) {
         // 変えた背景色を戻す
         // TableRow targetTableRow = (TableRow) findViewById(targetTableRowId);
         // targetTableRow.setBackgroundColor(Color.rgb(0,0,0));
     }
 
+    // アクションバーのメニューを押したときの処理
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
@@ -193,9 +214,19 @@ public class DisplaySettingActivity extends Activity {
         }
         // アクションバーの戻るを押したときの処理
         else if (id == android.R.id.home) {
-            // intentの作成
-            Intent intent = new Intent();
+            setAndFinishDisplaySettings(true);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
+    // 表示設定を保存して前の画面に戻る
+    public void setAndFinishDisplaySettings(boolean set_settings) {
+        // intentの作成
+        Intent intent = new Intent();
+
+        // 設定を反映させる場合
+        if (set_settings) {
             // チェックボックスの状態をセットする
             CheckBox taberu_checkbox = (CheckBox) findViewById(R.id.eat_checkBox);
             is_show_taberu = taberu_checkbox.isChecked();
@@ -210,7 +241,6 @@ public class DisplaySettingActivity extends Activity {
             CheckBox event_checkbox = (CheckBox) findViewById(R.id.event_checkBox);
             is_show_event = event_checkbox.isChecked();
 
-            System.out.println(is_show_taberu);
             intent.putExtra("is_show_taberu", is_show_taberu);
             intent.putExtra("is_show_miru", is_show_miru);
             intent.putExtra("is_show_asobu", is_show_asobu);
@@ -221,9 +251,38 @@ public class DisplaySettingActivity extends Activity {
             // 返却したい結果ステータスをセットする
             setResult(Activity.RESULT_OK, intent);
             finish();
-            return true;
+        } else {
+            // 返却したい結果ステータスをセットする
+            setResult(Activity.RESULT_CANCELED, intent);
+            finish();
         }
-        return super.onOptionsItemSelected(item);
+
+    }
+
+    // デバイスの戻るボタンを押したときのダイアログ
+    public static class ConfirmDialogFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage("地図へ戻ろうとしています。\nここで設定した観光スポットの表示設定を反映させますか？").setTitle("表示設定")
+                    .setPositiveButton("はい", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            DisplaySettingActivity calling_activity = (DisplaySettingActivity) getActivity();
+                            calling_activity.setAndFinishDisplaySettings(true);
+                        }
+                    })
+                    .setNegativeButton("キャンセル", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                        }
+                    })
+                    .setNeutralButton("いいえ", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            DisplaySettingActivity calling_activity = (DisplaySettingActivity) getActivity();
+                            calling_activity.setAndFinishDisplaySettings(false);
+                        }
+                    });
+            return builder.create();
+        }
     }
 
 }
