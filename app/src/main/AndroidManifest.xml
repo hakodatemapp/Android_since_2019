@@ -31,7 +31,7 @@
         <!-- Google Maps(V2)のAPIキー(デバッグ用) -->
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyBCyTw0gE6RbA8JKFIkO6ZS8Lmvsi8E5gY" />
+            android:value="AIzaSyDWAU-meATtLKj7x5Pg-q3fhAXP8DNLo1s" />
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
