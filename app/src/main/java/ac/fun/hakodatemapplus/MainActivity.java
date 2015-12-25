@@ -16,6 +16,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.*;
@@ -93,8 +94,8 @@ public class MainActivity extends FragmentActivity
         final boolean gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
         if (!gpsEnabled) {
-        } else {
-
+            DialogFragment dialog = new NoLocationDialogFragment();
+            dialog.show(getFragmentManager(), null);
         }
 
         mLocationManager = (LocationManager) this.getSystemService(Service.LOCATION_SERVICE);
@@ -361,11 +362,31 @@ public class MainActivity extends FragmentActivity
 
     }
 
+    // 位置情報が無効になっている場合のダイアログ
+    public static class NoLocationDialogFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage("位置情報を有効にすると地図に自分の場所が表示できます。設定アプリを開いて位置情報を有効にしますか?").setTitle("位置情報が使えません")
+                    .setPositiveButton("はい", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            Intent intent = new Intent();
+                            intent.setAction(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                            startActivity(intent);
+                        }
+                    }).setNegativeButton("いいえ", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                }
+            });
+            this.setCancelable(false);
+            return builder.create();
+        }
+    }
+
     // ネットワーク接続がないときのダイアログ
     public static class NoConnectionDialogFragment extends DialogFragment {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            // Use the Builder class for convenient dialog construction
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setMessage("ネットワーク接続がないため、データを取得できません。").setTitle("ネットワークオフライン")
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -375,7 +396,6 @@ public class MainActivity extends FragmentActivity
                         }
                     });
             this.setCancelable(false);
-            // Create the AlertDialog object and return it
             return builder.create();
         }
     }
@@ -384,7 +404,6 @@ public class MainActivity extends FragmentActivity
     public static class ConnectionErrorDialogFragment extends DialogFragment {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            // Use the Builder class for convenient dialog construction
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setMessage("データを取得できませんでした。しばらく待ってから再度試して下さい。").setTitle("ネットワークオフライン")
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -394,7 +413,6 @@ public class MainActivity extends FragmentActivity
                         }
                     });
             this.setCancelable(false);
-            // Create the AlertDialog object and return it
             return builder.create();
         }
     }
