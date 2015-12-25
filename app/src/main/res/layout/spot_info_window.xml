@@ -19,6 +19,8 @@
             android:gravity="center"
             android:layout_weight="1"
             android:layout_marginRight="3dp"
+            android:scrollHorizontally="true"
+            android:ellipsize="end"
             android:textStyle="bold" />
         <TextView
             android:id="@+id/spot_info_snippet"
