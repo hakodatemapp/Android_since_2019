@@ -225,9 +225,6 @@ public class DisplaySettingActivity extends Activity {
         // intentの作成
         Intent intent = new Intent();
 
-        if(set_settings) Log.d("SETTING", "TRUE");
-        else  Log.d("SETTING", "FALSE");
-
         // 設定を反映させる場合
         if (set_settings) {
             // チェックボックスの状態をセットする
@@ -266,7 +263,6 @@ public class DisplaySettingActivity extends Activity {
     public static class ConfirmDialogFragment extends DialogFragment {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            // Use the Builder class for convenient dialog construction
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setMessage("地図へ戻ろうとしています。\nここで設定した観光スポットの表示設定を反映させますか？").setTitle("表示設定")
                     .setPositiveButton("はい", new DialogInterface.OnClickListener() {
@@ -285,7 +281,6 @@ public class DisplaySettingActivity extends Activity {
                             calling_activity.setAndFinishDisplaySettings(false);
                         }
                     });
-            // Create the AlertDialog object and return it
             return builder.create();
         }
     }
