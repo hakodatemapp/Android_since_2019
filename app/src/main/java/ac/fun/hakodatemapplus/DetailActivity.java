@@ -2,7 +2,14 @@ package ac.fun.hakodatemapplus;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.view.MenuItem;
 import android.view.View;
 import android.os.Bundle;
@@ -29,8 +36,19 @@ public class DetailActivity extends Activity implements OnClickListener {
     private String title;
     private int image;
     private int course_id;
+    ProgressDialog progressDialog;
 
-
+    // InputStream -> String
+    static String InputStreamToString(InputStream is) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = br.readLine()) != null) {
+            sb.append(line);
+        }
+        br.close();
+        return sb.toString();
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,6 +59,7 @@ public class DetailActivity extends Activity implements OnClickListener {
         title = intent.getExtras().getString("title");
         image = intent.getExtras().getInt("image");
         course_id = intent.getExtras().getInt("course_id");
+
         //アクションバーの編集
         ActionBar actionBar = getActionBar();
         actionBar.setHomeButtonEnabled(true);
@@ -50,18 +69,106 @@ public class DetailActivity extends Activity implements OnClickListener {
         actionBar.setIcon(R.drawable.mapplus_icon);
 
         setContentView(R.layout.activity_detail);
+
         button_main = (Button) findViewById(R.id.button_main);
         button_main.setOnClickListener(this);
 
-        ImageView imageView = (ImageView) findViewById(R.id.image_view);
-        imageView.setImageResource(image);
+        // この時点でネットワークに接続できるかどうか調べる
+        if (checkNetworkStatus()) {
 
-        // SPARQLのクエリで使う形式に変換する(半角・全角スペース除去)
-        String search_title = title.replaceAll("[ 　]", "");
+            // まちあるきコース読み込み中のダイアログを表示する
+            progressDialog = new ProgressDialog(this);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setMessage("まちあるきコースを読み込んでいます…");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
 
-        // SPARQLのクエリを実行して取得したデータを反映する
-        SparqlGetThread st = new SparqlGetThread(search_title);
-        st.start();
+
+            ImageView imageView = (ImageView) findViewById(R.id.image_view);
+            imageView.setImageResource(image);
+
+            // SPARQLのクエリで使う形式に変換する(半角・全角スペース除去)
+            String search_title = title.replaceAll("[ 　]", "");
+
+            // SPARQLのクエリを実行して取得したデータを反映する
+            SparqlGetThread st = new SparqlGetThread(search_title);
+            st.start();
+        }
+    }
+
+    public boolean checkNetworkStatus() {
+        boolean result = false;
+
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo ni = cm.getActiveNetworkInfo();
+        if (ni == null) {
+            DialogFragment dialog = new NoConnectionDialogFragment();
+            dialog.show(getFragmentManager(), null);
+        } else if (!ni.isConnected()) {
+            DialogFragment dialog = new NoConnectionDialogFragment();
+            dialog.show(getFragmentManager(), null);
+        } else {
+            result = true;
+        }
+
+        return result;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            return true;
+        }
+        //アクションバーの戻るを押したときの処理
+        else if (id == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void onClick(View v) {
+
+        if (v == button_main) {
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("title", title);//第一引数呼び出すときのkey、第二引数:コース名
+            intent.putExtra("course_id", course_id);
+            startActivityForResult(intent, 0);
+        }
+    }
+
+    // ネットワーク接続がないときのダイアログ
+    public static class NoConnectionDialogFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage("ネットワーク接続がないため、データを取得できません。").setTitle("ネットワークオフライン")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            DetailActivity calling_activity = (DetailActivity) getActivity();
+                            calling_activity.finish();
+                        }
+                    });
+            this.setCancelable(false);
+            return builder.create();
+        }
+    }
+
+    // 接続できなかったときのダイアログ
+    public static class ConnectionErrorDialogFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage("データを取得できませんでした。しばらく待ってから再度試して下さい。").setTitle("ネットワークオフライン")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            DetailActivity calling_activity = (DetailActivity) getActivity();
+                            calling_activity.finish();
+                        }
+                    });
+            this.setCancelable(false);
+            return builder.create();
+        }
     }
 
     // SPARQLのクエリを実行して取得したデータを反映する
@@ -129,49 +236,16 @@ public class DetailActivity extends Activity implements OnClickListener {
                         TextView calorie_text = (TextView) findViewById(R.id.calorie_text);
                         calorie_text.setText(calorie_str);
 
+                        // 読み込み中のダイアログを閉じる
+                        progressDialog.dismiss();
                     }
                 });
 
             } catch (Exception ex) {
                 ex.printStackTrace();
+                DialogFragment dialog = new ConnectionErrorDialogFragment();
+                dialog.show(getFragmentManager(), null);
             }
-
-        }
-    }
-
-    // InputStream -> String
-    static String InputStreamToString(InputStream is) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = br.readLine()) != null) {
-            sb.append(line);
-        }
-        br.close();
-        return sb.toString();
-    }
-
-
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        //アクションバーの戻るを押したときの処理
-        else if (id == android.R.id.home) {
-            finish();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    public void onClick(View v) {
-
-        if (v == button_main) {
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra("title", title);//第一引数呼び出すときのkey、第二引数:コース名
-            intent.putExtra("course_id", course_id);
-            startActivityForResult(intent, 0);
         }
     }
 }

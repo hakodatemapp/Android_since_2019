@@ -1,9 +1,15 @@
 package ac.fun.hakodatemapplus;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.app.Activity;
 import android.util.Log;
@@ -111,6 +117,41 @@ public class FilmDoboku extends Activity {
     }
 
 
+    public boolean checkNetworkStatus() {
+        boolean result = false;
+
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo ni = cm.getActiveNetworkInfo();
+        if (ni == null) {
+            DialogFragment dialog = new NoConnectionDialogFragment();
+            dialog.show(getFragmentManager(), null);
+        } else if (!ni.isConnected()) {
+            DialogFragment dialog = new NoConnectionDialogFragment();
+            dialog.show(getFragmentManager(), null);
+        } else {
+            result = true;
+        }
+
+        return result;
+    }
+
+    // ネットワーク接続がないときのダイアログ
+    public static class NoConnectionDialogFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage("ネットワーク接続がないため、Webサイトを表示できません。").setTitle("ネットワークオフライン")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                        }
+                    });
+            this.setCancelable(false);
+            return builder.create();
+        }
+    }
+
+
+
     // スポットの画像を取得して設定
     class ImageGetThread extends Thread {
         private String imageurl_str;
@@ -158,10 +199,13 @@ public class FilmDoboku extends Activity {
 
     // WebブラウザのActivityを開く
     public void intentSpotWebBrowser(String url, String title) {
-        Intent intent = new Intent(this, SpotWebBrowser.class);
-        intent.putExtra("browser_url", url);
-        intent.putExtra("browser_title", title);
-        startActivityForResult(intent, 0);
+        // この時点でネットワークに接続できるかどうか調べる
+        if (checkNetworkStatus()) {
+            Intent intent = new Intent(this, SpotWebBrowser.class);
+            intent.putExtra("browser_url", url);
+            intent.putExtra("browser_title", title);
+            startActivityForResult(intent, 0);
+        }
     }
 
 
