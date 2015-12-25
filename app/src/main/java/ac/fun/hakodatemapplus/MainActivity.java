@@ -73,7 +73,7 @@ public class MainActivity extends FragmentActivity
         if (ni == null) {
             DialogFragment dialog = new NoConnectionDialogFragment();
             dialog.show(getFragmentManager(), null);
-        } else if(!ni.isConnected()) {
+        } else if (!ni.isConnected()) {
             DialogFragment dialog = new NoConnectionDialogFragment();
             dialog.show(getFragmentManager(), null);
         } else {
@@ -135,7 +135,7 @@ public class MainActivity extends FragmentActivity
                 snippet.setText(marker.getSnippet());
 
                 // 画像を設定
-                if(!marker.getSnippet().equals("まちあるきコース")) {
+                if (!marker.getSnippet().equals("まちあるきコース")) {
                     ImageView img = (ImageView) view.findViewById(R.id.spot_info_icon);
                     img.setImageResource(R.drawable.infomark);
                 }
@@ -291,7 +291,7 @@ public class MainActivity extends FragmentActivity
 
     // まちあるきコースをスタートと共に描画
     public void createMatiarukiMapWithStart(List<LatLng> course_list, boolean isDoReset) {
-        if(course_list != null) {
+        if (course_list != null) {
             LatLng start_position = course_list.get(0);    //スタート地点の緯度経度
 
             MarkerOptions options = new MarkerOptions();
@@ -316,8 +316,8 @@ public class MainActivity extends FragmentActivity
         }
     }
 
-    // SPARQLのクエリを実行して結果をArrayList形式で取得する
-    public void setSparqlResultFromQueue(ArrayList<ArrayList<String>> spot_list, String queue_url) {
+    // SPARQLのクエリを実行して結果をArrayList形式で取得する。成功すると1を、失敗すると0を返す
+    public boolean setSparqlResultFromQueue(ArrayList<ArrayList<String>> spot_list, String queue_url) {
         try {
             URL url = new URL(queue_url);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -356,9 +356,9 @@ public class MainActivity extends FragmentActivity
 
         } catch (Exception ex) {
             ex.printStackTrace();
-            DialogFragment dialog = new ConnectionErrorDialogFragment();
-            dialog.show(getFragmentManager(), null);
+            return false;
         }
+        return true;
 
     }
 
@@ -444,196 +444,204 @@ public class MainActivity extends FragmentActivity
 
             //観光スポットの取得
             ArrayList<ArrayList<String>> spot_list = new ArrayList<ArrayList<String>>();
-            setSparqlResultFromQueue(spot_list, queue_url);
-            final ArrayList<ArrayList<String>> final_list = spot_list;
+            if (!setSparqlResultFromQueue(spot_list, queue_url)) {
+                DialogFragment dialog = new ConnectionErrorDialogFragment();
+                dialog.show(getFragmentManager(), null);
+            } else {
+                final ArrayList<ArrayList<String>> final_list = spot_list;
 
-            //まちあるきマップにしかないスポットの取得
-            if (encoded_course != null) {
-                String queue_machi1 = "http://lod.per.c.fun.ac.jp:8000/sparql/?query=PREFIX%20rdfs%3a%20%3chttp%3a%2f%2fwww%2ew3%2eorg%2f2000%2f01%2frdf%2dschema%23%3e%0d%0aPREFIX%20schema%3a%20%3chttp%3a%2f%2fschema%2eorg%2f%3e%0d%0aPREFIX%20dc%3a%20%3chttp%3a%2f%2fpurl%2eorg%2fdc%2felements%2f1%2e1%2f%3e%0d%0aPREFIX%20geo%3a%20%3chttp%3a%2f%2fwww%2ew3%2eorg%2f2003%2f01%2fgeo%2fwgs84_pos%23%3e%0d%0a%0d%0aSELECT%20DISTINCT%20%3fcourseName%20%3frootNum%20%3fspotName%20%3fcategory%20%3flat%20%3flong%0d%0a%0d%0aFROM%20%3cfile%3a%2f%2f%2fvar%2flib%2f4store%2fmachiaruki_akiba%2erdf%3e%0d%0a%0d%0aWHERE%20%7b%0d%0a%7b%0d%0a%20%20%20%20%3curn%3a";
-                String queue_machi2 = "%3e%20rdfs%3alabel%20%3fcourseName%3b%0d%0a%20%20%20%20dc%3arelation%20%3fmspotURI%2e%0d%0a%20%20%20%20%3fmspotURI%20dc%3asubject%20%3frootNum%3b%0d%0a%20%20%20%20schema%3aname%20%3fspotName%3b%0d%0a%20%20%20%20geo%3alat%20%3flat%3b%0d%0a%20%20%20%20geo%3along%20%3flong%2e%0d%0a%7d%0d%0a%7d&output=json";
-                String queue_machi_url = queue_machi1 + encoded_course + queue_machi2;
-                setSparqlResultFromQueue(spot_list, queue_machi_url);
+                //まちあるきマップにしかないスポットの取得
+                if (encoded_course != null) {
+                    String queue_machi1 = "http://lod.per.c.fun.ac.jp:8000/sparql/?query=PREFIX%20rdfs%3a%20%3chttp%3a%2f%2fwww%2ew3%2eorg%2f2000%2f01%2frdf%2dschema%23%3e%0d%0aPREFIX%20schema%3a%20%3chttp%3a%2f%2fschema%2eorg%2f%3e%0d%0aPREFIX%20dc%3a%20%3chttp%3a%2f%2fpurl%2eorg%2fdc%2felements%2f1%2e1%2f%3e%0d%0aPREFIX%20geo%3a%20%3chttp%3a%2f%2fwww%2ew3%2eorg%2f2003%2f01%2fgeo%2fwgs84_pos%23%3e%0d%0a%0d%0aSELECT%20DISTINCT%20%3fcourseName%20%3frootNum%20%3fspotName%20%3fcategory%20%3flat%20%3flong%0d%0a%0d%0aFROM%20%3cfile%3a%2f%2f%2fvar%2flib%2f4store%2fmachiaruki_akiba%2erdf%3e%0d%0a%0d%0aWHERE%20%7b%0d%0a%7b%0d%0a%20%20%20%20%3curn%3a";
+                    String queue_machi2 = "%3e%20rdfs%3alabel%20%3fcourseName%3b%0d%0a%20%20%20%20dc%3arelation%20%3fmspotURI%2e%0d%0a%20%20%20%20%3fmspotURI%20dc%3asubject%20%3frootNum%3b%0d%0a%20%20%20%20schema%3aname%20%3fspotName%3b%0d%0a%20%20%20%20geo%3alat%20%3flat%3b%0d%0a%20%20%20%20geo%3along%20%3flong%2e%0d%0a%7d%0d%0a%7d&output=json";
+                    String queue_machi_url = queue_machi1 + encoded_course + queue_machi2;
+                    System.out.println("2回目の呼び出し");
+                    setSparqlResultFromQueue(spot_list, queue_machi_url);
+                }
+
+                // 受け取った結果を地図へ反映
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setSpotPinFromFinalList(final_list);
+                    }
+                });
             }
+        }
 
-            // 受け取った結果を地図へ反映
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
+        public void setSpotPinFromFinalList(ArrayList<ArrayList<String>> final_list) {
+            BitmapDescriptor taberu = BitmapDescriptorFactory.fromResource(R.drawable.taberu);
+            BitmapDescriptor miru = BitmapDescriptorFactory.fromResource(R.drawable.miru);
+            BitmapDescriptor asobu = BitmapDescriptorFactory.fromResource(R.drawable.asobu);
+            BitmapDescriptor kaimono = BitmapDescriptorFactory.fromResource(R.drawable.kaimono);
+            BitmapDescriptor onsen = BitmapDescriptorFactory.fromResource(R.drawable.onsen);
+            BitmapDescriptor event = BitmapDescriptorFactory.fromResource(R.drawable.event);
 
-                    BitmapDescriptor taberu = BitmapDescriptorFactory.fromResource(R.drawable.taberu);
-                    BitmapDescriptor miru = BitmapDescriptorFactory.fromResource(R.drawable.miru);
-                    BitmapDescriptor asobu = BitmapDescriptorFactory.fromResource(R.drawable.asobu);
-                    BitmapDescriptor kaimono = BitmapDescriptorFactory.fromResource(R.drawable.kaimono);
-                    BitmapDescriptor onsen = BitmapDescriptorFactory.fromResource(R.drawable.onsen);
-                    BitmapDescriptor event = BitmapDescriptorFactory.fromResource(R.drawable.event);
+            BitmapDescriptor pin01 = BitmapDescriptorFactory.fromResource(R.drawable.pin01);
+            BitmapDescriptor pin02 = BitmapDescriptorFactory.fromResource(R.drawable.pin02);
+            BitmapDescriptor pin03 = BitmapDescriptorFactory.fromResource(R.drawable.pin03);
+            BitmapDescriptor pin04 = BitmapDescriptorFactory.fromResource(R.drawable.pin04);
+            BitmapDescriptor pin05 = BitmapDescriptorFactory.fromResource(R.drawable.pin05);
+            BitmapDescriptor pin06 = BitmapDescriptorFactory.fromResource(R.drawable.pin06);
+            BitmapDescriptor pin07 = BitmapDescriptorFactory.fromResource(R.drawable.pin07);
+            BitmapDescriptor pin08 = BitmapDescriptorFactory.fromResource(R.drawable.pin08);
+            BitmapDescriptor pin09 = BitmapDescriptorFactory.fromResource(R.drawable.pin09);
+            BitmapDescriptor pin10 = BitmapDescriptorFactory.fromResource(R.drawable.pin10);
+            BitmapDescriptor pin11 = BitmapDescriptorFactory.fromResource(R.drawable.pin11);
+            BitmapDescriptor pin12 = BitmapDescriptorFactory.fromResource(R.drawable.pin12);
+            BitmapDescriptor pin13 = BitmapDescriptorFactory.fromResource(R.drawable.pin13);
+            BitmapDescriptor pin14 = BitmapDescriptorFactory.fromResource(R.drawable.pin14);
+            BitmapDescriptor pin15 = BitmapDescriptorFactory.fromResource(R.drawable.pin15);
+            BitmapDescriptor pin16 = BitmapDescriptorFactory.fromResource(R.drawable.pin16);
+            BitmapDescriptor pin17 = BitmapDescriptorFactory.fromResource(R.drawable.pin17);
+            BitmapDescriptor pin18 = BitmapDescriptorFactory.fromResource(R.drawable.pin18);
+            BitmapDescriptor pin19 = BitmapDescriptorFactory.fromResource(R.drawable.pin19);
+            BitmapDescriptor pin20 = BitmapDescriptorFactory.fromResource(R.drawable.pin20);
 
-                    BitmapDescriptor pin01 = BitmapDescriptorFactory.fromResource(R.drawable.pin01);
-                    BitmapDescriptor pin02 = BitmapDescriptorFactory.fromResource(R.drawable.pin02);
-                    BitmapDescriptor pin03 = BitmapDescriptorFactory.fromResource(R.drawable.pin03);
-                    BitmapDescriptor pin04 = BitmapDescriptorFactory.fromResource(R.drawable.pin04);
-                    BitmapDescriptor pin05 = BitmapDescriptorFactory.fromResource(R.drawable.pin05);
-                    BitmapDescriptor pin06 = BitmapDescriptorFactory.fromResource(R.drawable.pin06);
-                    BitmapDescriptor pin07 = BitmapDescriptorFactory.fromResource(R.drawable.pin07);
-                    BitmapDescriptor pin08 = BitmapDescriptorFactory.fromResource(R.drawable.pin08);
-                    BitmapDescriptor pin09 = BitmapDescriptorFactory.fromResource(R.drawable.pin09);
-                    BitmapDescriptor pin10 = BitmapDescriptorFactory.fromResource(R.drawable.pin10);
-                    BitmapDescriptor pin11 = BitmapDescriptorFactory.fromResource(R.drawable.pin11);
-                    BitmapDescriptor pin12 = BitmapDescriptorFactory.fromResource(R.drawable.pin12);
-                    BitmapDescriptor pin13 = BitmapDescriptorFactory.fromResource(R.drawable.pin13);
-                    BitmapDescriptor pin14 = BitmapDescriptorFactory.fromResource(R.drawable.pin14);
-                    BitmapDescriptor pin15 = BitmapDescriptorFactory.fromResource(R.drawable.pin15);
-                    BitmapDescriptor pin16 = BitmapDescriptorFactory.fromResource(R.drawable.pin16);
-                    BitmapDescriptor pin17 = BitmapDescriptorFactory.fromResource(R.drawable.pin17);
-                    BitmapDescriptor pin18 = BitmapDescriptorFactory.fromResource(R.drawable.pin18);
-                    BitmapDescriptor pin19 = BitmapDescriptorFactory.fromResource(R.drawable.pin19);
-                    BitmapDescriptor pin20 = BitmapDescriptorFactory.fromResource(R.drawable.pin20);
+            // スポットのピンを地図上に表示
+            for (int i = 0; i < final_list.size(); i++) {
+                LatLng location = new LatLng(Double.parseDouble(final_list.get(i).get(4)),
+                        Double.parseDouble(final_list.get(i).get(5)));
 
-                    // スポットのピンを地図上に表示
-                    for (int i = 0; i < final_list.size(); i++) {
-                        LatLng location = new LatLng(Double.parseDouble(final_list.get(i).get(4)),
-                                Double.parseDouble(final_list.get(i).get(5)));
+                // マーカー(観光スポットのピン)の設定
+                MarkerOptions options = new MarkerOptions();
 
-                        // マーカー(観光スポットのピン)の設定
-                        MarkerOptions options = new MarkerOptions();
+                // ピンの位置を緯度経度で設定
+                options.position(location);
 
-                        // ピンの位置を緯度経度で設定
-                        options.position(location);
+                // 観光スポット名を設定
+                options.title(final_list.get(i).get(2));
 
-                        // 観光スポット名を設定
-                        options.title(final_list.get(i).get(2));
+                boolean is_pin_show = true;
 
-                        boolean is_pin_show = true;
-
-                        // ピンにcourseNameがセットされていればまちあるきコース
-                        if (final_list.get(i).get(0) != null) {
-                            // カテゴリが設定されていなければはこぶらにない(詳細が出せない)
-                            if(final_list.get(i).get(3) == null) {
-                                options.snippet("まちあるきコース");
-                            } else {
-                                switch (final_list.get(i).get(3)) {
-                                    case "食べる":
-                                        options.snippet("まちあるきコース - 食べる");
-                                        break;
-                                    case "見る":
-                                        options.snippet("まちあるきコース - 見る");
-                                        break;
-                                    case "遊ぶ":
-                                        options.snippet("まちあるきコース - 遊ぶ");
-                                        break;
-                                    case "買う":
-                                        options.snippet("まちあるきコース - 買う");
-                                        break;
-                                    case "温泉":
-                                        options.snippet("まちあるきコース - 温泉");
-                                        break;
-                                    case "観光カレンダー":
-                                        options.snippet("まちあるきコース - 観光イベント");
-                                        break;
-                                }
-                            }
-                            switch (final_list.get(i).get(1)) {
-                                case "1":
-                                    options.icon(pin01);
-                                    break;
-                                case "2":
-                                    options.icon(pin02);
-                                    break;
-                                case "3":
-                                    options.icon(pin03);
-                                    break;
-                                case "4":
-                                    options.icon(pin04);
-                                    break;
-                                case "5":
-                                    options.icon(pin05);
-                                    break;
-                                case "6":
-                                    options.icon(pin06);
-                                    break;
-                                case "7":
-                                    options.icon(pin07);
-                                    break;
-                                case "8":
-                                    options.icon(pin08);
-                                    break;
-                                case "9":
-                                    options.icon(pin09);
-                                    break;
-                                case "10":
-                                    options.icon(pin10);
-                                    break;
-                                case "11":
-                                    options.icon(pin11);
-                                    break;
-                                case "12":
-                                    options.icon(pin12);
-                                    break;
-                                case "13":
-                                    options.icon(pin13);
-                                    break;
-                                case "14":
-                                    options.icon(pin14);
-                                    break;
-                                case "15":
-                                    options.icon(pin15);
-                                    break;
-                                case "16":
-                                    options.icon(pin16);
-                                    break;
-                                case "17":
-                                    options.icon(pin17);
-                                    break;
-                                case "18":
-                                    options.icon(pin18);
-                                    break;
-                                case "19":
-                                    options.icon(pin19);
-                                    break;
-                                case "20":
-                                    options.icon(pin20);
-                                    break;
-                            }
-
-                            // courseNameが設定されていないピンは通常の観光スポットとして扱う
-                        } else {
-                            // カテゴリを設定する
-                            options.snippet(final_list.get(i).get(3));
-                            switch (final_list.get(i).get(3)) {
-                                case "食べる":
-                                    options.icon(taberu);
-                                    is_pin_show = is_show_taberu;
-                                    break;
-                                case "見る":
-                                    options.icon(miru);
-                                    is_pin_show = is_show_miru;
-                                    break;
-                                case "遊ぶ":
-                                    options.icon(asobu);
-                                    is_pin_show = is_show_asobu;
-                                    break;
-                                case "買う":
-                                    options.icon(kaimono);
-                                    is_pin_show = is_show_kaimono;
-                                    break;
-                                case "温泉":
-                                    options.icon(onsen);
-                                    is_pin_show = is_show_onsen;
-                                    break;
-                                case "観光カレンダー":
-                                    options.icon(event);
-                                    options.snippet("観光イベント");
-                                    is_pin_show = is_show_event;
-                                    break;
-                            }
+                // ピンにcourseNameがセットされていればまちあるきコース
+                if (final_list.get(i).get(0) != null) {
+                    // カテゴリが設定されていなければはこぶらにない(詳細が出せない)
+                    if (final_list.get(i).get(3) == null) {
+                        options.snippet("まちあるきコース");
+                    } else {
+                        switch (final_list.get(i).get(3)) {
+                            case "食べる":
+                                options.snippet("まちあるきコース - 食べる");
+                                break;
+                            case "見る":
+                                options.snippet("まちあるきコース - 見る");
+                                break;
+                            case "遊ぶ":
+                                options.snippet("まちあるきコース - 遊ぶ");
+                                break;
+                            case "買う":
+                                options.snippet("まちあるきコース - 買う");
+                                break;
+                            case "温泉":
+                                options.snippet("まちあるきコース - 温泉");
+                                break;
+                            case "観光カレンダー":
+                                options.snippet("まちあるきコース - 観光イベント");
+                                break;
                         }
-                        Marker marker = gm.addMarker(options);
-                        marker.setVisible(is_pin_show);
+                    }
+                    switch (final_list.get(i).get(1)) {
+                        case "1":
+                            options.icon(pin01);
+                            break;
+                        case "2":
+                            options.icon(pin02);
+                            break;
+                        case "3":
+                            options.icon(pin03);
+                            break;
+                        case "4":
+                            options.icon(pin04);
+                            break;
+                        case "5":
+                            options.icon(pin05);
+                            break;
+                        case "6":
+                            options.icon(pin06);
+                            break;
+                        case "7":
+                            options.icon(pin07);
+                            break;
+                        case "8":
+                            options.icon(pin08);
+                            break;
+                        case "9":
+                            options.icon(pin09);
+                            break;
+                        case "10":
+                            options.icon(pin10);
+                            break;
+                        case "11":
+                            options.icon(pin11);
+                            break;
+                        case "12":
+                            options.icon(pin12);
+                            break;
+                        case "13":
+                            options.icon(pin13);
+                            break;
+                        case "14":
+                            options.icon(pin14);
+                            break;
+                        case "15":
+                            options.icon(pin15);
+                            break;
+                        case "16":
+                            options.icon(pin16);
+                            break;
+                        case "17":
+                            options.icon(pin17);
+                            break;
+                        case "18":
+                            options.icon(pin18);
+                            break;
+                        case "19":
+                            options.icon(pin19);
+                            break;
+                        case "20":
+                            options.icon(pin20);
+                            break;
                     }
 
-                    // 読み込み中のダイアログを閉じる
-                    progressDialog.dismiss();
+                    // courseNameが設定されていないピンは通常の観光スポットとして扱う
+                } else {
+                    // カテゴリを設定する
+                    options.snippet(final_list.get(i).get(3));
+                    switch (final_list.get(i).get(3)) {
+                        case "食べる":
+                            options.icon(taberu);
+                            is_pin_show = is_show_taberu;
+                            break;
+                        case "見る":
+                            options.icon(miru);
+                            is_pin_show = is_show_miru;
+                            break;
+                        case "遊ぶ":
+                            options.icon(asobu);
+                            is_pin_show = is_show_asobu;
+                            break;
+                        case "買う":
+                            options.icon(kaimono);
+                            is_pin_show = is_show_kaimono;
+                            break;
+                        case "温泉":
+                            options.icon(onsen);
+                            is_pin_show = is_show_onsen;
+                            break;
+                        case "観光カレンダー":
+                            options.icon(event);
+                            options.snippet("観光イベント");
+                            is_pin_show = is_show_event;
+                            break;
+                    }
                 }
-            });
+                Marker marker = gm.addMarker(options);
+                marker.setVisible(is_pin_show);
+            }
+
+            // 読み込み中のダイアログを閉じる
+            progressDialog.dismiss();
         }
     }
 }
