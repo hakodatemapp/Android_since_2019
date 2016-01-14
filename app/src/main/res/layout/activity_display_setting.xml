@@ -316,6 +316,7 @@
 
             </TableRow>
 
+            <!--
             <TableRow>
                 <TextView
                     android:id="@+id/kaibatu_text"
@@ -327,7 +328,6 @@
                     android:layout_weight="1"
                     android:background="#fff"
                     android:text="現在地の海抜"/>
-
 
                 <Switch
                     android:layout_height="match_parent"
@@ -339,105 +339,6 @@
                     android:background="#fff"/>
 
             </TableRow>
-
-            <!--
-
-            <TableRow
-                android:layout_width="wrap_content"
-                android:background="#000000"
-                android:layout_height="wrap_content">
-                <ImageView
-                    android:id="@+id/hinanjo_icon"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:layout_weight="1"
-                    android:background="#fff"
-                    android:src="@drawable/miru"/>
-
-                <TextView
-                    android:id="@+id/hinanjo_text"
-                    style="@style/CodeFont"
-                    android:textSize="15dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:layout_weight="1"
-                    android:background="#fff"
-                    android:text="津波避難所" />
-
-                <CheckBox
-                    android:layout_height="match_parent"
-                    android:id="@+id/hinanjo_checkBox"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:layout_weight="1"
-                    android:checked="false"
-                    android:background="#fff"/>
-
-
-            </TableRow>
-
-            <TableRow
-                android:layout_width="wrap_content"
-                android:background="#000000"
-                android:layout_height="wrap_content">
-                <ImageView
-                    android:id="@+id/building_icon"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:layout_weight="1"
-                    android:background="#fff"
-                    android:src="@drawable/miru"/>
-
-                <TextView
-                    android:id="@+id/building_text"
-                    style="@style/CodeFont"
-                    android:textSize="15dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:layout_weight="1"
-                    android:background="#fff"
-                    android:text="津波避難ビル" />
-
-                <CheckBox
-                    android:layout_height="match_parent"
-                    android:id="@+id/building_checkBox"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:layout_weight="1"
-                    android:checked="false"
-                    android:background="#fff"/>
-
-
-            </TableRow>
-
-            <TableRow>
-                <TextView
-                    android:id="@+id/kaibatu_text"
-                    style="@style/CodeFont"
-                    android:textSize="15dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:layout_weight="1"
-                    android:background="#fff"
-                    android:text="現在地の海抜"/>
-
-
-            <Switch
-                android:layout_height="match_parent"
-                android:id="@+id/kaibatu_switch"
-                android:layout_marginBottom="1dp"
-                android:layout_marginTop="1dp"
-                android:layout_weight="1"
-                android:checked="false"
-                android:background="#fff"/>
-
-            </TableRow>
-
             -->
 
         </TableLayout>

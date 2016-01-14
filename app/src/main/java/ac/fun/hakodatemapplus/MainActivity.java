@@ -58,6 +58,8 @@ public class MainActivity extends FragmentActivity
     private boolean is_show_kaimono = true;
     private boolean is_show_onsen = true;
     private boolean is_show_event = true;
+    private boolean is_show_hinanjo = false;
+    private boolean is_show_is_show_tsunamibuilding = false;
     // GooglePlay開発者サービスの準備ができていないときは表示設定を操作できないようにする
     private boolean isMapReady = false;
     private LocationManager mLocationManager;
@@ -208,6 +210,8 @@ public class MainActivity extends FragmentActivity
                     is_show_kaimono = intent.getExtras().getBoolean("is_show_kaimono");
                     is_show_onsen = intent.getExtras().getBoolean("is_show_onsen");
                     is_show_event = intent.getExtras().getBoolean("is_show_event");
+                    is_show_hinanjo = intent.getExtras().getBoolean("is_show_hinanjo");
+                    is_show_is_show_tsunamibuilding = intent.getExtras().getBoolean("is_show_tsunamibuilding");
                     System.out.println(is_show_taberu);
 
                     // 表示するピンを反映するために地図上のOverlayを全消去
@@ -266,6 +270,8 @@ public class MainActivity extends FragmentActivity
                 intent.putExtra("is_show_kaimono", is_show_kaimono);
                 intent.putExtra("is_show_onsen", is_show_onsen);
                 intent.putExtra("is_show_event", is_show_event);
+                intent.putExtra("is_show_hinanjo", is_show_hinanjo);
+                intent.putExtra("is_show_tsunamibuilding", is_show_is_show_tsunamibuilding);
 
                 // 遷移先から返却されてくる際の識別コード
                 int requestCode = 1002;// 返却値を考慮したActivityの起動を行う
