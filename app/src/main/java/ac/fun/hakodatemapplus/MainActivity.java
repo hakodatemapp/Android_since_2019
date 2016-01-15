@@ -59,7 +59,7 @@ public class MainActivity extends FragmentActivity
     private boolean is_show_onsen = true;
     private boolean is_show_event = true;
     private boolean is_show_hinanjo = false;
-    private boolean is_show_is_show_tsunamibuilding = false;
+    private boolean is_show_tsunamibuilding = false;
     // GooglePlay開発者サービスの準備ができていないときは表示設定を操作できないようにする
     private boolean isMapReady = false;
     private LocationManager mLocationManager;
@@ -211,7 +211,7 @@ public class MainActivity extends FragmentActivity
                     is_show_onsen = intent.getExtras().getBoolean("is_show_onsen");
                     is_show_event = intent.getExtras().getBoolean("is_show_event");
                     is_show_hinanjo = intent.getExtras().getBoolean("is_show_hinanjo");
-                    is_show_is_show_tsunamibuilding = intent.getExtras().getBoolean("is_show_tsunamibuilding");
+                    is_show_tsunamibuilding = intent.getExtras().getBoolean("is_show_tsunamibuilding");
                     System.out.println(is_show_taberu);
 
                     // 表示するピンを反映するために地図上のOverlayを全消去
@@ -271,7 +271,7 @@ public class MainActivity extends FragmentActivity
                 intent.putExtra("is_show_onsen", is_show_onsen);
                 intent.putExtra("is_show_event", is_show_event);
                 intent.putExtra("is_show_hinanjo", is_show_hinanjo);
-                intent.putExtra("is_show_tsunamibuilding", is_show_is_show_tsunamibuilding);
+                intent.putExtra("is_show_tsunamibuilding", is_show_tsunamibuilding);
 
                 // 遷移先から返却されてくる際の識別コード
                 int requestCode = 1002;// 返却値を考慮したActivityの起動を行う
@@ -478,6 +478,11 @@ public class MainActivity extends FragmentActivity
                     setSparqlResultFromQueue(spot_list, queue_machi_url);
                 }
 
+                //避難所の取得
+                String queue_shelter_url = "http://lod.per.c.fun.ac.jp:8000/sparql/?query=PREFIX%20rdf%3a%20%3Chttp%3a%2f%2fwww%2ew3%2eorg%2f1999%2f02%2f22-rdf-syntax-ns%23%3E%0d%0aPREFIX%20rdfs%3a%20%3Chttp%3a%2f%2fwww%2ew3%2eorg%2f2000%2f01%2frdf-schema%23%3E%0d%0aPREFIX%20geo%3a%20%3Chttp%3a%2f%2fwww%2ew3%2eorg%2f2003%2f01%2fgeo%2fwgs84_pos%23%3E%0d%0aPREFIX%20schema%3a%20%3Chttp%3a%2f%2fschema%2eorg%2f%3E%0d%0aPREFIX%20shelter%3a%20%3Chttp%3a%2f%2flod%2eper%2ec%2efun%2eac%2ejp%2fbosai%2fterms%2fshelter%23%3E%0d%0aPREFIX%20evcx%3a%20%3Chttp%3a%2f%2fsmartercity%2ejp%2fevacuation%23%3E%0d%0a%0d%0aSELECT%20DISTINCT%20%3fspotName%20%3frootNum%20%3fcategory%20%3flat%20%3flong%0d%0a%0d%0aFROM%20%3Cfile%3a%2f%2f%2fvar%2flib%2f4store%2fshelter%2erdf%3E%0d%0a%0d%0aWHERE%20%7b%0d%0a%20%20%3fs%20rdfs%3alabel%20%3fspotName%3b%0d%0a%20%20%20%20geo%3aalt%20%3frootNum%3b%0d%0a%20%20%20%20shelter%3atypeOfshelter%20%3fcategory%3b%0d%0a%20%20%20%20geo%3alat%20%3flat%3b%0d%0a%20%20%20%20geo%3along%20%3flong%3b%0d%0a%7d&output=json";
+                System.out.println("3回目の呼び出し");
+                setSparqlResultFromQueue(spot_list, queue_shelter_url);
+
                 // 受け取った結果を地図へ反映
                 runOnUiThread(new Runnable() {
                     @Override
@@ -516,6 +521,9 @@ public class MainActivity extends FragmentActivity
             BitmapDescriptor pin18 = BitmapDescriptorFactory.fromResource(R.drawable.pin18);
             BitmapDescriptor pin19 = BitmapDescriptorFactory.fromResource(R.drawable.pin19);
             BitmapDescriptor pin20 = BitmapDescriptorFactory.fromResource(R.drawable.pin20);
+
+            BitmapDescriptor hinanjo = BitmapDescriptorFactory.fromResource(R.drawable.hinanjo);
+            BitmapDescriptor tsunamibuilding = BitmapDescriptorFactory.fromResource(R.drawable.tsunamibuilding);
 
             // スポットのピンを地図上に表示
             for (int i = 0; i < final_list.size(); i++) {
@@ -653,6 +661,13 @@ public class MainActivity extends FragmentActivity
                             options.snippet("観光イベント");
                             is_pin_show = is_show_event;
                             break;
+                        case "津波避難所":
+                            options.icon(hinanjo);
+                            is_pin_show = is_show_hinanjo;
+                            break;
+                        case "津波避難ビル":
+                            options.icon(tsunamibuilding);
+                            is_pin_show = is_show_tsunamibuilding;
                     }
                 }
                 Marker marker = gm.addMarker(options);
