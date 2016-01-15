@@ -106,7 +106,13 @@ public class MainActivity extends FragmentActivity
                 String marker_snippet = arg0.getSnippet();
                 Log.d("MARKER", marker_title);
                 if (!marker_title.equals("スタート") && !marker_snippet.equals("まちあるきコース")) {
-                    Intent intent = new Intent(MainActivity.this, SpotDetailActivity.class);
+                    Intent intent;
+
+                    if(marker_snippet.equals("津波避難所") || marker_snippet.equals("津波避難ビル") ){
+                        intent = new Intent(MainActivity.this, ShelterDetailActivity.class);
+                    } else {
+                        intent = new Intent(MainActivity.this, SpotDetailActivity.class);
+                    }
                     intent.putExtra("spot_title", marker_title);    // 第二引数：マーカーのタイトル
                     // 遷移先から返却されてくる際の識別コード
                     int requestCode = 1001;// 返却値を考慮したActivityの起動を行う

@@ -5,7 +5,7 @@
     android:background="#EFEFF4">
 
     <LinearLayout
-        android:id="@+id/spot_layout"
+        android:id="@+id/shelter_layout"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="#EFEFF4"
@@ -13,7 +13,7 @@
 
         <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
-            android:id="@+id/spot_table"
+            android:id="@+id/shelter_table"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#EFEFF4"
@@ -44,7 +44,7 @@
                 android:background="#000000">
 
                 <TextView
-                    android:id="@+id/spot_address"
+                    android:id="@+id/shelter_category"
                     style="@style/CodeFont"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
@@ -56,7 +56,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/address_text"
+                    android:id="@+id/category_text"
                     style="@style/CodeFont"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -74,7 +74,7 @@
                 android:background="#000000">
 
                 <TextView
-                    android:id="@+id/spot_tel"
+                    android:id="@+id/shelter_capa"
                     style="@style/CodeFont"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -85,7 +85,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/tel_text"
+                    android:id="@+id/capa_text"
                     style="@style/CodeFont"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -102,7 +102,7 @@
                 android:background="#000000">
 
                 <TextView
-                    android:id="@+id/spot_access"
+                    android:id="@+id/shelter_address"
                     style="@style/CodeFont"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -113,7 +113,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/access_text"
+                    android:id="@+id/address_text"
                     style="@style/CodeFont"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -130,7 +130,7 @@
                 android:background="#000000">
 
                 <TextView
-                    android:id="@+id/spot_area"
+                    android:id="@+id/shelter_phone"
                     style="@style/CodeFont"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -141,7 +141,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/area_text"
+                    android:id="@+id/phone_text"
                     style="@style/CodeFont"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
