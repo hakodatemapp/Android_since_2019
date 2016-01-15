@@ -27,6 +27,7 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
+import org.w3c.dom.Text;
 
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -139,6 +140,7 @@ public class MainActivity extends FragmentActivity
                     ImageView img = (ImageView) view.findViewById(R.id.spot_info_icon);
                     img.setImageResource(R.drawable.infomark);
                 }
+
                 return view;
             }
 

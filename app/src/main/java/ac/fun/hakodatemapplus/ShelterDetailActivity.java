@@ -213,20 +213,22 @@ public class ShelterDetailActivity extends Activity {
                         name_text.setText(queue_title);
 
                         // 種類
-                        TextView description_text = (TextView) findViewById(R.id.category_text);
-                        description_text.setText(category_str);
+                        TextView category_text = (TextView) findViewById(R.id.category_text);
+                        category_text.setText(category_str);
 
                         // 収容人数
-                        TextView access_text = (TextView) findViewById(R.id.capa_text);
-                        access_text.setText(capa_str);
+                        if (!capa_str.equals("")){
+                            TextView capa_text = (TextView) findViewById(R.id.capa_text);
+                            capa_text.setText(capa_str + "人");
+                        }
 
                         // 所在地
                         TextView address_text = (TextView) findViewById(R.id.address_text);
                         address_text.setText(address_str);
 
                         // 電話番号
-                        TextView tel_text = (TextView) findViewById(R.id.phone_text);
-                        tel_text.setText(phone_str);
+                        TextView phone_text = (TextView) findViewById(R.id.phone_text);
+                        phone_text.setText(phone_str);
 
                         // 読み込み中のダイアログを閉じる
                         progressDialog.dismiss();
