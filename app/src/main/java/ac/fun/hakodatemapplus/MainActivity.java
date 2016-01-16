@@ -109,7 +109,7 @@ public class MainActivity extends FragmentActivity
                 if (!marker_title.equals("スタート") && !marker_snippet.equals("まちあるきコース")) {
                     Intent intent;
 
-                    if(marker_snippet.equals("津波避難所") || marker_snippet.equals("津波避難ビル") ){
+                    if(marker_snippet.indexOf("津波避難所") != -1 || marker_snippet.indexOf("津波避難ビル") != -1 ){
                         intent = new Intent(MainActivity.this, ShelterDetailActivity.class);
                     } else {
                         intent = new Intent(MainActivity.this, SpotDetailActivity.class);
@@ -132,8 +132,13 @@ public class MainActivity extends FragmentActivity
                 title.setText(marker.getTitle());
 
                 // スニペットを設定
+                String marker_snippet = marker.getSnippet();
                 TextView snippet = (TextView) view.findViewById(R.id.spot_info_snippet);
-                snippet.setText(marker.getSnippet());
+                snippet.setText(marker_snippet);
+
+                if(marker_snippet.indexOf("津波避難所") != -1 || marker_snippet.indexOf("津波避難ビル") != -1 ) {
+                    snippet.setTextColor(Color.BLUE);
+                }
 
                 // 画像を設定
                 if (!marker.getSnippet().equals("まちあるきコース")) {
@@ -671,10 +676,14 @@ public class MainActivity extends FragmentActivity
                             break;
                         case "津波避難所":
                             options.icon(hinanjo);
+                            System.out.println(String.format("津波避難所 - 海抜%sm", final_list.get(i).get(1)));
+                            options.snippet(String.format("津波避難所 - 海抜%sm", final_list.get(i).get(1)));
                             is_pin_show = is_show_hinanjo;
                             break;
                         case "津波避難ビル":
                             options.icon(tsunamibuilding);
+                            System.out.println(String.format("津波避難ビル - 海抜%sm", final_list.get(i).get(1)));
+                            options.snippet(String.format("津波避難ビル - 海抜%sm", final_list.get(i).get(1)));
                             is_pin_show = is_show_tsunamibuilding;
                     }
                 }
