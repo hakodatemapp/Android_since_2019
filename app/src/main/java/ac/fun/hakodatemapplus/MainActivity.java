@@ -676,13 +676,11 @@ public class MainActivity extends FragmentActivity
                             break;
                         case "津波避難所":
                             options.icon(hinanjo);
-                            System.out.println(String.format("津波避難所 - 海抜%sm", final_list.get(i).get(1)));
                             options.snippet(String.format("津波避難所 - 海抜%sm", final_list.get(i).get(1)));
                             is_pin_show = is_show_hinanjo;
                             break;
                         case "津波避難ビル":
                             options.icon(tsunamibuilding);
-                            System.out.println(String.format("津波避難ビル - 海抜%sm", final_list.get(i).get(1)));
                             options.snippet(String.format("津波避難ビル - 海抜%sm", final_list.get(i).get(1)));
                             is_pin_show = is_show_tsunamibuilding;
                     }
