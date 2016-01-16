@@ -1,32 +1,51 @@
 package ac.fun.hakodatemapplus;
 
-import com.google.android.gms.maps.*;
-import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
-import com.google.android.gms.maps.model.*;
-
-
-import android.app.*;
+import android.app.ActionBar;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.ProgressDialog;
+import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.location.*;
+import android.hardware.SensorManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.provider.Settings;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.*;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
+
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -44,7 +63,7 @@ import static ac.fun.hakodatemapplus.DetailActivity.InputStreamToString;
 //
 
 public class MainActivity extends FragmentActivity
-        implements OnMapReadyCallback {
+        implements OnMapReadyCallback, LocationListener {
 
     MapFragment mf;
     ProgressDialog progressDialog;
@@ -58,9 +77,14 @@ public class MainActivity extends FragmentActivity
     private boolean is_show_kaimono = true;
     private boolean is_show_onsen = true;
     private boolean is_show_event = true;
+
+    // 海抜を表示するかどうか初期設定
+    // TODO: 表示設定統合時にデフォルトをfalseにする
+    private boolean is_show_altitude = true;
+
     // GooglePlay開発者サービスの準備ができていないときは表示設定を操作できないようにする
     private boolean isMapReady = false;
-    private LocationManager mLocationManager;
+    private LocationManager mLocationManager = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,11 +92,13 @@ public class MainActivity extends FragmentActivity
         setContentView(R.layout.activity_main);
 
         // この時点でネットワークに接続できるかどうか調べる
-        if(checkNetworkStatus()) {
+        if (checkNetworkStatus()) {
             SupportMapFragment mapFragment =
                     (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
             mapFragment.getMapAsync(this);
         }
+        mLocationManager =
+                (LocationManager) getSystemService(Context.LOCATION_SERVICE);
     }
 
     // Google Mapが利用できるとき
@@ -81,16 +107,21 @@ public class MainActivity extends FragmentActivity
         gMap = map;
 
         // 位置情報が取得できるかどうか確認する
-        LocationManager locationManager =
-                (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        final boolean gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        final boolean gpsEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
         if (!gpsEnabled) {
             DialogFragment dialog = new NoLocationDialogFragment();
             dialog.show(getFragmentManager(), null);
+        } else {
+            System.out.println("Location Request in MapReady");
+            mLocationManager.getProvider(LocationManager.GPS_PROVIDER);
+            mLocationManager.requestLocationUpdates(
+                    LocationManager.GPS_PROVIDER,
+                    2000,
+                    0,
+                    this);
         }
 
-        mLocationManager = (LocationManager) this.getSystemService(Service.LOCATION_SERVICE);
         Location myLocate = mLocationManager.getLastKnownLocation("gps");
 
         map.setTrafficEnabled(false);
@@ -171,6 +202,39 @@ public class MainActivity extends FragmentActivity
         isMapReady = true;
     }
 
+    @Override
+    public void onLocationChanged(Location location) {
+        double alt = location.getAltitude();
+        TextView alt_val_tv = (TextView) findViewById(R.id.altitude_value);
+        alt_val_tv.setText(String.format("%.1fm", alt));
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        switch (status) {
+            case LocationProvider.AVAILABLE:
+                Log.v("Status", "AVAILABLE");
+                break;
+            case LocationProvider.OUT_OF_SERVICE:
+                Log.v("Status", "OUT_OF_SERVICE");
+                break;
+            case LocationProvider.TEMPORARILY_UNAVAILABLE:
+                Log.v("Status", "TEMPORARILY_UNAVAILABLE");
+                break;
+        }
+    }
+
+
+    @Override
+    public void onProviderEnabled(String provider) {
+        Log.v("Provider", "ENABLED");
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+        Log.v("Provider", "DISABLED");
+    }
+
     // 読み込み中のダイアログを出しながら観光スポットのデータを問い合わせる
     public void getSPARQLInvoke() {
         // 地図読み込み中のダイアログを表示する
@@ -200,7 +264,7 @@ public class MainActivity extends FragmentActivity
             // 返却結果ステータスとの比較
             if (resultCode == Activity.RESULT_OK) {
                 // この時点でネットワークに接続できるかどうか調べる
-                if(checkNetworkStatus()) {
+                if (checkNetworkStatus()) {
                     // 表示設定画面からの値を取得
                     is_show_taberu = intent.getExtras().getBoolean("is_show_taberu");
                     is_show_miru = intent.getExtras().getBoolean("is_show_miru");
@@ -234,8 +298,39 @@ public class MainActivity extends FragmentActivity
 
     public void onResume() {
         System.out.println("onResume");
+
+        TextView alt_val_tv = (TextView) findViewById(R.id.altitude_value);
+        alt_val_tv.setText("取得中");
+
+        if (mLocationManager != null) {
+            System.out.println("Location Request in onResume");
+            mLocationManager.getProvider(LocationManager.GPS_PROVIDER);
+            mLocationManager.requestLocationUpdates(
+                    LocationManager.GPS_PROVIDER,
+                    2000,
+                    0,
+                    this);
+        }
         super.onResume();
     }
+
+    @Override
+    protected void onDestroy() {
+        if (mLocationManager != null) {
+            mLocationManager.removeUpdates(this);
+        }
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        if (mLocationManager != null) {
+            mLocationManager.removeUpdates(this);
+        }
+
+        super.onPause();
+    }
+
 
     // メニューを読み込む
     @Override
@@ -375,12 +470,13 @@ public class MainActivity extends FragmentActivity
 
     }
 
+
     // 位置情報が無効になっている場合のダイアログ
     public static class NoLocationDialogFragment extends DialogFragment {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setMessage("位置情報を有効にすると地図に自分の場所が表示できます。設定アプリを開いて位置情報を有効にしますか?").setTitle("位置情報が使えません")
+            builder.setMessage("GPSを有効にすると地図に自分の場所が表示できます。設定アプリを開いてGPSを有効にしますか?").setTitle("GPSが使えません")
                     .setPositiveButton("はい", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             Intent intent = new Intent();
