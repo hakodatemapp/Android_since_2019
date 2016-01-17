@@ -12,340 +12,364 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TableLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentEnd="false"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/textView"
-            android:stretchColumns="true">
+        <LinearLayout
+            android:id="@+id/display_setting_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="#EFEFF4"
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:paddingRight="@dimen/activity_horizontal_margin"
-
-                android:text="チェックが入っているカテゴリがマップに表示されます。"
-                android:textSize="13dp"
-                android:textStyle="bold" />
-
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/eat_row"
-                android:background="#000">
-
-                <ImageView
-                    android:id="@+id/eat_icon"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:background="#fff"
-                    android:src="@drawable/taberu" />
-
-                <TextView
-                    android:id="@+id/eat_text"
-                    style="@style/CodeFont"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:layout_weight="1"
-                    android:background="#fff"
-                    android:text="食べる"
-                    android:textSize="15dp" />
-
-                <CheckBox
-                    android:id="@+id/eat_checkBox"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:background="#fff"
-                    android:checked="true" />
-
-            </TableRow>
-
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/look_row"
-                android:background="#000">
-
-                <ImageView
-                    android:id="@+id/look_icon"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:background="#fff"
-                    android:src="@drawable/miru" />
-
-                <TextView
-                    android:id="@+id/look_text"
-                    style="@style/CodeFont"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:layout_weight="1"
-                    android:background="#fff"
-                    android:text="見る"
-                    android:textSize="15dp" />
-
-                <CheckBox
-                    android:id="@+id/look_checkBox"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:background="#fff"
-                    android:checked="true" />
-
-            </TableRow>
-
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/play_row"
-                android:background="#000">
-
-                <ImageView
-                    android:id="@+id/play_icon"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:background="#fff"
-                    android:src="@drawable/asobu" />
-
-                <TextView
-                    android:id="@+id/play_text"
-                    style="@style/CodeFont"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:layout_weight="1"
-                    android:background="#fff"
-                    android:text="遊ぶ"
-                    android:textSize="15dp" />
-
-                <CheckBox
-                    android:id="@+id/play_checkBox"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:background="#fff"
-                    android:checked="true" />
-
-            </TableRow>
-
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/buy_row"
-                android:background="#000">
-
-                <ImageView
-                    android:id="@+id/buy_icon"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:background="#fff"
-                    android:src="@drawable/kaimono" />
-
-                <TextView
-                    android:id="@+id/buy_text"
-                    style="@style/CodeFont"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:layout_weight="1"
-                    android:background="#fff"
-                    android:text="買う"
-                    android:textSize="15dp" />
-
-                <CheckBox
-                    android:id="@+id/buy_checkBox"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:background="#fff"
-                    android:checked="true" />
-
-            </TableRow>
-
-
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/spa_row"
-                android:background="#000">
-
-                <ImageView
-                    android:id="@+id/spa_icon"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:background="#fff"
-                    android:src="@drawable/onsen" />
-
-                <TextView
-                    android:id="@+id/spa_text"
-                    style="@style/CodeFont"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:layout_weight="1"
-                    android:background="#fff"
-                    android:text="温泉"
-                    android:textSize="15dp" />
-
-                <CheckBox
-                    android:id="@+id/spa_checkBox"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:background="#fff"
-                    android:checked="true" />
-
-            </TableRow>
-
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/event_row"
-                android:background="#000000">
-
-                <ImageView
-                    android:id="@+id/event_icon"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:background="#fff"
-                    android:src="@drawable/event" />
-
-                <TextView
-                    android:id="@+id/event_text"
-                    style="@style/CodeFont"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:layout_weight="1"
-                    android:background="#fff"
-                    android:text="観光イベント"
-                    android:textSize="15dp" />
-
-
-                <CheckBox
-                    android:id="@+id/event_checkBox"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:background="#fff"
-                    android:checked="true" />
-
-            </TableRow>
-
-
-            <!--
-
-            <TableRow
-                android:layout_width="wrap_content"
-                android:background="#000000"
-                android:layout_height="wrap_content">
-                <ImageView
-                    android:id="@+id/hinanjo_icon"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:layout_weight="1"
-                    android:background="#fff"
-                    android:src="@drawable/miru"/>
-
-                <TextView
-                    android:id="@+id/hinanjo_text"
-                    style="@style/CodeFont"
-                    android:textSize="15dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:layout_weight="1"
-                    android:background="#fff"
-                    android:text="津波避難所" />
-
-                <CheckBox
-                    android:layout_height="match_parent"
-                    android:id="@+id/hinanjo_checkBox"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:layout_weight="1"
-                    android:checked="false"
-                    android:background="#fff"/>
-
-
-            </TableRow>
-
-            <TableRow
-                android:layout_width="wrap_content"
-                android:background="#000000"
-                android:layout_height="wrap_content">
-                <ImageView
-                    android:id="@+id/building_icon"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:layout_weight="1"
-                    android:background="#fff"
-                    android:src="@drawable/miru"/>
-
-                <TextView
-                    android:id="@+id/building_text"
-                    style="@style/CodeFont"
-                    android:textSize="15dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:layout_weight="1"
-                    android:background="#fff"
-                    android:text="津波避難ビル" />
-
-                <CheckBox
-                    android:layout_height="match_parent"
-                    android:id="@+id/building_checkBox"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:layout_weight="1"
-                    android:checked="false"
-                    android:background="#fff"/>
-
-
-            </TableRow>
-
-            <TableRow>
-                <TextView
-                    android:id="@+id/kaibatu_text"
-                    style="@style/CodeFont"
-                    android:textSize="15dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:layout_weight="1"
-                    android:background="#fff"
-                    android:text="現在地の海抜"/>
-
-
-            <Switch
+            <TableLayout
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/kaibatu_switch"
-                android:layout_marginBottom="1dp"
-                android:layout_marginTop="1dp"
-                android:layout_weight="1"
-                android:checked="false"
-                android:background="#fff"/>
+                android:layout_alignParentEnd="false"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/textView"
+                android:stretchColumns="true">
 
-            </TableRow>
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="@dimen/activity_horizontal_margin"
+                    android:paddingRight="@dimen/activity_horizontal_margin"
 
-            -->
+                    android:text="チェックが入っているカテゴリがマップに表示されます。"
+                    android:textSize="13dp"
+                    android:textStyle="bold" />
 
-        </TableLayout>
+                <TableRow
+                    android:id="@+id/eat_row"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#000">
+
+                    <ImageView
+                        android:id="@+id/eat_icon"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="1dp"
+                        android:layout_marginTop="1dp"
+                        android:background="#fff"
+                        android:src="@drawable/taberu" />
+
+                    <TextView
+                        android:id="@+id/eat_text"
+                        style="@style/CodeFont"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="1dp"
+                        android:layout_marginTop="1dp"
+                        android:layout_weight="1"
+                        android:background="#fff"
+                        android:text="食べる"
+                        android:textSize="15dp" />
+
+                    <CheckBox
+                        android:id="@+id/eat_checkBox"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="1dp"
+                        android:layout_marginTop="1dp"
+                        android:background="#fff"
+                        android:checked="true" />
+
+                </TableRow>
+
+                <TableRow
+                    android:id="@+id/look_row"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#000">
+
+                    <ImageView
+                        android:id="@+id/look_icon"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="1dp"
+                        android:layout_marginTop="1dp"
+                        android:background="#fff"
+                        android:src="@drawable/miru" />
+
+                    <TextView
+                        android:id="@+id/look_text"
+                        style="@style/CodeFont"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="1dp"
+                        android:layout_marginTop="1dp"
+                        android:layout_weight="1"
+                        android:background="#fff"
+                        android:text="見る"
+                        android:textSize="15dp" />
+
+                    <CheckBox
+                        android:id="@+id/look_checkBox"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="1dp"
+                        android:layout_marginTop="1dp"
+                        android:background="#fff"
+                        android:checked="true" />
+
+                </TableRow>
+
+                <TableRow
+                    android:id="@+id/play_row"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#000">
+
+                    <ImageView
+                        android:id="@+id/play_icon"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="1dp"
+                        android:layout_marginTop="1dp"
+                        android:background="#fff"
+                        android:src="@drawable/asobu" />
+
+                    <TextView
+                        android:id="@+id/play_text"
+                        style="@style/CodeFont"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="1dp"
+                        android:layout_marginTop="1dp"
+                        android:layout_weight="1"
+                        android:background="#fff"
+                        android:text="遊ぶ"
+                        android:textSize="15dp" />
+
+                    <CheckBox
+                        android:id="@+id/play_checkBox"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="1dp"
+                        android:layout_marginTop="1dp"
+                        android:background="#fff"
+                        android:checked="true" />
+
+                </TableRow>
+
+                <TableRow
+                    android:id="@+id/buy_row"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#000">
+
+                    <ImageView
+                        android:id="@+id/buy_icon"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="1dp"
+                        android:layout_marginTop="1dp"
+                        android:background="#fff"
+                        android:src="@drawable/kaimono" />
+
+                    <TextView
+                        android:id="@+id/buy_text"
+                        style="@style/CodeFont"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="1dp"
+                        android:layout_marginTop="1dp"
+                        android:layout_weight="1"
+                        android:background="#fff"
+                        android:text="買う"
+                        android:textSize="15dp" />
+
+                    <CheckBox
+                        android:id="@+id/buy_checkBox"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="1dp"
+                        android:layout_marginTop="1dp"
+                        android:background="#fff"
+                        android:checked="true" />
+
+                </TableRow>
+
+
+                <TableRow
+                    android:id="@+id/spa_row"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#000">
+
+                    <ImageView
+                        android:id="@+id/spa_icon"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="1dp"
+                        android:layout_marginTop="1dp"
+                        android:background="#fff"
+                        android:src="@drawable/onsen" />
+
+                    <TextView
+                        android:id="@+id/spa_text"
+                        style="@style/CodeFont"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="1dp"
+                        android:layout_marginTop="1dp"
+                        android:layout_weight="1"
+                        android:background="#fff"
+                        android:text="温泉"
+                        android:textSize="15dp" />
+
+                    <CheckBox
+                        android:id="@+id/spa_checkBox"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="1dp"
+                        android:layout_marginTop="1dp"
+                        android:background="#fff"
+                        android:checked="true" />
+
+                </TableRow>
+
+                <TableRow
+                    android:id="@+id/event_row"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#000000">
+
+                    <ImageView
+                        android:id="@+id/event_icon"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="1dp"
+                        android:layout_marginTop="1dp"
+                        android:background="#fff"
+                        android:src="@drawable/event" />
+
+                    <TextView
+                        android:id="@+id/event_text"
+                        style="@style/CodeFont"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="1dp"
+                        android:layout_marginTop="1dp"
+                        android:layout_weight="1"
+                        android:background="#fff"
+                        android:text="観光イベント"
+                        android:textSize="15dp" />
+
+
+                    <CheckBox
+                        android:id="@+id/event_checkBox"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="1dp"
+                        android:layout_marginTop="1dp"
+                        android:background="#fff"
+                        android:checked="true" />
+
+                </TableRow>
+            </TableLayout>
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="false"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="60dp"
+                android:stretchColumns="true">
+
+                <TableRow
+                    android:id="@+id/hinanjo_row"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#000000">
+
+                    <ImageView
+                        android:id="@+id/hinanjo_icon"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="1dp"
+                        android:layout_marginTop="1dp"
+                        android:background="#fff"
+                        android:src="@drawable/hinanjo" />
+
+                    <TextView
+                        android:id="@+id/hinanjo_text"
+                        style="@style/CodeFont"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="1dp"
+                        android:layout_marginTop="1dp"
+                        android:layout_weight="1"
+                        android:background="#fff"
+                        android:text="津波避難所"
+                        android:textSize="15dp" />
+
+
+                    <CheckBox
+                        android:id="@+id/hinanjo_checkBox"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="1dp"
+                        android:layout_marginTop="1dp"
+                        android:background="#fff"
+                        android:checked="false" />
+
+                </TableRow>
+
+                <TableRow
+                    android:id="@+id/tsunamibuilding_row"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#000000">
+
+                    <ImageView
+                        android:id="@+id/tsunamibuilding_icon"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="1dp"
+                        android:layout_marginTop="1dp"
+                        android:background="#fff"
+                        android:src="@drawable/tsunamibuilding" />
+
+                    <TextView
+                        android:id="@+id/tsunamibuilding_text"
+                        style="@style/CodeFont"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="1dp"
+                        android:layout_marginTop="1dp"
+                        android:layout_weight="1"
+                        android:background="#fff"
+                        android:text="津波避難ビル"
+                        android:textSize="15dp" />
+
+
+                    <CheckBox
+                        android:id="@+id/tsunamibuilding_checkBox"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="1dp"
+                        android:layout_marginTop="1dp"
+                        android:background="#fff"
+                        android:checked="false" />
+
+                </TableRow>
+            </TableLayout>
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="false"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:stretchColumns="true">
+
+                <TableRow
+                    android:id="@+id/kaibatu_row"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#000000">
+
+                    <TextView
+                        android:id="@+id/kaibatu_text"
+                        style="@style/CodeFont"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="1dp"
+                        android:layout_marginTop="1dp"
+                        android:layout_weight="1"
+                        android:background="#fff"
+                        android:text="現在地の海抜"
+                        android:textSize="15dp" />
+
+                    <Switch
+                        android:id="@+id/kaibatu_switch"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="1dp"
+                        android:layout_marginTop="1dp"
+                        android:layout_weight="1"
+                        android:background="#fff"
+                        android:checked="false" />
+                </TableRow>
+            </TableLayout>
+        </LinearLayout>
 
     </ScrollView>
 

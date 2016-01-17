@@ -33,12 +33,18 @@ public class DisplaySettingActivity extends Activity {
     private boolean is_show_kaimono = true;
     private boolean is_show_onsen = true;
     private boolean is_show_event = true;
+    private boolean is_show_hinanjo = true;
+    private boolean is_show_tsunamibuilding = true;
+
     private CheckBox taberu_checkbox;
     private CheckBox miru_checkbox;
     private CheckBox asobu_checkbox;
     private CheckBox kaimono_checkbox;
     private CheckBox onsen_checkbox;
     private CheckBox event_checkbox;
+    private CheckBox hinanjo_checkBox;
+    private CheckBox tsunamibuilding_checkBox;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +92,8 @@ public class DisplaySettingActivity extends Activity {
         is_show_kaimono = intent.getExtras().getBoolean("is_show_kaimono");
         is_show_onsen = intent.getExtras().getBoolean("is_show_onsen");
         is_show_event = intent.getExtras().getBoolean("is_show_event");
+        is_show_hinanjo = intent.getExtras().getBoolean("is_show_hinanjo");
+        is_show_tsunamibuilding = intent.getExtras().getBoolean("is_show_tsunamibuilding");
 
         // 現在の状態をチェックボックスへ反映させる
         taberu_checkbox = (CheckBox) findViewById(R.id.eat_checkBox);
@@ -100,6 +108,10 @@ public class DisplaySettingActivity extends Activity {
         onsen_checkbox.setChecked(is_show_onsen);
         event_checkbox = (CheckBox) findViewById(R.id.event_checkBox);
         event_checkbox.setChecked(is_show_event);
+        hinanjo_checkBox = (CheckBox) findViewById(R.id.hinanjo_checkBox);
+        hinanjo_checkBox.setChecked(is_show_hinanjo);
+        tsunamibuilding_checkBox = (CheckBox) findViewById(R.id.tsunamibuilding_checkBox);
+        tsunamibuilding_checkBox.setChecked(is_show_tsunamibuilding);
     }
 
     private void setTableRowListener() {
@@ -187,6 +199,34 @@ public class DisplaySettingActivity extends Activity {
                 return true;
             }
         });
+
+        TableRow hinanjo_row = (TableRow) findViewById(R.id.hinanjo_row);
+        hinanjo_row.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    //押したときの動作
+                    optionsTouchDownListener(R.id.hinanjo_row, R.id.hinanjo_checkBox);
+                } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                    //離したときの動作
+                    optionsTouchUpListener(R.id.hinanjo_row);
+                }
+                return true;
+            }
+        });
+
+        TableRow tsunamibuilding_row = (TableRow) findViewById(R.id.tsunamibuilding_row);
+        tsunamibuilding_row.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    //押したときの動作
+                    optionsTouchDownListener(R.id.tsunamibuilding_row, R.id.tsunamibuilding_checkBox);
+                } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                    //離したときの動作
+                    optionsTouchUpListener(R.id.tsunamibuilding_row);
+                }
+                return true;
+            }
+        });
     }
 
     // 表示設定のRowに指を付けたときの処理
@@ -240,6 +280,10 @@ public class DisplaySettingActivity extends Activity {
             is_show_onsen = onsen_checkbox.isChecked();
             CheckBox event_checkbox = (CheckBox) findViewById(R.id.event_checkBox);
             is_show_event = event_checkbox.isChecked();
+            CheckBox hinanjo_checkbox = (CheckBox) findViewById(R.id.hinanjo_checkBox);
+            is_show_hinanjo = hinanjo_checkbox.isChecked();
+            CheckBox tsunamibuilding_checkbox = (CheckBox) findViewById(R.id.tsunamibuilding_checkBox);
+            is_show_tsunamibuilding = tsunamibuilding_checkbox.isChecked();
 
             intent.putExtra("is_show_taberu", is_show_taberu);
             intent.putExtra("is_show_miru", is_show_miru);
@@ -247,6 +291,8 @@ public class DisplaySettingActivity extends Activity {
             intent.putExtra("is_show_kaimono", is_show_kaimono);
             intent.putExtra("is_show_onsen", is_show_onsen);
             intent.putExtra("is_show_event", is_show_event);
+            intent.putExtra("is_show_hinanjo", is_show_hinanjo);
+            intent.putExtra("is_show_tsunamibuilding", is_show_tsunamibuilding);
 
             // 返却したい結果ステータスをセットする
             setResult(Activity.RESULT_OK, intent);
