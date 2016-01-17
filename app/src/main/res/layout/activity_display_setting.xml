@@ -288,7 +288,7 @@
 
 
                     <CheckBox
-                        android:id="@+id/hinanjo_checkBox"
+                        android:id="@+id/hinanjo_checkbox"
                         android:layout_height="match_parent"
                         android:layout_marginBottom="1dp"
                         android:layout_marginTop="1dp"
@@ -324,7 +324,7 @@
 
 
                     <CheckBox
-                        android:id="@+id/tsunamibuilding_checkBox"
+                        android:id="@+id/tsunamibuilding_checkbox"
                         android:layout_height="match_parent"
                         android:layout_marginBottom="1dp"
                         android:layout_marginTop="1dp"
@@ -343,13 +343,13 @@
                 android:stretchColumns="true">
 
                 <TableRow
-                    android:id="@+id/kaibatu_row"
+                    android:id="@+id/altitude_row"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="#000000">
 
                     <TextView
-                        android:id="@+id/kaibatu_text"
+                        android:id="@+id/altitude_text"
                         style="@style/CodeFont"
                         android:layout_height="match_parent"
                         android:layout_marginBottom="1dp"
@@ -360,7 +360,7 @@
                         android:textSize="15dp" />
 
                     <Switch
-                        android:id="@+id/kaibatu_switch"
+                        android:id="@+id/altitude_switch"
                         android:layout_height="match_parent"
                         android:layout_marginBottom="1dp"
                         android:layout_marginTop="1dp"

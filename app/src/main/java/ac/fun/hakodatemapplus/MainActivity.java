@@ -1,33 +1,49 @@
 package ac.fun.hakodatemapplus;
 
-import com.google.android.gms.maps.*;
-import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
-import com.google.android.gms.maps.model.*;
-
-
-import android.app.*;
+import android.app.ActionBar;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.location.*;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.provider.Settings;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.*;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
+
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.json.JSONException;
-import org.w3c.dom.Text;
+import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -45,13 +61,14 @@ import static ac.fun.hakodatemapplus.DetailActivity.InputStreamToString;
 //
 
 public class MainActivity extends FragmentActivity
-        implements OnMapReadyCallback {
+        implements OnMapReadyCallback, LocationListener {
 
     MapFragment mf;
     ProgressDialog progressDialog;
     private String title;
     private int course_id;
     private GoogleMap gMap;
+
     // スポット表示の初期設定
     private boolean is_show_taberu = true;
     private boolean is_show_miru = true;
@@ -59,11 +76,17 @@ public class MainActivity extends FragmentActivity
     private boolean is_show_kaimono = true;
     private boolean is_show_onsen = true;
     private boolean is_show_event = true;
+
+    // 海抜を表示するかどうか初期設定
+    // TODO: 表示設定統合時にデフォルトをfalseにする
+    private boolean is_show_altitude = false;
+
     private boolean is_show_hinanjo = false;
     private boolean is_show_tsunamibuilding = false;
+
     // GooglePlay開発者サービスの準備ができていないときは表示設定を操作できないようにする
     private boolean isMapReady = false;
-    private LocationManager mLocationManager;
+    private LocationManager mLocationManager = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,11 +94,13 @@ public class MainActivity extends FragmentActivity
         setContentView(R.layout.activity_main);
 
         // この時点でネットワークに接続できるかどうか調べる
-        if(checkNetworkStatus()) {
+        if (checkNetworkStatus()) {
             SupportMapFragment mapFragment =
                     (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
             mapFragment.getMapAsync(this);
         }
+        mLocationManager =
+                (LocationManager) getSystemService(Context.LOCATION_SERVICE);
     }
 
     // Google Mapが利用できるとき
@@ -83,17 +108,6 @@ public class MainActivity extends FragmentActivity
     public void onMapReady(GoogleMap map) {
         gMap = map;
 
-        // 位置情報が取得できるかどうか確認する
-        LocationManager locationManager =
-                (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        final boolean gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-        if (!gpsEnabled) {
-            DialogFragment dialog = new NoLocationDialogFragment();
-            dialog.show(getFragmentManager(), null);
-        }
-
-        mLocationManager = (LocationManager) this.getSystemService(Service.LOCATION_SERVICE);
         Location myLocate = mLocationManager.getLastKnownLocation("gps");
 
         map.setTrafficEnabled(false);
@@ -109,7 +123,7 @@ public class MainActivity extends FragmentActivity
                 if (!marker_title.equals("スタート") && !marker_snippet.equals("まちあるきコース")) {
                     Intent intent;
 
-                    if(marker_snippet.indexOf("津波避難所") != -1 || marker_snippet.indexOf("津波避難ビル") != -1 ){
+                    if (marker_snippet.indexOf("津波避難所") != -1 || marker_snippet.indexOf("津波避難ビル") != -1) {
                         intent = new Intent(MainActivity.this, ShelterDetailActivity.class);
                     } else {
                         intent = new Intent(MainActivity.this, SpotDetailActivity.class);
@@ -136,7 +150,7 @@ public class MainActivity extends FragmentActivity
                 TextView snippet = (TextView) view.findViewById(R.id.spot_info_snippet);
                 snippet.setText(marker_snippet);
 
-                if(marker_snippet.indexOf("津波避難所") != -1 || marker_snippet.indexOf("津波避難ビル") != -1 ) {
+                if (marker_snippet.indexOf("津波避難所") != -1 || marker_snippet.indexOf("津波避難ビル") != -1) {
                     snippet.setTextColor(Color.BLUE);
                 }
 
@@ -186,27 +200,6 @@ public class MainActivity extends FragmentActivity
         isMapReady = true;
     }
 
-    // 読み込み中のダイアログを出しながら観光スポットのデータを問い合わせる
-    public void getSPARQLInvoke() {
-        // 地図読み込み中のダイアログを表示する
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setMessage("地図を読み込んでいます…");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
-
-        // SPARQLのクエリで使う形式に変換する(半角・全角スペース除去)
-        String search_title = title.replaceAll("[ 　]", "");
-
-        if (course_id != 0) {
-            SparqlGetThread st = new SparqlGetThread(gMap, search_title);
-            st.start();
-        } else {
-            SparqlGetThread st = new SparqlGetThread(gMap, "");
-            st.start();
-        }
-    }
-
     // 別のActivityから戻ってきた場合
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         System.out.println("onActivityResult");
@@ -215,7 +208,7 @@ public class MainActivity extends FragmentActivity
             // 返却結果ステータスとの比較
             if (resultCode == Activity.RESULT_OK) {
                 // この時点でネットワークに接続できるかどうか調べる
-                if(checkNetworkStatus()) {
+                if (checkNetworkStatus()) {
                     // 表示設定画面からの値を取得
                     is_show_taberu = intent.getExtras().getBoolean("is_show_taberu");
                     is_show_miru = intent.getExtras().getBoolean("is_show_miru");
@@ -225,6 +218,7 @@ public class MainActivity extends FragmentActivity
                     is_show_event = intent.getExtras().getBoolean("is_show_event");
                     is_show_hinanjo = intent.getExtras().getBoolean("is_show_hinanjo");
                     is_show_tsunamibuilding = intent.getExtras().getBoolean("is_show_tsunamibuilding");
+                    is_show_altitude = intent.getExtras().getBoolean("is_show_altitude");
                     System.out.println(is_show_taberu);
 
                     // 表示するピンを反映するために地図上のOverlayを全消去
@@ -251,8 +245,36 @@ public class MainActivity extends FragmentActivity
 
     public void onResume() {
         System.out.println("onResume");
+
+        // 海抜を表示する設定なら取得を開始する
+        LinearLayout altitude_container  = (LinearLayout) findViewById(R.id.altitude_container);
+        if (is_show_altitude) {
+            altitude_container.setVisibility(View.VISIBLE);
+            startGetAltitude();
+        } else {
+            altitude_container.setVisibility(View.INVISIBLE);
+        }
         super.onResume();
     }
+
+    @Override
+    protected void onDestroy() {
+        // この画面が隠れるのなら、位置情報の取得は終了
+        if (mLocationManager != null) {
+            mLocationManager.removeUpdates(this);
+        }
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        // この画面が隠れるのなら、位置情報の取得は終了
+        if (mLocationManager != null) {
+            mLocationManager.removeUpdates(this);
+        }
+        super.onPause();
+    }
+
 
     // メニューを読み込む
     @Override
@@ -285,6 +307,7 @@ public class MainActivity extends FragmentActivity
                 intent.putExtra("is_show_event", is_show_event);
                 intent.putExtra("is_show_hinanjo", is_show_hinanjo);
                 intent.putExtra("is_show_tsunamibuilding", is_show_tsunamibuilding);
+                intent.putExtra("is_show_altitude", is_show_altitude);
 
                 // 遷移先から返却されてくる際の識別コード
                 int requestCode = 1002;// 返却値を考慮したActivityの起動を行う
@@ -301,6 +324,83 @@ public class MainActivity extends FragmentActivity
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+
+    // GPSの有効・無効をチェックしながら海抜の取得を開始する
+    private void startGetAltitude() {
+        // 位置情報が取得できるかどうか確認する
+        final boolean gpsEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+        if (!gpsEnabled) {
+            DialogFragment dialog = new NoLocationDialogFragment();
+            dialog.show(getFragmentManager(), null);
+        } else {
+            // 海抜の表示をリセットする
+            TextView alt_val_tv = (TextView) findViewById(R.id.altitude_value);
+            alt_val_tv.setText("取得中");
+
+            mLocationManager.getProvider(LocationManager.GPS_PROVIDER);
+            mLocationManager.requestLocationUpdates(
+                    LocationManager.GPS_PROVIDER,
+                    2000,
+                    0,
+                    this);
+        }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        double alt = location.getAltitude();
+        TextView alt_val_tv = (TextView) findViewById(R.id.altitude_value);
+        alt_val_tv.setText(String.format("%.1fm", alt));
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+//        switch (status) {
+//            case LocationProvider.AVAILABLE:
+//                Log.v("Status", "AVAILABLE");
+//                break;
+//            case LocationProvider.OUT_OF_SERVICE:
+//                Log.v("Status", "OUT_OF_SERVICE");
+//                break;
+//            case LocationProvider.TEMPORARILY_UNAVAILABLE:
+//                Log.v("Status", "TEMPORARILY_UNAVAILABLE");
+//                break;
+//        }
+    }
+
+
+    @Override
+    public void onProviderEnabled(String provider) {
+//        Log.v("Provider", "ENABLED");
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+//        Log.v("Provider", "DISABLED");
+    }
+
+    // 読み込み中のダイアログを出しながら観光スポットのデータを問い合わせる
+    public void getSPARQLInvoke() {
+        // 地図読み込み中のダイアログを表示する
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setMessage("地図を読み込んでいます…");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+        // SPARQLのクエリで使う形式に変換する(半角・全角スペース除去)
+        String search_title = title.replaceAll("[ 　]", "");
+
+        if (course_id != 0) {
+            SparqlGetThread st = new SparqlGetThread(gMap, search_title);
+            st.start();
+        } else {
+            SparqlGetThread st = new SparqlGetThread(gMap, "");
+            st.start();
+        }
     }
 
     public boolean checkNetworkStatus() {
@@ -399,7 +499,7 @@ public class MainActivity extends FragmentActivity
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setMessage("位置情報を有効にすると地図に自分の場所が表示できます。設定アプリを開いて位置情報を有効にしますか?").setTitle("位置情報が使えません")
+            builder.setMessage("GPSを有効にすると地図に自分の場所が表示できます。設定アプリを開いてGPSを有効にしますか?").setTitle("GPSが使えません")
                     .setPositiveButton("はい", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             Intent intent = new Intent();

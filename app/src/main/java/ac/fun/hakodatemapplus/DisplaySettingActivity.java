@@ -22,6 +22,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.ScrollView;
+import android.widget.Switch;
 import android.widget.TableRow;
 import android.widget.TextView;
 
@@ -35,6 +36,7 @@ public class DisplaySettingActivity extends Activity {
     private boolean is_show_event = true;
     private boolean is_show_hinanjo = true;
     private boolean is_show_tsunamibuilding = true;
+    private boolean is_show_altitude = true;
 
     private CheckBox taberu_checkbox;
     private CheckBox miru_checkbox;
@@ -42,8 +44,9 @@ public class DisplaySettingActivity extends Activity {
     private CheckBox kaimono_checkbox;
     private CheckBox onsen_checkbox;
     private CheckBox event_checkbox;
-    private CheckBox hinanjo_checkBox;
-    private CheckBox tsunamibuilding_checkBox;
+    private CheckBox hinanjo_checkbox;
+    private CheckBox tsunamibuilding_checkbox;
+    private Switch altitude_switch;
 
 
     @Override
@@ -94,6 +97,7 @@ public class DisplaySettingActivity extends Activity {
         is_show_event = intent.getExtras().getBoolean("is_show_event");
         is_show_hinanjo = intent.getExtras().getBoolean("is_show_hinanjo");
         is_show_tsunamibuilding = intent.getExtras().getBoolean("is_show_tsunamibuilding");
+        is_show_altitude = intent.getExtras().getBoolean("is_show_altitude");
 
         // 現在の状態をチェックボックスへ反映させる
         taberu_checkbox = (CheckBox) findViewById(R.id.eat_checkBox);
@@ -108,10 +112,13 @@ public class DisplaySettingActivity extends Activity {
         onsen_checkbox.setChecked(is_show_onsen);
         event_checkbox = (CheckBox) findViewById(R.id.event_checkBox);
         event_checkbox.setChecked(is_show_event);
-        hinanjo_checkBox = (CheckBox) findViewById(R.id.hinanjo_checkBox);
-        hinanjo_checkBox.setChecked(is_show_hinanjo);
-        tsunamibuilding_checkBox = (CheckBox) findViewById(R.id.tsunamibuilding_checkBox);
-        tsunamibuilding_checkBox.setChecked(is_show_tsunamibuilding);
+
+        hinanjo_checkbox = (CheckBox) findViewById(R.id.hinanjo_checkbox);
+        hinanjo_checkbox.setChecked(is_show_hinanjo);
+        tsunamibuilding_checkbox = (CheckBox) findViewById(R.id.tsunamibuilding_checkbox);
+        tsunamibuilding_checkbox.setChecked(is_show_tsunamibuilding);
+        altitude_switch = (Switch) findViewById(R.id.altitude_switch);
+        altitude_switch.setChecked(is_show_altitude);
     }
 
     private void setTableRowListener() {
@@ -205,7 +212,7 @@ public class DisplaySettingActivity extends Activity {
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     //押したときの動作
-                    optionsTouchDownListener(R.id.hinanjo_row, R.id.hinanjo_checkBox);
+                    optionsTouchDownListener(R.id.hinanjo_row, R.id.hinanjo_checkbox);
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
                     //離したときの動作
                     optionsTouchUpListener(R.id.hinanjo_row);
@@ -219,7 +226,7 @@ public class DisplaySettingActivity extends Activity {
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     //押したときの動作
-                    optionsTouchDownListener(R.id.tsunamibuilding_row, R.id.tsunamibuilding_checkBox);
+                    optionsTouchDownListener(R.id.tsunamibuilding_row, R.id.tsunamibuilding_checkbox);
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
                     //離したときの動作
                     optionsTouchUpListener(R.id.tsunamibuilding_row);
@@ -227,6 +234,8 @@ public class DisplaySettingActivity extends Activity {
                 return true;
             }
         });
+
+
     }
 
     // 表示設定のRowに指を付けたときの処理
@@ -268,22 +277,16 @@ public class DisplaySettingActivity extends Activity {
         // 設定を反映させる場合
         if (set_settings) {
             // チェックボックスの状態をセットする
-            CheckBox taberu_checkbox = (CheckBox) findViewById(R.id.eat_checkBox);
             is_show_taberu = taberu_checkbox.isChecked();
-            CheckBox miru_checkbox = (CheckBox) findViewById(R.id.look_checkBox);
             is_show_miru = miru_checkbox.isChecked();
-            CheckBox asobu_checkbox = (CheckBox) findViewById(R.id.play_checkBox);
             is_show_asobu = asobu_checkbox.isChecked();
-            CheckBox kaimono_checkbox = (CheckBox) findViewById(R.id.buy_checkBox);
             is_show_kaimono = kaimono_checkbox.isChecked();
-            CheckBox onsen_checkbox = (CheckBox) findViewById(R.id.spa_checkBox);
             is_show_onsen = onsen_checkbox.isChecked();
-            CheckBox event_checkbox = (CheckBox) findViewById(R.id.event_checkBox);
             is_show_event = event_checkbox.isChecked();
-            CheckBox hinanjo_checkbox = (CheckBox) findViewById(R.id.hinanjo_checkBox);
             is_show_hinanjo = hinanjo_checkbox.isChecked();
-            CheckBox tsunamibuilding_checkbox = (CheckBox) findViewById(R.id.tsunamibuilding_checkBox);
             is_show_tsunamibuilding = tsunamibuilding_checkbox.isChecked();
+            is_show_altitude = altitude_switch.isChecked();
+
 
             intent.putExtra("is_show_taberu", is_show_taberu);
             intent.putExtra("is_show_miru", is_show_miru);
@@ -293,6 +296,7 @@ public class DisplaySettingActivity extends Activity {
             intent.putExtra("is_show_event", is_show_event);
             intent.putExtra("is_show_hinanjo", is_show_hinanjo);
             intent.putExtra("is_show_tsunamibuilding", is_show_tsunamibuilding);
+            intent.putExtra("is_show_altitude", is_show_altitude);
 
             // 返却したい結果ステータスをセットする
             setResult(Activity.RESULT_OK, intent);
