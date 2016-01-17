@@ -1,0 +1,157 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:background="#EFEFF4">
+
+    <LinearLayout
+        android:id="@+id/shelter_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#EFEFF4"
+        android:orientation="vertical">
+
+        <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/shelter_table"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#EFEFF4"
+            android:shrinkColumns="1">
+
+            <TableRow
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#000000">
+
+                <TextView
+                    android:id="@+id/name_text"
+                    style="@style/CodeFont"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="1dp"
+                    android:layout_span="2"
+                    android:layout_weight="1"
+                    android:background="#EFEFF4"
+                    android:text="読み込み中…"
+                    android:textStyle="bold" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#000000">
+
+                <TextView
+                    android:id="@+id/shelter_category"
+                    style="@style/CodeFont"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="1dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_weight="1"
+                    android:background="#fff"
+                    android:text="種類"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/category_text"
+                    style="@style/CodeFont"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="1dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_weight="1"
+                    android:background="#fff"
+                    android:text="読み込み中…" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#000000">
+
+                <TextView
+                    android:id="@+id/shelter_capa"
+                    style="@style/CodeFont"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="1dp"
+                    android:layout_weight="1"
+                    android:background="#fff"
+                    android:text="収容人数"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/capa_text"
+                    style="@style/CodeFont"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="1dp"
+                    android:layout_weight="1"
+                    android:background="#fff"
+                    android:text="" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#000000">
+
+                <TextView
+                    android:id="@+id/shelter_address"
+                    style="@style/CodeFont"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="1dp"
+                    android:layout_weight="1"
+                    android:background="#fff"
+                    android:text="所在地"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/address_text"
+                    style="@style/CodeFont"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="1dp"
+                    android:layout_weight="1"
+                    android:background="#fff"
+                    android:text="" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#000000">
+
+                <TextView
+                    android:id="@+id/shelter_phone"
+                    style="@style/CodeFont"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="1dp"
+                    android:layout_weight="1"
+                    android:background="#fff"
+                    android:text="電話番号"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/phone_text"
+                    style="@style/CodeFont"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="1dp"
+                    android:layout_weight="1"
+                    android:background="#fff"
+                    android:text="" />
+            </TableRow>
+
+        </TableLayout>
+
+    </LinearLayout>
+</ScrollView>
