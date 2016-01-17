@@ -126,12 +126,9 @@ public class DisplaySettingActivity extends Activity {
         TableRow taberu_row = (TableRow) findViewById(R.id.eat_row);
         taberu_row.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
                     //押したときの動作
-                    optionsTouchDownListener(R.id.eat_row, R.id.eat_checkBox);
-                } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    //離したときの動作
-                    optionsTouchUpListener(R.id.eat_row);
+                    optionsTouchListener(R.id.eat_row, R.id.eat_checkBox);
                 }
                 return true;
             }
@@ -140,13 +137,10 @@ public class DisplaySettingActivity extends Activity {
         TableRow miru_row = (TableRow) findViewById(R.id.look_row);
         miru_row.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
                     //押したときの動作
-                    optionsTouchDownListener(R.id.look_row, R.id.look_checkBox);
-                } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    //離したときの動作
-                    optionsTouchUpListener(R.id.look_row);
-                }
+                    optionsTouchListener(R.id.look_row, R.id.look_checkBox);
+                } 
                 return true;
             }
         });
@@ -154,12 +148,9 @@ public class DisplaySettingActivity extends Activity {
         TableRow asobu_row = (TableRow) findViewById(R.id.play_row);
         asobu_row.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
                     //押したときの動作
-                    optionsTouchDownListener(R.id.play_row, R.id.play_checkBox);
-                } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    //離したときの動作
-                    optionsTouchUpListener(R.id.play_row);
+                    optionsTouchListener(R.id.play_row, R.id.play_checkBox);
                 }
                 return true;
             }
@@ -168,12 +159,9 @@ public class DisplaySettingActivity extends Activity {
         TableRow kaimono_row = (TableRow) findViewById(R.id.buy_row);
         kaimono_row.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
                     //押したときの動作
-                    optionsTouchDownListener(R.id.buy_row, R.id.buy_checkBox);
-                } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    //離したときの動作
-                    optionsTouchUpListener(R.id.buy_row);
+                    optionsTouchListener(R.id.buy_row, R.id.buy_checkBox);
                 }
                 return true;
             }
@@ -182,12 +170,9 @@ public class DisplaySettingActivity extends Activity {
         TableRow onsen_row = (TableRow) findViewById(R.id.spa_row);
         onsen_row.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
                     //押したときの動作
-                    optionsTouchDownListener(R.id.spa_row, R.id.spa_checkBox);
-                } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    //離したときの動作
-                    optionsTouchUpListener(R.id.spa_row);
+                    optionsTouchListener(R.id.spa_row, R.id.spa_checkBox);
                 }
                 return true;
             }
@@ -196,12 +181,9 @@ public class DisplaySettingActivity extends Activity {
         TableRow event_row = (TableRow) findViewById(R.id.event_row);
         event_row.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
                     //押したときの動作
-                    optionsTouchDownListener(R.id.event_row, R.id.event_checkBox);
-                } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    //離したときの動作
-                    optionsTouchUpListener(R.id.event_row);
+                    optionsTouchListener(R.id.event_row, R.id.event_checkBox);
                 }
                 return true;
             }
@@ -210,12 +192,9 @@ public class DisplaySettingActivity extends Activity {
         TableRow hinanjo_row = (TableRow) findViewById(R.id.hinanjo_row);
         hinanjo_row.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
                     //押したときの動作
-                    optionsTouchDownListener(R.id.hinanjo_row, R.id.hinanjo_checkbox);
-                } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    //離したときの動作
-                    optionsTouchUpListener(R.id.hinanjo_row);
+                    optionsTouchListener(R.id.hinanjo_row, R.id.hinanjo_checkbox);
                 }
                 return true;
             }
@@ -224,12 +203,9 @@ public class DisplaySettingActivity extends Activity {
         TableRow tsunamibuilding_row = (TableRow) findViewById(R.id.tsunamibuilding_row);
         tsunamibuilding_row.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
                     //押したときの動作
-                    optionsTouchDownListener(R.id.tsunamibuilding_row, R.id.tsunamibuilding_checkbox);
-                } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    //離したときの動作
-                    optionsTouchUpListener(R.id.tsunamibuilding_row);
+                    optionsTouchListener(R.id.tsunamibuilding_row, R.id.tsunamibuilding_checkbox);
                 }
                 return true;
             }
@@ -239,20 +215,13 @@ public class DisplaySettingActivity extends Activity {
     }
 
     // 表示設定のRowに指を付けたときの処理
-    private void optionsTouchDownListener(int targetTableRowId, int targetCheckBoxId) {
+    private void optionsTouchListener(int targetTableRowId, int targetCheckBoxId) {
         TableRow targetTableRow = (TableRow) findViewById(targetTableRowId);
         CheckBox targetCheckBox = (CheckBox) findViewById(targetCheckBoxId);
         targetCheckBox.setChecked(!targetCheckBox.isChecked());
 
         // さわったところが分かりやすいよう背景色を変える
         // targetTableRow.setBackgroundResource(android.R.drawable.list_selector_background);
-    }
-
-    // 表示設定のRowを指で離したときの処理
-    private void optionsTouchUpListener(int targetTableRowId) {
-        // 変えた背景色を戻す
-        // TableRow targetTableRow = (TableRow) findViewById(targetTableRowId);
-        // targetTableRow.setBackgroundColor(Color.rgb(0,0,0));
     }
 
     // アクションバーのメニューを押したときの処理
