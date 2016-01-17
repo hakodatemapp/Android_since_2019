@@ -13,7 +13,6 @@ import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -24,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,7 +44,6 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -69,6 +68,7 @@ public class MainActivity extends FragmentActivity
     private String title;
     private int course_id;
     private GoogleMap gMap;
+
     // スポット表示の初期設定
     private boolean is_show_taberu = true;
     private boolean is_show_miru = true;
@@ -79,7 +79,7 @@ public class MainActivity extends FragmentActivity
 
     // 海抜を表示するかどうか初期設定
     // TODO: 表示設定統合時にデフォルトをfalseにする
-    private boolean is_show_altitude = true;
+    private boolean is_show_altitude = false;
 
     private boolean is_show_hinanjo = false;
     private boolean is_show_tsunamibuilding = false;
@@ -108,22 +108,6 @@ public class MainActivity extends FragmentActivity
     public void onMapReady(GoogleMap map) {
         gMap = map;
 
-        // 位置情報が取得できるかどうか確認する
-        final boolean gpsEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-        if (!gpsEnabled) {
-            DialogFragment dialog = new NoLocationDialogFragment();
-            dialog.show(getFragmentManager(), null);
-        } else {
-            System.out.println("Location Request in MapReady");
-            mLocationManager.getProvider(LocationManager.GPS_PROVIDER);
-            mLocationManager.requestLocationUpdates(
-                    LocationManager.GPS_PROVIDER,
-                    2000,
-                    0,
-                    this);
-        }
-
         Location myLocate = mLocationManager.getLastKnownLocation("gps");
 
         map.setTrafficEnabled(false);
@@ -139,7 +123,7 @@ public class MainActivity extends FragmentActivity
                 if (!marker_title.equals("スタート") && !marker_snippet.equals("まちあるきコース")) {
                     Intent intent;
 
-                    if(marker_snippet.indexOf("津波避難所") != -1 || marker_snippet.indexOf("津波避難ビル") != -1 ){
+                    if (marker_snippet.indexOf("津波避難所") != -1 || marker_snippet.indexOf("津波避難ビル") != -1) {
                         intent = new Intent(MainActivity.this, ShelterDetailActivity.class);
                     } else {
                         intent = new Intent(MainActivity.this, SpotDetailActivity.class);
@@ -166,7 +150,7 @@ public class MainActivity extends FragmentActivity
                 TextView snippet = (TextView) view.findViewById(R.id.spot_info_snippet);
                 snippet.setText(marker_snippet);
 
-                if(marker_snippet.indexOf("津波避難所") != -1 || marker_snippet.indexOf("津波避難ビル") != -1 ) {
+                if (marker_snippet.indexOf("津波避難所") != -1 || marker_snippet.indexOf("津波避難ビル") != -1) {
                     snippet.setTextColor(Color.BLUE);
                 }
 
@@ -214,6 +198,155 @@ public class MainActivity extends FragmentActivity
         // 観光スポットのピンを表示
         getSPARQLInvoke();
         isMapReady = true;
+    }
+
+    // 別のActivityから戻ってきた場合
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        System.out.println("onActivityResult");
+
+        if (requestCode == 1002) {
+            // 返却結果ステータスとの比較
+            if (resultCode == Activity.RESULT_OK) {
+                // この時点でネットワークに接続できるかどうか調べる
+                if (checkNetworkStatus()) {
+                    // 表示設定画面からの値を取得
+                    is_show_taberu = intent.getExtras().getBoolean("is_show_taberu");
+                    is_show_miru = intent.getExtras().getBoolean("is_show_miru");
+                    is_show_asobu = intent.getExtras().getBoolean("is_show_asobu");
+                    is_show_kaimono = intent.getExtras().getBoolean("is_show_kaimono");
+                    is_show_onsen = intent.getExtras().getBoolean("is_show_onsen");
+                    is_show_event = intent.getExtras().getBoolean("is_show_event");
+                    is_show_hinanjo = intent.getExtras().getBoolean("is_show_hinanjo");
+                    is_show_tsunamibuilding = intent.getExtras().getBoolean("is_show_tsunamibuilding");
+                    is_show_altitude = intent.getExtras().getBoolean("is_show_altitude");
+                    System.out.println(is_show_taberu);
+
+                    // 表示するピンを反映するために地図上のOverlayを全消去
+                    try {
+                        // GoogleMapオブジェクトの取得
+                        gMap.clear();
+                    }
+                    // GoogleMapが使用不可のときのためにtry catchで囲っています。
+                    catch (Exception e) {
+                        System.out.println("古いOverlayをクリアできませんでした");
+                        e.printStackTrace();
+                    }
+
+                    // まちあるきコースを表示して、地図の中心をコースのスタートにしない
+                    createMatiarukiMapWithStart(MatiarukiCourse.getMatiarukiCourse(course_id), false);
+
+                    // 更新された設定で観光スポットのピンを表示
+                    getSPARQLInvoke();
+                }
+            }
+        }
+
+    }
+
+    public void onResume() {
+        System.out.println("onResume");
+
+        // 海抜を表示する設定なら取得を開始する
+        LinearLayout altitude_container  = (LinearLayout) findViewById(R.id.altitude_container);
+        if (is_show_altitude) {
+            altitude_container.setVisibility(View.VISIBLE);
+            startGetAltitude();
+        } else {
+            altitude_container.setVisibility(View.INVISIBLE);
+        }
+        super.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        // この画面が隠れるのなら、位置情報の取得は終了
+        if (mLocationManager != null) {
+            mLocationManager.removeUpdates(this);
+        }
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        // この画面が隠れるのなら、位置情報の取得は終了
+        if (mLocationManager != null) {
+            mLocationManager.removeUpdates(this);
+        }
+        super.onPause();
+    }
+
+
+    // メニューを読み込む
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_map, menu);
+        ActionBar actionBar = getActionBar();
+        actionBar.setHomeButtonEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setTitle(title);
+        actionBar.setLogo(R.drawable.mapplus_icon);
+
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    // 画面左上の戻るボタン・表示設定が押されたとき
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.menu_displaysetting) {
+            if (isMapReady == true) {
+                Intent intent = new Intent(MainActivity.this, DisplaySettingActivity.class);
+
+                // 現在の地図画面の状態をセットする
+                intent.putExtra("is_show_taberu", is_show_taberu);
+                intent.putExtra("is_show_miru", is_show_miru);
+                intent.putExtra("is_show_asobu", is_show_asobu);
+                intent.putExtra("is_show_kaimono", is_show_kaimono);
+                intent.putExtra("is_show_onsen", is_show_onsen);
+                intent.putExtra("is_show_event", is_show_event);
+                intent.putExtra("is_show_hinanjo", is_show_hinanjo);
+                intent.putExtra("is_show_tsunamibuilding", is_show_tsunamibuilding);
+                intent.putExtra("is_show_altitude", is_show_altitude);
+
+                // 遷移先から返却されてくる際の識別コード
+                int requestCode = 1002;// 返却値を考慮したActivityの起動を行う
+                startActivityForResult(intent, requestCode);
+
+            } else {
+                Toast.makeText(this, "地図が読み込まれていません。Google Play開発者サービスが更新されていない場合は更新をお願いします。", Toast.LENGTH_LONG).show();
+            }
+            return true;
+        }
+        //アクションバーの戻るを押したときの処理
+        else if (id == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    // GPSの有効・無効をチェックしながら海抜の取得を開始する
+    private void startGetAltitude() {
+        // 位置情報が取得できるかどうか確認する
+        final boolean gpsEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+        if (!gpsEnabled) {
+            DialogFragment dialog = new NoLocationDialogFragment();
+            dialog.show(getFragmentManager(), null);
+        } else {
+            // 海抜の表示をリセットする
+            TextView alt_val_tv = (TextView) findViewById(R.id.altitude_value);
+            alt_val_tv.setText("取得中");
+
+            mLocationManager.getProvider(LocationManager.GPS_PROVIDER);
+            mLocationManager.requestLocationUpdates(
+                    LocationManager.GPS_PROVIDER,
+                    2000,
+                    0,
+                    this);
+        }
     }
 
     @Override
@@ -268,133 +401,6 @@ public class MainActivity extends FragmentActivity
             SparqlGetThread st = new SparqlGetThread(gMap, "");
             st.start();
         }
-    }
-
-    // 別のActivityから戻ってきた場合
-    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        System.out.println("onActivityResult");
-
-        if (requestCode == 1002) {
-            // 返却結果ステータスとの比較
-            if (resultCode == Activity.RESULT_OK) {
-                // この時点でネットワークに接続できるかどうか調べる
-                if (checkNetworkStatus()) {
-                    // 表示設定画面からの値を取得
-                    is_show_taberu = intent.getExtras().getBoolean("is_show_taberu");
-                    is_show_miru = intent.getExtras().getBoolean("is_show_miru");
-                    is_show_asobu = intent.getExtras().getBoolean("is_show_asobu");
-                    is_show_kaimono = intent.getExtras().getBoolean("is_show_kaimono");
-                    is_show_onsen = intent.getExtras().getBoolean("is_show_onsen");
-                    is_show_event = intent.getExtras().getBoolean("is_show_event");
-                    is_show_hinanjo = intent.getExtras().getBoolean("is_show_hinanjo");
-                    is_show_tsunamibuilding = intent.getExtras().getBoolean("is_show_tsunamibuilding");
-                    System.out.println(is_show_taberu);
-
-                    // 表示するピンを反映するために地図上のOverlayを全消去
-                    try {
-                        // GoogleMapオブジェクトの取得
-                        gMap.clear();
-                    }
-                    // GoogleMapが使用不可のときのためにtry catchで囲っています。
-                    catch (Exception e) {
-                        System.out.println("古いOverlayをクリアできませんでした");
-                        e.printStackTrace();
-                    }
-
-                    // まちあるきコースを表示して、地図の中心をコースのスタートにしない
-                    createMatiarukiMapWithStart(MatiarukiCourse.getMatiarukiCourse(course_id), false);
-
-                    // 更新された設定で観光スポットのピンを表示
-                    getSPARQLInvoke();
-                }
-            }
-        }
-
-    }
-
-    public void onResume() {
-//        System.out.println("onResume");
-
-        // 海抜の表示をリセットする
-        TextView alt_val_tv = (TextView) findViewById(R.id.altitude_value);
-        alt_val_tv.setText("取得中");
-
-        if (mLocationManager != null) {
-//            System.out.println("Location Request in onResume");
-            mLocationManager.getProvider(LocationManager.GPS_PROVIDER);
-            mLocationManager.requestLocationUpdates(
-                    LocationManager.GPS_PROVIDER,
-                    2000,
-                    0,
-                    this);
-        }
-        super.onResume();
-    }
-
-    @Override
-    protected void onDestroy() {
-        if (mLocationManager != null) {
-            mLocationManager.removeUpdates(this);
-        }
-        super.onDestroy();
-    }
-
-    @Override
-    protected void onPause() {
-        if (mLocationManager != null) {
-            mLocationManager.removeUpdates(this);
-        }
-        super.onPause();
-    }
-
-
-    // メニューを読み込む
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_map, menu);
-        ActionBar actionBar = getActionBar();
-        actionBar.setHomeButtonEnabled(true);
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(title);
-        actionBar.setLogo(R.drawable.mapplus_icon);
-
-        actionBar.setDisplayHomeAsUpEnabled(true);
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    // 画面左上の戻るボタン・表示設定が押されたとき
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.menu_displaysetting) {
-            if (isMapReady == true) {
-                Intent intent = new Intent(MainActivity.this, DisplaySettingActivity.class);
-
-                // 現在の地図画面の状態をセットする
-                intent.putExtra("is_show_taberu", is_show_taberu);
-                intent.putExtra("is_show_miru", is_show_miru);
-                intent.putExtra("is_show_asobu", is_show_asobu);
-                intent.putExtra("is_show_kaimono", is_show_kaimono);
-                intent.putExtra("is_show_onsen", is_show_onsen);
-                intent.putExtra("is_show_event", is_show_event);
-                intent.putExtra("is_show_hinanjo", is_show_hinanjo);
-                intent.putExtra("is_show_tsunamibuilding", is_show_tsunamibuilding);
-
-                // 遷移先から返却されてくる際の識別コード
-                int requestCode = 1002;// 返却値を考慮したActivityの起動を行う
-                startActivityForResult(intent, requestCode);
-
-            } else {
-                Toast.makeText(this, "地図が読み込まれていません。Google Play開発者サービスが更新されていない場合は更新をお願いします。", Toast.LENGTH_LONG).show();
-            }
-            return true;
-        }
-        //アクションバーの戻るを押したときの処理
-        else if (id == android.R.id.home) {
-            finish();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     public boolean checkNetworkStatus() {
@@ -487,7 +493,6 @@ public class MainActivity extends FragmentActivity
         return true;
 
     }
-
 
     // 位置情報が無効になっている場合のダイアログ
     public static class NoLocationDialogFragment extends DialogFragment {
