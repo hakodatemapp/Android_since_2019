@@ -1,7 +1,20 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/menu_displaysetting"
+        android:id="@+id/menu_escape"
         android:orderInCategory="100"
-        android:showAsAction="ifRoom"
+        android:icon="@drawable/action_alert"
+        android:showAsAction="always"
+        android:title="避難モード" />
+    <item
+        android:id="@+id/menu_search"
+        android:orderInCategory="101"
+        android:icon="@drawable/action_search"
+        android:showAsAction="always"
+        android:title="観光スポット検索" />
+    <item
+        android:id="@+id/menu_displaysetting"
+        android:orderInCategory="102"
+        android:icon="@drawable/action_setting"
+        android:showAsAction="always"
         android:title="表示設定" />
 </menu>
