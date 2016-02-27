@@ -253,16 +253,26 @@ public class MainActivity extends FragmentActivity
             // GoogleMapオブジェクトの取得
             gMap.clear();
         }
-        // GoogleMapが使用不可のときのためにtry catchで囲っています。
+        // GoogleMapが使用不可・Overlayをクリアできなかったとき
         catch (Exception e) {
             System.out.println("古いOverlayをクリアできませんでした");
             e.printStackTrace();
         }
 
+        // 避難モードのインジケータを設定する
         if(is_escape_mode == true) {
             escape_menu.setIcon(R.drawable.escape_button_on);
         } else {
             escape_menu.setIcon(R.drawable.escape_button_off);
+        }
+
+        // 海抜を表示する設定なら取得を開始する
+        LinearLayout altitude_container  = (LinearLayout) findViewById(R.id.altitude_container);
+        if (is_show_altitude == true) {
+            altitude_container.setVisibility(View.VISIBLE);
+            startGetAltitude();
+        } else {
+            altitude_container.setVisibility(View.INVISIBLE);
         }
 
         // まちあるきコースを表示して、地図の中心をコースのスタートにしない
@@ -274,15 +284,16 @@ public class MainActivity extends FragmentActivity
 
     public void onResume() {
         System.out.println("onResume");
-
+        
         // 海抜を表示する設定なら取得を開始する
         LinearLayout altitude_container  = (LinearLayout) findViewById(R.id.altitude_container);
-        if (is_show_altitude) {
+        if (is_show_altitude == true) {
             altitude_container.setVisibility(View.VISIBLE);
             startGetAltitude();
         } else {
             altitude_container.setVisibility(View.INVISIBLE);
         }
+
         super.onResume();
     }
 
