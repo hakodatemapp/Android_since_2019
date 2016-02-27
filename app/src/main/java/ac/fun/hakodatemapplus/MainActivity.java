@@ -20,6 +20,7 @@ import android.provider.Settings;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -77,10 +78,12 @@ public class MainActivity extends FragmentActivity
     private boolean is_show_onsen = true;
     private boolean is_show_event = true;
 
-    // 海抜を表示するかどうか初期設定
-    // TODO: 表示設定統合時にデフォルトをfalseにする
-    private boolean is_show_altitude = false;
+    // 避難モード
+    private boolean is_escape_mode = false;
+    private MenuItem escape_menu = null;    // 状態をアイコンとしてセットするためにメニューを用意
 
+    // 海抜を表示するかどうか初期設定
+    private boolean is_show_altitude = false;
     private boolean is_show_hinanjo = false;
     private boolean is_show_tsunamibuilding = false;
 
@@ -203,6 +206,8 @@ public class MainActivity extends FragmentActivity
     // 別のActivityから戻ってきた場合
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         System.out.println("onActivityResult");
+        int enable_spoticons = 0;   // 観光スポットが有効にされた数
+        int enable_escapeitems = 0; // 避難所・避難ビル・海抜が有効にされた数
 
         if (requestCode == 1002) {
             // 返却結果ステータスとの比較
@@ -219,41 +224,76 @@ public class MainActivity extends FragmentActivity
                     is_show_hinanjo = intent.getExtras().getBoolean("is_show_hinanjo");
                     is_show_tsunamibuilding = intent.getExtras().getBoolean("is_show_tsunamibuilding");
                     is_show_altitude = intent.getExtras().getBoolean("is_show_altitude");
-                    System.out.println(is_show_taberu);
 
-                    // 表示するピンを反映するために地図上のOverlayを全消去
-                    try {
-                        // GoogleMapオブジェクトの取得
-                        gMap.clear();
+                    // 観光スポットを非表示にし、避難所・避難ビル・海抜がすべて表示されたら避難モードにする
+                    if(is_show_taberu == false &&
+                            is_show_miru == false &&
+                            is_show_asobu == false &&
+                            is_show_kaimono == false &&
+                            is_show_onsen == false &&
+                            is_show_event == false &&
+                            is_show_hinanjo == true &&
+                            is_show_tsunamibuilding == true &&
+                            is_show_altitude == true) {
+                        is_escape_mode = true;
+                    } else {
+                        is_escape_mode = false;
                     }
-                    // GoogleMapが使用不可のときのためにtry catchで囲っています。
-                    catch (Exception e) {
-                        System.out.println("古いOverlayをクリアできませんでした");
-                        e.printStackTrace();
-                    }
-
-                    // まちあるきコースを表示して、地図の中心をコースのスタートにしない
-                    createMatiarukiMapWithStart(MatiarukiCourse.getMatiarukiCourse(course_id), false);
-
-                    // 更新された設定で観光スポットのピンを表示
-                    getSPARQLInvoke();
+                    mapRepaint();
                 }
             }
         }
 
     }
 
-    public void onResume() {
-        System.out.println("onResume");
+    // 観光スポットのピンを再描画する
+    private void mapRepaint() {
+        // 表示するピンを反映するために地図上のOverlayを全消去
+        try {
+            // GoogleMapオブジェクトの取得
+            gMap.clear();
+        }
+        // GoogleMapが使用不可・Overlayをクリアできなかったとき
+        catch (Exception e) {
+            System.out.println("古いOverlayをクリアできませんでした");
+            e.printStackTrace();
+        }
+
+        // 避難モードのインジケータを設定する
+        if(is_escape_mode == true) {
+            escape_menu.setIcon(R.drawable.escape_button_on);
+        } else {
+            escape_menu.setIcon(R.drawable.escape_button_off);
+        }
 
         // 海抜を表示する設定なら取得を開始する
         LinearLayout altitude_container  = (LinearLayout) findViewById(R.id.altitude_container);
-        if (is_show_altitude) {
+        if (is_show_altitude == true) {
             altitude_container.setVisibility(View.VISIBLE);
             startGetAltitude();
         } else {
             altitude_container.setVisibility(View.INVISIBLE);
         }
+
+        // まちあるきコースを表示して、地図の中心をコースのスタートにしない
+        createMatiarukiMapWithStart(MatiarukiCourse.getMatiarukiCourse(course_id), false);
+
+        // 更新された設定で観光スポットのピンを表示
+        getSPARQLInvoke();
+    }
+
+    public void onResume() {
+        System.out.println("onResume");
+        
+        // 海抜を表示する設定なら取得を開始する
+        LinearLayout altitude_container  = (LinearLayout) findViewById(R.id.altitude_container);
+        if (is_show_altitude == true) {
+            altitude_container.setVisibility(View.VISIBLE);
+            startGetAltitude();
+        } else {
+            altitude_container.setVisibility(View.INVISIBLE);
+        }
+
         super.onResume();
     }
 
@@ -275,11 +315,12 @@ public class MainActivity extends FragmentActivity
         super.onPause();
     }
 
-
     // メニューを読み込む
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_map, menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_map, menu);
+
         ActionBar actionBar = getActionBar();
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayShowTitleEnabled(true);
@@ -287,6 +328,9 @@ public class MainActivity extends FragmentActivity
         actionBar.setLogo(R.drawable.mapplus_icon);
 
         actionBar.setDisplayHomeAsUpEnabled(true);
+
+        // 後でアイコンを変更するために避難モードのボタンを取得
+        escape_menu = menu.findItem(R.id.menu_escape);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -317,9 +361,39 @@ public class MainActivity extends FragmentActivity
                 Toast.makeText(this, "地図が読み込まれていません。Google Play開発者サービスが更新されていない場合は更新をお願いします。", Toast.LENGTH_LONG).show();
             }
             return true;
-        }
-        //アクションバーの戻るを押したときの処理
-        else if (id == android.R.id.home) {
+
+            // 避難モードボタンを押したときの処理
+        } else if(id == R.id.menu_escape) {
+            if(is_escape_mode == false) {
+                is_show_taberu = false;
+                is_show_miru = false;
+                is_show_asobu = false;
+                is_show_kaimono = false;
+                is_show_onsen = false;
+                is_show_event = false;
+                is_show_hinanjo= true;
+                is_show_tsunamibuilding = true;
+                is_show_altitude = true;
+                is_escape_mode = true;
+
+                mapRepaint();
+            } else {
+                is_show_taberu = true;
+                is_show_miru = true;
+                is_show_asobu = true;
+                is_show_kaimono = true;
+                is_show_onsen = true;
+                is_show_event = true;
+                is_show_hinanjo= false;
+                is_show_tsunamibuilding = false;
+                is_show_altitude = false;
+                is_escape_mode = false;
+
+                mapRepaint();
+            }
+            return true;
+            //アクションバーの戻るを押したときの処理
+        } else if (id == android.R.id.home) {
             finish();
             return true;
         }

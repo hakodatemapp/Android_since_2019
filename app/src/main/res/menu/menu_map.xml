@@ -2,15 +2,15 @@
     <item
         android:id="@+id/menu_escape"
         android:orderInCategory="100"
-        android:icon="@drawable/action_alert"
+        android:icon="@drawable/escape_button_off"
         android:showAsAction="always"
         android:title="避難モード" />
-    <item
-        android:id="@+id/menu_search"
-        android:orderInCategory="101"
-        android:icon="@drawable/action_search"
-        android:showAsAction="always"
-        android:title="観光スポット検索" />
+    <!-- <item-->
+        <!--android:id="@+id/menu_search"-->
+        <!--android:orderInCategory="101"-->
+        <!--android:icon="@drawable/action_search"-->
+        <!--android:showAsAction="always"-->
+        <!--android:title="観光スポット検索" /> -->
     <item
         android:id="@+id/menu_displaysetting"
         android:orderInCategory="102"
