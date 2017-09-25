@@ -250,6 +250,42 @@
                         android:checked="true" />
 
                 </TableRow>
+
+                <TableRow
+                    android:id="@+id/sweets_row"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#000000">
+
+                    <ImageView
+                        android:id="@+id/sweets_icon"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="1dp"
+                        android:layout_marginTop="1dp"
+                        android:background="#fff"
+                        android:src="@drawable/taberu" />
+
+                    <TextView
+                        android:id="@+id/sweets_text"
+                        style="@style/CodeFont"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="1dp"
+                        android:layout_marginTop="1dp"
+                        android:layout_weight="1"
+                        android:background="#fff"
+                        android:text="函館スイーツ"
+                        android:textSize="15dp" />
+
+
+                    <CheckBox
+                        android:id="@+id/sweets_checkBox"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="1dp"
+                        android:layout_marginTop="1dp"
+                        android:background="#fff"
+                        android:checked="true" />
+
+                </TableRow>
             </TableLayout>
 
             <TableLayout

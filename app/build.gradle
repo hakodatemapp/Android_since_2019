@@ -9,8 +9,8 @@ android {
             storePassword 'mapplus'
         }
     }
-    compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+    compileSdkVersion 25
+    buildToolsVersion '25.0.0'
     defaultConfig {
         applicationId "ac.fun.hakodatemapplus"
         minSdkVersion 14
@@ -32,6 +32,6 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:22.2.0'
+    compile 'com.android.support:support-v4:25.3.1'
     compile 'com.google.android.gms:play-services:+'
 }
