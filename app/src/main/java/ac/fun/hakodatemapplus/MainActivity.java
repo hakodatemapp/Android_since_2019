@@ -878,7 +878,7 @@ public class MainActivity extends FragmentActivity
                             is_pin_show = is_show_event;
                             System.out.println("ここで判定！観光イベント"+is_pin_show);
                             break;
-                        case "スイーツ":
+                        case "函館スイーツ":
                             options.icon(sweets);
                             options.snippet("函館スイーツ");
                             is_pin_show = is_show_sweets;
