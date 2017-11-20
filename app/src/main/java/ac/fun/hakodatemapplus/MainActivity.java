@@ -112,7 +112,7 @@ public class MainActivity extends FragmentActivity
     public void onMapReady(GoogleMap map) {
         gMap = map;
 
-        Location myLocate = mLocationManager.getLastKnownLocation("gps");
+        //Location myLocate = mLocationManager.getLastKnownLocation("gps");
 
         map.setTrafficEnabled(false);
         map.setMyLocationEnabled(true);
@@ -123,7 +123,10 @@ public class MainActivity extends FragmentActivity
             public void onInfoWindowClick(Marker arg0) {
                 String marker_title = arg0.getTitle();
                 String marker_snippet = arg0.getSnippet();
-                Log.d("MARKER", marker_title);
+                String marker_id= arg0.getTag().toString();
+
+                Log.d("Title", marker_title);
+                Log.d("Snippet",marker_snippet);
                 if (!marker_title.equals("スタート") && !marker_snippet.equals("まちあるきコース")) {
                     Intent intent;
 
@@ -133,6 +136,8 @@ public class MainActivity extends FragmentActivity
                         intent = new Intent(MainActivity.this, SpotDetailActivity.class);
                     }
                     intent.putExtra("spot_title", marker_title);    // 第二引数：マーカーのタイトル
+                    intent.putExtra("spot_category", marker_snippet);
+                    intent.putExtra("spot_id",marker_id);
                     // 遷移先から返却されてくる際の識別コード
                     int requestCode = 1001;// 返却値を考慮したActivityの起動を行う
                     startActivityForResult(intent, requestCode);
@@ -540,6 +545,7 @@ public class MainActivity extends FragmentActivity
             JSONObject json_results = json.getJSONObject("results");
             JSONArray bindings = json_results.getJSONArray("bindings");
 
+
             for (int i = 0; i < bindings.length(); i++) {
                 JSONObject binding = bindings.getJSONObject(i);
                 ArrayList spot_detail = new ArrayList<>();
@@ -555,11 +561,7 @@ public class MainActivity extends FragmentActivity
                     spot_detail.add(1, null);
                 }
                 try{
-                    if(binding.getJSONObject("spotName").getString("value")!=null){
-                        spot_detail.add(2, binding.getJSONObject("spotName").getString("value"));
-                    }else{
-                        spot_detail.add(2, binding.getJSONObject("shopname").getString("value"));
-                    }
+                    spot_detail.add(2, binding.getJSONObject("spotName").getString("value"));
                 } catch (JSONException e){
                     spot_detail.add(2,  binding.getJSONObject("shopname").getString("value"));
                 }
@@ -572,9 +574,15 @@ public class MainActivity extends FragmentActivity
                 spot_detail.add(4, binding.getJSONObject("lat").getString("value"));
                 spot_detail.add(5, binding.getJSONObject("long").getString("value"));
 
+                if(spot_detail.get(3)=="函館スイーツ"){
+                    spot_detail.add(6, binding.getJSONObject("id").getString("value"));
+                }else{
+                    spot_detail.add(6,null);
+                }
+
                 spot_list.add(spot_detail);
             }
-        System.out.println("ここだよ！！"+spot_list);
+        //System.out.println("ここだよ！！"+spot_list);
         } catch (Exception ex) {
             ex.printStackTrace();
             return false;
@@ -640,7 +648,7 @@ public class MainActivity extends FragmentActivity
     }
 
     // SPARQLのクエリを実行して取得したデータを反映する
-    class SparqlGetThread extends Thread {
+    private class SparqlGetThread extends Thread {
         GoogleMap gm;
         String queue_title;
 
@@ -709,7 +717,7 @@ public class MainActivity extends FragmentActivity
             BitmapDescriptor kaimono = BitmapDescriptorFactory.fromResource(R.drawable.kaimono);
             BitmapDescriptor onsen = BitmapDescriptorFactory.fromResource(R.drawable.onsen);
             BitmapDescriptor event = BitmapDescriptorFactory.fromResource(R.drawable.event);
-            BitmapDescriptor sweets = BitmapDescriptorFactory.fromResource(R.drawable.asobu);
+            BitmapDescriptor sweets = BitmapDescriptorFactory.fromResource(R.drawable.sweets);
 
             BitmapDescriptor pin01 = BitmapDescriptorFactory.fromResource(R.drawable.pin01);
             BitmapDescriptor pin02 = BitmapDescriptorFactory.fromResource(R.drawable.pin02);
@@ -735,7 +743,7 @@ public class MainActivity extends FragmentActivity
             BitmapDescriptor hinanjo = BitmapDescriptorFactory.fromResource(R.drawable.hinanjo);
             BitmapDescriptor tsunamibuilding = BitmapDescriptorFactory.fromResource(R.drawable.tsunamibuilding);
 
-            System.out.println("ここでもあるかも"+final_list.size());
+            //System.out.println("ここでもあるかも"+final_list.size());
 
             // スポットのピンを地図上に表示
             for (int i = 0; i < final_list.size(); i++) {
@@ -780,6 +788,7 @@ public class MainActivity extends FragmentActivity
                                 break;
                             case "函館スイーツ":
                                 options.snippet("まちあるきコース - 函館スイーツ");
+
                                 break;
                         }
                     }
@@ -850,7 +859,7 @@ public class MainActivity extends FragmentActivity
                 } else {
                     // カテゴリを設定する
                     options.snippet(final_list.get(i).get(3));
-                    System.out.println("ここですよー！！！へい！"+ final_list.get(i).get(3));
+                    //System.out.println("ここですよー！！！へい！"+ final_list.get(i).get(3));
                     switch (final_list.get(i).get(3)) {
                         case "食べる":
                             options.icon(taberu);
@@ -876,13 +885,13 @@ public class MainActivity extends FragmentActivity
                             options.icon(event);
                             options.snippet("観光イベント");
                             is_pin_show = is_show_event;
-                            System.out.println("ここで判定！観光イベント"+is_pin_show);
+                           // System.out.println("ここで判定！観光イベント"+is_pin_show);
                             break;
                         case "函館スイーツ":
                             options.icon(sweets);
                             options.snippet("函館スイーツ");
                             is_pin_show = is_show_sweets;
-                            System.out.println("ここで判定！"+is_pin_show);
+                            //System.out.println("ここで判定！"+is_pin_show);
                             break;
                         case "津波避難所":
                             options.icon(hinanjo);
@@ -896,6 +905,16 @@ public class MainActivity extends FragmentActivity
                     }
                 }
                 Marker marker = gm.addMarker(options);
+                //println("id:"+final_list.get(i).get(6));
+
+                String thisId=final_list.get(i).get(6);
+                if(thisId==null){
+                    marker.setTag("");
+                }else{
+                    marker.setTag(thisId);
+                }
+
+                //System.out.println("this_marker:"+marker.getTag());
                 marker.setVisible(is_pin_show);
             }
 

@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#EFEFF4"
-            android:shrinkColumns="1">
+            android:stretchColumns="1">
 
             <TableRow
                 android:layout_width="wrap_content"
@@ -28,7 +28,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_span="2"
-                    android:layout_weight="1"
                     android:adjustViewBounds="true"
                     android:scaleType="fitStart" />
             </TableRow>
@@ -45,7 +44,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
                     android:layout_span="2"
-                    android:layout_weight="1"
                     android:background="#EFEFF4"
                     android:text="読み込み中…"
                     android:textStyle="bold" />
@@ -73,33 +71,165 @@
             <TableRow
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="#000000"
+                >
+
+                <TextView
+                    android:id="@+id/featured_text"
+                    style="@style/CodeFont"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="1dp"
+                    android:layout_span="2"
+                    android:layout_weight="1"
+                    android:background="#EFEFF4"
+                    android:text="おすすめ商品"
+                    android:textStyle="bold" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#000000">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_span="2"
+                    android:layout_marginBottom="1dp"
+                    >
+
+                    <ImageView
+                        android:id="@+id/featuredImage_view"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:adjustViewBounds="true"
+                        android:layout_weight="2"
+                        android:background="#fff" />
+
+                    <TextView
+                        android:id="@+id/featuredName_text"
+                        style="@style/CodeFont"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="5"
+                        android:background="#fff"
+                        android:text="読み込み中..." />
+                    <TextView
+                        android:id="@+id/nextButton_text"
+                        style="@style/CodeFont"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="#fff"
+                        android:text=">" />
+                </LinearLayout>
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#000000">
+
+                <TextView
+                    android:id="@+id/base_text"
+                    style="@style/CodeFont"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="1dp"
+                    android:layout_span="2"
+                    android:background="#EFEFF4"
+                    android:text="基本情報"
+                    android:textStyle="bold" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#000000">
+
+                <TextView
+                    android:id="@+id/spot_postcode"
+                    style="@style/CodeFont"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="1dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_weight="1"
+                    android:background="#fff"
+                    android:text="郵便番号"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/postcode_text"
+                    style="@style/CodeFont"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="1dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_weight="2"
+                    android:background="#fff"
+                    android:text="読み込み中…" />
+            </TableRow>
+            <TableRow
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="#000000">
 
                 <TextView
                     android:id="@+id/spot_address"
                     style="@style/CodeFont"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="1dp"
                     android:layout_marginTop="1dp"
                     android:layout_weight="1"
                     android:background="#fff"
-                    android:text="所在地"
+                    android:text="住所"
                     android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/address_text"
                     style="@style/CodeFont"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
                     android:layout_marginTop="1dp"
-                    android:layout_weight="1"
+                    android:layout_weight="2"
                     android:background="#fff"
                     android:text="読み込み中…" />
             </TableRow>
 
+            <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#000000">
+
+            <TextView
+                android:id="@+id/spot_tel"
+                style="@style/CodeFont"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="1dp"
+                android:layout_weight="1"
+                android:background="#fff"
+                android:text="電話番号"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tel_text"
+                style="@style/CodeFont"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="1dp"
+                android:layout_weight="2"
+                android:background="#fff"
+                android:text="読み込み中…" />
+        </TableRow>
             <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -107,23 +237,77 @@
                 android:background="#000000">
 
                 <TextView
-                    android:id="@+id/spot_tel"
+                    android:id="@+id/spot_fax"
                     style="@style/CodeFont"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="1dp"
                     android:layout_weight="1"
                     android:background="#fff"
-                    android:text="電話番号"
+                    android:text="FAX番号"
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/tel_text"
+                    android:id="@+id/fax_text"
                     style="@style/CodeFont"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
+                    android:layout_weight="2"
+                    android:background="#fff"
+                    android:text="読み込み中…" />
+            </TableRow>
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#000000">
+
+                <TextView
+                    android:id="@+id/spot_openTime"
+                    style="@style/CodeFont"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="1dp"
                     android:layout_weight="1"
+                    android:background="#fff"
+                    android:text="営業時間"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/openTime_text"
+                    style="@style/CodeFont"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="1dp"
+                    android:layout_weight="2"
+                    android:background="#fff"
+                    android:text="読み込み中…" />
+            </TableRow>
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#000000">
+
+                <TextView
+                    android:id="@+id/spot_horiday"
+                    style="@style/CodeFont"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="1dp"
+                    android:layout_weight="1"
+                    android:background="#fff"
+                    android:text="定休日"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/horiday_text"
+                    style="@style/CodeFont"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="1dp"
+                    android:layout_weight="2"
                     android:background="#fff"
                     android:text="読み込み中…" />
             </TableRow>
@@ -137,7 +321,7 @@
                 <TextView
                     android:id="@+id/spot_access"
                     style="@style/CodeFont"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="1dp"
                     android:layout_weight="1"
@@ -148,10 +332,10 @@
                 <TextView
                     android:id="@+id/access_text"
                     style="@style/CodeFont"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
-                    android:layout_weight="1"
+                    android:layout_weight="2"
                     android:background="#fff"
                     android:text="読み込み中…" />
             </TableRow>
@@ -165,7 +349,7 @@
                 <TextView
                     android:id="@+id/spot_area"
                     style="@style/CodeFont"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="1dp"
                     android:layout_weight="1"
@@ -176,12 +360,120 @@
                 <TextView
                     android:id="@+id/area_text"
                     style="@style/CodeFont"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="1dp"
+                    android:layout_weight="2"
+                    android:background="#fff"
+                    android:text="読み込み中…" />
+            </TableRow>
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#000000">
+
+                <TextView
+                    android:id="@+id/spot_parking"
+                    style="@style/CodeFont"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
                     android:layout_marginBottom="1dp"
                     android:layout_weight="1"
                     android:background="#fff"
+                    android:text="駐車場"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/parking_text"
+                    style="@style/CodeFont"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="1dp"
+                    android:layout_weight="2"
+                    android:background="#fff"
                     android:text="読み込み中…" />
+            </TableRow>
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#000000">
+
+                <TextView
+                    android:id="@+id/spot_eatIn"
+                    style="@style/CodeFont"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="1dp"
+                    android:layout_weight="1"
+                    android:background="#fff"
+                    android:text="イートイン"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/eatIn_text"
+                    style="@style/CodeFont"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="1dp"
+                    android:layout_weight="2"
+                    android:background="#fff"
+                    android:text="読み込み中…" />
+            </TableRow>
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#000000">
+
+                <TextView
+                    android:id="@+id/spot_eMail"
+                    style="@style/CodeFont"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="1dp"
+                    android:layout_weight="1"
+                    android:background="#fff"
+                    android:text="メール"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/eMail_text"
+                    style="@style/CodeFont"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="1dp"
+                    android:layout_weight="2"
+                    android:background="#fff"
+                    android:text="読み込み中…" />
+            </TableRow>
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#000000">
+
+                <TextView
+                    android:id="@+id/spot_officialWeb"
+                    style="@style/CodeFont"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="1dp"
+                    android:layout_weight="1"
+                    android:background="#fff"
+                    android:text="公式サイト"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/officialWeb_text"
+                    style="@style/CodeFont"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="1dp"
+                    android:layout_weight="2"
+                    android:background="#fff"
+                    android:text="なし" />
             </TableRow>
 
             <TableRow

@@ -263,7 +263,7 @@
                         android:layout_marginBottom="1dp"
                         android:layout_marginTop="1dp"
                         android:background="#fff"
-                        android:src="@drawable/taberu" />
+                        android:src="@drawable/sweets" />
 
                     <TextView
                         android:id="@+id/sweets_text"

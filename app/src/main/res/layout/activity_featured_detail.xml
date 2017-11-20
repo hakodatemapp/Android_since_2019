@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:background="#EFEFF4">
+
+    <LinearLayout
+        android:id="@+id/spot_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#EFEFF4"
+        android:orientation="vertical">
+
+        <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/spot_table"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#EFEFF4">
+        <TableRow android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/featuredImage_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_span="2"
+                android:layout_weight="1"
+                android:adjustViewBounds="true"
+                android:background="#fff"
+                android:scaleType="fitCenter" />
+        </TableRow>
+    <!--
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#000000">
+
+            <TextView
+                android:id="@+id/spot_featuredDescription"
+                style="@style/CodeFont"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="1dp"
+                android:layout_marginTop="1dp"
+                android:layout_weight="1"
+                android:background="#fff"
+                android:text="商品説明"
+                android:textStyle="bold" />
+        </TableRow>-->
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            >
+
+            <TextView
+                android:id="@+id/featuredDescription_text"
+                style="@style/CodeFont"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="1dp"
+                android:layout_marginTop="1dp"
+                android:layout_span="2"
+                android:layout_weight="1"
+                android:background="#fff"
+                android:text="読み込み中…" />
+        </TableRow>
+
+
+            <TableRow
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#000000">
+
+                <TextView
+                    android:id="@+id/spot_featuredPrice"
+                    style="@style/CodeFont"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="1dp"
+                    android:layout_marginTop="1dp"
+                    android:background="#fff"
+                    android:text="税込価格"
+                    android:layout_weight="1"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/featuredPrice_text"
+                    style="@style/CodeFont"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="1dp"
+                    android:layout_marginTop="1dp"
+                    android:background="#fff"
+                    android:layout_weight="3"
+                    android:text="読み込み中…" />
+            </TableRow>
+
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#000000">
+
+            <TextView
+                android:id="@+id/spot_officialWeb"
+                style="@style/CodeFont"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="1dp"
+                android:layout_weight="1"
+                android:background="#fff"
+                android:text="公式サイト"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/officialWeb_text"
+                style="@style/CodeFont"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="1dp"
+                android:layout_weight="3"
+                android:background="#fff"
+                android:text="なし" />
+        </TableRow>
+
+    </TableLayout>
+
+    <!-- はこぶらへのリンク -->
+    <TextView
+        android:id="@+id/powered_hakobura"
+        style="@style/CodeFont"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="1dp"
+        android:background="#EFEFF4"
+        android:gravity="right"
+        android:text="powered by 函館市公式観光情報サイト「はこぶら」"
+        android:textAlignment="textEnd"
+        android:textColor="#0000ff"
+        android:textSize="10sp"
+        android:textStyle="bold" />
+    </LinearLayout>
+</ScrollView>
