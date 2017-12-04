@@ -57,7 +57,11 @@ import java.util.Map;
 import static ac.fun.hakodatemapplus.R.id.address_text;
 import static ac.fun.hakodatemapplus.R.id.area_text;
 import static ac.fun.hakodatemapplus.R.id.description_text;
+import static ac.fun.hakodatemapplus.R.id.eMail_text;
+import static ac.fun.hakodatemapplus.R.id.eatIn_text;
 import static ac.fun.hakodatemapplus.R.id.image_view;
+import static ac.fun.hakodatemapplus.R.id.name_text;
+import static ac.fun.hakodatemapplus.R.id.officialWeb_text;
 import static ac.fun.hakodatemapplus.R.id.postcode_text;
 import static ac.fun.hakodatemapplus.R.id.spot_tel;
 import static ac.fun.hakodatemapplus.R.id.tel_text;
@@ -221,15 +225,16 @@ public class SpotDetailActivity extends Activity {
 
         public void run() {
             URL image_url = null;
-            InputStream istream = null;
-            //画像のURLを直うち
+            //画像のURLを代入
             try {
                 image_url = new URL(imageurl_str);
             } catch (MalformedURLException e) {
+                System.out.println(e);
                 e.printStackTrace();
             }
             Bitmap oBmp = null;
 
+            InputStream istream = null;
             //インプットストリームで画像を読み込む
             try {
                 istream = image_url.openStream();
@@ -239,6 +244,7 @@ public class SpotDetailActivity extends Activity {
                 istream.close();
             } catch (IOException e) {
                 e.printStackTrace();
+                System.out.println(e);
             }
 
             final Bitmap addBmp = oBmp;
@@ -356,7 +362,7 @@ public class SpotDetailActivity extends Activity {
                 bindings = json_results.getJSONArray("bindings");
                 System.out.println("ここまでおｋ３");
                 System.out.println(bindings);
-                //ここで死亡
+
                 final JSONObject binding = bindings.getJSONObject(0);     // bindingはbindingsのゼロ番目であることに注意
                 System.out.println("ここまでおｋ４");
 
@@ -413,6 +419,7 @@ public class SpotDetailActivity extends Activity {
                 final String access_str = getDataFromJSON(binding,"access","");
                 final String area_str = getDataFromJSON(binding,"area","");
                 final String image_str = getDataFromJSON(binding,"image","shopimage");
+                System.out.println(image_str);//成功済み
                 final String address_str = getDataFromJSON(binding,"address","address");
                 final String telephone_str = getDataFromJSON(binding,"telephone","telephone");
                 final String fax_str = getDataFromJSON(binding,"fax","faxNumber");
@@ -434,8 +441,8 @@ public class SpotDetailActivity extends Activity {
                         hakoburaimg_thread.start();
 
                         // スポット名
-                        TextView name_text = (TextView) findViewById(R.id.name_text);
-                        name_text.setText(queue_title);
+                        //TextView name_text = (TextView) findViewById(R.id.name_text);
+                        //name_text.setText(queue_title);
 
                         // 概要
                         TextView description_text = (TextView) findViewById(R.id.description_text);
@@ -573,24 +580,55 @@ public class SpotDetailActivity extends Activity {
 
                         // イートイン
                         TextView eatIn_text = (TextView) findViewById(R.id.eatIn_text);
-                        eatIn_text.setText(eatIn_str);
-                        if(eatIn_str.equals("")){
+                        if(!queue_category.equals("函館スイーツ")){
                             findViewById(R.id.spot_eatIn).setVisibility(GONE);
                             eatIn_text.setVisibility(GONE);
+                        }else if(!eatIn_str.equals("")){
+                            eatIn_text.setText(eatIn_str);
                         }
 
                         // メール
                         TextView eMail_text = (TextView) findViewById(R.id.eMail_text);
-                        eMail_text.setText(eMail_str);
-                        if(eMail_str.equals("")){
+                        if(!queue_category.equals("函館スイーツ")){
                             findViewById(R.id.spot_eMail).setVisibility(GONE);
                             eMail_text.setVisibility(GONE);
+                        }else if(!eMail_str.equals("")) {
+                            eMail_text.setText(eMail_str);
                         }
 
+                        TextView officialWeb_text= (TextView) findViewById(R.id.officialWeb_text);
+
                         // URL
+                        if(queue_category.equals("函館スイーツ")){
+                            if(!url_str.equals("")){
+                                officialWeb_text.setText(url_str);
+                                findViewById(R.id.spot_officialWeb).setOnClickListener(new View.OnClickListener() {
+                                    public void onClick(View v) {
+                                        intentSpotWebBrowser(url_str, spot_title);
+                                    }
+                                });
+                                officialWeb_text.setOnClickListener(new View.OnClickListener() {
+                                    public void onClick(View v) {
+                                        intentSpotWebBrowser(url_str, spot_title);
+                                    }
+                                });
+                            }
+                        }else{
+                            officialWeb_text.setVisibility(GONE);
+                            findViewById(R.id.officialWeb_text_yajirushi).setVisibility(GONE);
+                            findViewById(R.id.spot_officialWeb).setVisibility(GONE);
+                        }
+
+
+                        // もっと見る
+                        TextView hakoburalink=(TextView) findViewById(R.id.spot_hakoburalink);
+                        hakoburalink.setText(queue_category.equals("函館スイーツ")?"函館スイーツの紹介ページを見る":"もっと見る");
+                        final String link=queue_category.equals("函館スイーツ")?
+                                "http://www.hakodate-sweets.com/detail.php?cat=shop&id="+Integer.parseInt(queue_id):
+                                url_str;
                         findViewById(R.id.hakoburalink_row).setOnClickListener(new View.OnClickListener() {
                             public void onClick(View v) {
-                                intentSpotWebBrowser(url_str, spot_title);
+                                intentSpotWebBrowser(link, spot_title);
                             }
                         });
 

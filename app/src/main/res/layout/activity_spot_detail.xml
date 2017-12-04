@@ -32,22 +32,22 @@
                     android:scaleType="fitStart" />
             </TableRow>
 
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="#000000">
+            <!--<TableRow-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:background="#000000">-->
 
-                <TextView
-                    android:id="@+id/name_text"
-                    style="@style/CodeFont"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="1dp"
-                    android:layout_span="2"
-                    android:background="#EFEFF4"
-                    android:text="読み込み中…"
-                    android:textStyle="bold" />
-            </TableRow>
+                <!--<TextView-->
+                    <!--android:id="@+id/name_text"-->
+                    <!--style="@style/CodeFont"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginBottom="1dp"-->
+                    <!--android:layout_span="2"-->
+                    <!--android:background="#EFEFF4"-->
+                    <!--android:text="読み込み中…"-->
+                    <!--android:textStyle="bold" />-->
+            <!--</TableRow>-->
 
             <TableRow
                 android:layout_width="match_parent"
@@ -59,6 +59,7 @@
                     style="@style/CodeFont"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_marginTop="1dp"
                     android:layout_marginBottom="1dp"
                     android:layout_span="2"
                     android:layout_weight="1"
@@ -89,22 +90,14 @@
 
             <TableRow
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#000000">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_span="2"
-                    android:layout_marginBottom="1dp"
-                    >
+                android:layout_height="match_parent">
 
                     <ImageView
                         android:id="@+id/featuredImage_view"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:adjustViewBounds="true"
                         android:layout_weight="2"
+                        android:adjustViewBounds="true"
                         android:background="#fff" />
 
                     <TextView
@@ -112,25 +105,24 @@
                         style="@style/CodeFont"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="5"
+                        android:layout_weight="9.43"
                         android:background="#fff"
                         android:text="読み込み中..." />
+
                     <TextView
                         android:id="@+id/nextButton_text"
                         style="@style/CodeFont"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
                         android:background="#fff"
                         android:text=">" />
-                </LinearLayout>
-
             </TableRow>
 
             <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#000000">
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                >
 
                 <TextView
                     android:id="@+id/base_text"
@@ -156,8 +148,8 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:layout_weight="1"
+
+                    android:layout_weight="2"
                     android:background="#fff"
                     android:text="郵便番号"
                     android:textStyle="bold" />
@@ -168,8 +160,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:layout_weight="2"
+                    android:layout_weight="3"
                     android:background="#fff"
                     android:text="読み込み中…" />
             </TableRow>
@@ -185,8 +176,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:layout_weight="1"
+                    android:layout_weight="2"
                     android:background="#fff"
                     android:text="住所"
                     android:textStyle="bold" />
@@ -197,8 +187,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:layout_weight="2"
+                    android:layout_weight="3"
                     android:background="#fff"
                     android:text="読み込み中…" />
             </TableRow>
@@ -215,7 +204,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="1dp"
-                android:layout_weight="1"
+                android:layout_weight="2"
                 android:background="#fff"
                 android:text="電話番号"
                 android:textStyle="bold" />
@@ -226,7 +215,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="1dp"
-                android:layout_weight="2"
+                android:layout_weight="3"
                 android:background="#fff"
                 android:text="読み込み中…" />
         </TableRow>
@@ -242,7 +231,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="1dp"
-                    android:layout_weight="1"
+                    android:layout_weight="2"
                     android:background="#fff"
                     android:text="FAX番号"
                     android:textStyle="bold" />
@@ -253,7 +242,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
-                    android:layout_weight="2"
+                    android:layout_weight="3"
                     android:background="#fff"
                     android:text="読み込み中…" />
             </TableRow>
@@ -269,7 +258,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="1dp"
-                    android:layout_weight="1"
+                    android:layout_weight="2"
                     android:background="#fff"
                     android:text="営業時間"
                     android:textStyle="bold" />
@@ -280,7 +269,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
-                    android:layout_weight="2"
+                    android:layout_weight="3"
                     android:background="#fff"
                     android:text="読み込み中…" />
             </TableRow>
@@ -296,7 +285,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="1dp"
-                    android:layout_weight="1"
+                    android:layout_weight="2"
                     android:background="#fff"
                     android:text="定休日"
                     android:textStyle="bold" />
@@ -307,7 +296,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
-                    android:layout_weight="2"
+                    android:layout_weight="3"
                     android:background="#fff"
                     android:text="読み込み中…" />
             </TableRow>
@@ -324,7 +313,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="1dp"
-                    android:layout_weight="1"
+                    android:layout_weight="2"
                     android:background="#fff"
                     android:text="アクセス"
                     android:textStyle="bold" />
@@ -335,7 +324,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
-                    android:layout_weight="2"
+                    android:layout_weight="3"
                     android:background="#fff"
                     android:text="読み込み中…" />
             </TableRow>
@@ -352,7 +341,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="1dp"
-                    android:layout_weight="1"
+                    android:layout_weight="2"
                     android:background="#fff"
                     android:text="エリア"
                     android:textStyle="bold" />
@@ -363,7 +352,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
-                    android:layout_weight="2"
+                    android:layout_weight="3"
                     android:background="#fff"
                     android:text="読み込み中…" />
             </TableRow>
@@ -379,7 +368,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="1dp"
-                    android:layout_weight="1"
+                    android:layout_weight="2"
                     android:background="#fff"
                     android:text="駐車場"
                     android:textStyle="bold" />
@@ -390,7 +379,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
-                    android:layout_weight="2"
+                    android:layout_weight="3"
                     android:background="#fff"
                     android:text="読み込み中…" />
             </TableRow>
@@ -406,7 +395,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="1dp"
-                    android:layout_weight="1"
+                    android:layout_weight="2"
                     android:background="#fff"
                     android:text="イートイン"
                     android:textStyle="bold" />
@@ -417,9 +406,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
-                    android:layout_weight="2"
+                    android:layout_weight="3"
                     android:background="#fff"
-                    android:text="読み込み中…" />
+                    android:text="なし" />
             </TableRow>
             <TableRow
                 android:layout_width="match_parent"
@@ -433,7 +422,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="1dp"
-                    android:layout_weight="1"
+                    android:layout_weight="2"
                     android:background="#fff"
                     android:text="メール"
                     android:textStyle="bold" />
@@ -444,9 +433,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
-                    android:layout_weight="2"
+                    android:layout_weight="3"
                     android:background="#fff"
-                    android:text="読み込み中…" />
+                    android:text="なし" />
             </TableRow>
             <TableRow
                 android:layout_width="match_parent"
@@ -460,20 +449,32 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="1dp"
-                    android:layout_weight="1"
+                    android:layout_weight="2"
                     android:background="#fff"
                     android:text="公式サイト"
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/officialWeb_text"
+                android:id="@+id/officialWeb_text"
+                style="@style/CodeFont"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="0.5dp"
+                android:layout_weight="2.2"
+                android:background="#fff"
+                android:text="なし" />
+
+                <TextView
+                    android:id="@+id/officialWeb_text_yajirushi"
                     style="@style/CodeFont"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="1dp"
-                    android:layout_weight="2"
+                    android:layout_height="match_parent"
+
+                    android:layout_marginBottom="0.5dp"
+                    android:layout_weight="1"
                     android:background="#fff"
-                    android:text="なし" />
+                    android:text=">" />
+
             </TableRow>
 
             <TableRow
@@ -486,24 +487,24 @@
                 <TextView
                     android:id="@+id/spot_hakoburalink"
                     style="@style/CodeFont"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="1dp"
-                    android:layout_weight="1"
+                    android:layout_weight="4.2"
                     android:background="#fff"
                     android:gravity="left"
                     android:text="もっと見る"
                     android:textStyle="bold" />
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical|right"
+                <TextView
+                    android:id="@+id/spt_hakodate_yajirushi"
+                    style="@style/CodeFont"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
                     android:layout_marginBottom="1dp"
                     android:layout_weight="1"
                     android:background="#fff"
-                    android:padding="25dip"
-                    android:src="@drawable/gray_arrow" />
+                    android:text=">" />
             </TableRow>
         </TableLayout>
 

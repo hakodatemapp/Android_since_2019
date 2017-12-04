@@ -112,7 +112,7 @@ public class MainActivity extends FragmentActivity
     public void onMapReady(GoogleMap map) {
         gMap = map;
 
-        //Location myLocate = mLocationManager.getLastKnownLocation("gps");
+        Location myLocate = mLocationManager.getLastKnownLocation("gps");
 
         map.setTrafficEnabled(false);
         map.setMyLocationEnabled(true);
@@ -331,11 +331,11 @@ public class MainActivity extends FragmentActivity
 
         ActionBar actionBar = getActionBar();
         actionBar.setHomeButtonEnabled(true);
-        actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(title);
-        actionBar.setLogo(R.drawable.mapplus_icon);
-
+        actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setIcon(R.drawable.mapplus_icon);
+
 
         // 後でアイコンを変更するために避難モードのボタンを取得
         escape_menu = menu.findItem(R.id.menu_escape);
