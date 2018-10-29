@@ -77,6 +77,7 @@ public class MainActivity extends FragmentActivity
     private boolean is_show_kaimono = true;
     private boolean is_show_onsen = true;
     private boolean is_show_event = true;
+    private boolean is_show_sweets = true;
 
     // 避難モード
     private boolean is_escape_mode = false;
@@ -122,7 +123,10 @@ public class MainActivity extends FragmentActivity
             public void onInfoWindowClick(Marker arg0) {
                 String marker_title = arg0.getTitle();
                 String marker_snippet = arg0.getSnippet();
-                Log.d("MARKER", marker_title);
+                String marker_id= arg0.getTag().toString();
+
+                Log.d("Title", marker_title);
+                Log.d("Snippet",marker_snippet);
                 if (!marker_title.equals("スタート") && !marker_snippet.equals("まちあるきコース")) {
                     Intent intent;
 
@@ -132,6 +136,8 @@ public class MainActivity extends FragmentActivity
                         intent = new Intent(MainActivity.this, SpotDetailActivity.class);
                     }
                     intent.putExtra("spot_title", marker_title);    // 第二引数：マーカーのタイトル
+                    intent.putExtra("spot_category", marker_snippet);
+                    intent.putExtra("spot_id",marker_id);
                     // 遷移先から返却されてくる際の識別コード
                     int requestCode = 1001;// 返却値を考慮したActivityの起動を行う
                     startActivityForResult(intent, requestCode);
@@ -221,6 +227,7 @@ public class MainActivity extends FragmentActivity
                     is_show_kaimono = intent.getExtras().getBoolean("is_show_kaimono");
                     is_show_onsen = intent.getExtras().getBoolean("is_show_onsen");
                     is_show_event = intent.getExtras().getBoolean("is_show_event");
+                    is_show_sweets = intent.getExtras().getBoolean("is_show_sweets");
                     is_show_hinanjo = intent.getExtras().getBoolean("is_show_hinanjo");
                     is_show_tsunamibuilding = intent.getExtras().getBoolean("is_show_tsunamibuilding");
                     is_show_altitude = intent.getExtras().getBoolean("is_show_altitude");
@@ -232,6 +239,7 @@ public class MainActivity extends FragmentActivity
                             is_show_kaimono == false &&
                             is_show_onsen == false &&
                             is_show_event == false &&
+                            is_show_sweets == false &&
                             is_show_hinanjo == true &&
                             is_show_tsunamibuilding == true &&
                             is_show_altitude == true) {
@@ -323,11 +331,11 @@ public class MainActivity extends FragmentActivity
 
         ActionBar actionBar = getActionBar();
         actionBar.setHomeButtonEnabled(true);
-        actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(title);
-        actionBar.setLogo(R.drawable.mapplus_icon);
-
+        actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setIcon(R.drawable.mapplus_icon);
+
 
         // 後でアイコンを変更するために避難モードのボタンを取得
         escape_menu = menu.findItem(R.id.menu_escape);
@@ -349,6 +357,7 @@ public class MainActivity extends FragmentActivity
                 intent.putExtra("is_show_kaimono", is_show_kaimono);
                 intent.putExtra("is_show_onsen", is_show_onsen);
                 intent.putExtra("is_show_event", is_show_event);
+                intent.putExtra("is_show_sweets", is_show_sweets);
                 intent.putExtra("is_show_hinanjo", is_show_hinanjo);
                 intent.putExtra("is_show_tsunamibuilding", is_show_tsunamibuilding);
                 intent.putExtra("is_show_altitude", is_show_altitude);
@@ -371,6 +380,7 @@ public class MainActivity extends FragmentActivity
                 is_show_kaimono = false;
                 is_show_onsen = false;
                 is_show_event = false;
+                is_show_sweets = false;
                 is_show_hinanjo= true;
                 is_show_tsunamibuilding = true;
                 is_show_altitude = true;
@@ -384,6 +394,7 @@ public class MainActivity extends FragmentActivity
                 is_show_kaimono = true;
                 is_show_onsen = true;
                 is_show_event = true;
+                is_show_sweets = true;
                 is_show_hinanjo= false;
                 is_show_tsunamibuilding = false;
                 is_show_altitude = false;
@@ -534,6 +545,7 @@ public class MainActivity extends FragmentActivity
             JSONObject json_results = json.getJSONObject("results");
             JSONArray bindings = json_results.getJSONArray("bindings");
 
+
             for (int i = 0; i < bindings.length(); i++) {
                 JSONObject binding = bindings.getJSONObject(i);
                 ArrayList spot_detail = new ArrayList<>();
@@ -548,22 +560,34 @@ public class MainActivity extends FragmentActivity
                 } catch (JSONException e) {
                     spot_detail.add(1, null);
                 }
-                spot_detail.add(2, binding.getJSONObject("spotName").getString("value"));
+                try{
+                    spot_detail.add(2, binding.getJSONObject("spotName").getString("value"));
+                } catch (JSONException e){
+                    spot_detail.add(2,  binding.getJSONObject("shopname").getString("value"));
+                }
+
                 try {
                     spot_detail.add(3, binding.getJSONObject("category").getString("value"));
                 } catch (JSONException e) {
-                    spot_detail.add(3, null);
+                    spot_detail.add(3, "函館スイーツ");
                 }
                 spot_detail.add(4, binding.getJSONObject("lat").getString("value"));
                 spot_detail.add(5, binding.getJSONObject("long").getString("value"));
 
+                if(spot_detail.get(3)=="函館スイーツ"){
+                    spot_detail.add(6, binding.getJSONObject("id").getString("value"));
+                }else{
+                    spot_detail.add(6,null);
+                }
+
                 spot_list.add(spot_detail);
             }
-
+        //System.out.println("ここだよ！！"+spot_list);
         } catch (Exception ex) {
             ex.printStackTrace();
             return false;
         }
+
         return true;
 
     }
@@ -624,7 +648,7 @@ public class MainActivity extends FragmentActivity
     }
 
     // SPARQLのクエリを実行して取得したデータを反映する
-    class SparqlGetThread extends Thread {
+    private class SparqlGetThread extends Thread {
         GoogleMap gm;
         String queue_title;
 
@@ -664,6 +688,12 @@ public class MainActivity extends FragmentActivity
                     System.out.println("2回目の呼び出し");
                     setSparqlResultFromQueue(spot_list, queue_machi_url);
                 }
+                //スイーツ情報の取得
+                if (encoded_course != null) {
+                    System.out.println("スイーツ情報の呼び出し");
+                    String que_sweets_url="http://lod.per.c.fun.ac.jp:8080/sparql?default-graph-uri=http://localhost:8080/DAV/hakodate_sweets&format=json&query=PREFIX%20geo%3A%20%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23%3E%0APREFIX%20sweets%3A%20%3Chttp%3A%2F%2Flod.fun.ac.jp%2Fhakobura%2Fterms%2Fsweet%23%3E%0A%0Aselect%20%3Fid%20%3Fshopname%20%3Flat%20%3Flong%20where%20%7B%0A%3Fs%20sweets%3Aid%20%3Fid.%0A%3Fs%20sweets%3Ashopname%20%3Fshopname.%0A%3Fs%20geo%3Alat%20%3Flat.%0A%3Fs%20geo%3Along%20%3Flong.%0AFILTER%20(lang(%3Fshopname)%20%3D%20%27ja%27)%0A%7D";
+                    setSparqlResultFromQueue(spot_list,que_sweets_url);
+                }
 
                 //避難所の取得
                 String queue_shelter_url = "http://lod.per.c.fun.ac.jp:8000/sparql/?query=PREFIX%20rdf%3a%20%3Chttp%3a%2f%2fwww%2ew3%2eorg%2f1999%2f02%2f22-rdf-syntax-ns%23%3E%0d%0aPREFIX%20rdfs%3a%20%3Chttp%3a%2f%2fwww%2ew3%2eorg%2f2000%2f01%2frdf-schema%23%3E%0d%0aPREFIX%20geo%3a%20%3Chttp%3a%2f%2fwww%2ew3%2eorg%2f2003%2f01%2fgeo%2fwgs84_pos%23%3E%0d%0aPREFIX%20schema%3a%20%3Chttp%3a%2f%2fschema%2eorg%2f%3E%0d%0aPREFIX%20shelter%3a%20%3Chttp%3a%2f%2flod%2eper%2ec%2efun%2eac%2ejp%2fbosai%2fterms%2fshelter%23%3E%0d%0aPREFIX%20evcx%3a%20%3Chttp%3a%2f%2fsmartercity%2ejp%2fevacuation%23%3E%0d%0a%0d%0aSELECT%20DISTINCT%20%3fspotName%20%3frootNum%20%3fcategory%20%3flat%20%3flong%0d%0a%0d%0aFROM%20%3Cfile%3a%2f%2f%2fvar%2flib%2f4store%2fshelter%2erdf%3E%0d%0a%0d%0aWHERE%20%7b%0d%0a%20%20%3fs%20rdfs%3alabel%20%3fspotName%3b%0d%0a%20%20%20%20geo%3aalt%20%3frootNum%3b%0d%0a%20%20%20%20shelter%3atypeOfshelter%20%3fcategory%3b%0d%0a%20%20%20%20geo%3alat%20%3flat%3b%0d%0a%20%20%20%20geo%3along%20%3flong%3b%0d%0a%7d&output=json";
@@ -687,6 +717,7 @@ public class MainActivity extends FragmentActivity
             BitmapDescriptor kaimono = BitmapDescriptorFactory.fromResource(R.drawable.kaimono);
             BitmapDescriptor onsen = BitmapDescriptorFactory.fromResource(R.drawable.onsen);
             BitmapDescriptor event = BitmapDescriptorFactory.fromResource(R.drawable.event);
+            BitmapDescriptor sweets = BitmapDescriptorFactory.fromResource(R.drawable.sweets);
 
             BitmapDescriptor pin01 = BitmapDescriptorFactory.fromResource(R.drawable.pin01);
             BitmapDescriptor pin02 = BitmapDescriptorFactory.fromResource(R.drawable.pin02);
@@ -711,6 +742,8 @@ public class MainActivity extends FragmentActivity
 
             BitmapDescriptor hinanjo = BitmapDescriptorFactory.fromResource(R.drawable.hinanjo);
             BitmapDescriptor tsunamibuilding = BitmapDescriptorFactory.fromResource(R.drawable.tsunamibuilding);
+
+            //System.out.println("ここでもあるかも"+final_list.size());
 
             // スポットのピンを地図上に表示
             for (int i = 0; i < final_list.size(); i++) {
@@ -752,6 +785,10 @@ public class MainActivity extends FragmentActivity
                                 break;
                             case "観光カレンダー":
                                 options.snippet("まちあるきコース - 観光イベント");
+                                break;
+                            case "函館スイーツ":
+                                options.snippet("まちあるきコース - 函館スイーツ");
+
                                 break;
                         }
                     }
@@ -822,6 +859,7 @@ public class MainActivity extends FragmentActivity
                 } else {
                     // カテゴリを設定する
                     options.snippet(final_list.get(i).get(3));
+                    //System.out.println("ここですよー！！！へい！"+ final_list.get(i).get(3));
                     switch (final_list.get(i).get(3)) {
                         case "食べる":
                             options.icon(taberu);
@@ -847,6 +885,13 @@ public class MainActivity extends FragmentActivity
                             options.icon(event);
                             options.snippet("観光イベント");
                             is_pin_show = is_show_event;
+                           // System.out.println("ここで判定！観光イベント"+is_pin_show);
+                            break;
+                        case "函館スイーツ":
+                            options.icon(sweets);
+                            options.snippet("函館スイーツ");
+                            is_pin_show = is_show_sweets;
+                            //System.out.println("ここで判定！"+is_pin_show);
                             break;
                         case "津波避難所":
                             options.icon(hinanjo);
@@ -860,6 +905,16 @@ public class MainActivity extends FragmentActivity
                     }
                 }
                 Marker marker = gm.addMarker(options);
+                //println("id:"+final_list.get(i).get(6));
+
+                String thisId=final_list.get(i).get(6);
+                if(thisId==null){
+                    marker.setTag("");
+                }else{
+                    marker.setTag(thisId);
+                }
+
+                //System.out.println("this_marker:"+marker.getTag());
                 marker.setVisible(is_pin_show);
             }
 

@@ -17,6 +17,7 @@ public class ListItem {
         sText = text;
         //画像のResIDを取得
         iRes  = res;
+
     }
  
     public String Get_Text(){

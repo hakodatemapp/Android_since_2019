@@ -34,6 +34,7 @@ public class DisplaySettingActivity extends Activity {
     private boolean is_show_kaimono = true;
     private boolean is_show_onsen = true;
     private boolean is_show_event = true;
+    private boolean is_show_sweets = true;
     private boolean is_show_hinanjo = true;
     private boolean is_show_tsunamibuilding = true;
     private boolean is_show_altitude = true;
@@ -44,6 +45,7 @@ public class DisplaySettingActivity extends Activity {
     private CheckBox kaimono_checkbox;
     private CheckBox onsen_checkbox;
     private CheckBox event_checkbox;
+    private CheckBox sweets_checkbox;
     private CheckBox hinanjo_checkbox;
     private CheckBox tsunamibuilding_checkbox;
     private Switch altitude_switch;
@@ -95,6 +97,7 @@ public class DisplaySettingActivity extends Activity {
         is_show_kaimono = intent.getExtras().getBoolean("is_show_kaimono");
         is_show_onsen = intent.getExtras().getBoolean("is_show_onsen");
         is_show_event = intent.getExtras().getBoolean("is_show_event");
+        is_show_sweets = intent.getExtras().getBoolean("is_show_sweets");
         is_show_hinanjo = intent.getExtras().getBoolean("is_show_hinanjo");
         is_show_tsunamibuilding = intent.getExtras().getBoolean("is_show_tsunamibuilding");
         is_show_altitude = intent.getExtras().getBoolean("is_show_altitude");
@@ -112,6 +115,8 @@ public class DisplaySettingActivity extends Activity {
         onsen_checkbox.setChecked(is_show_onsen);
         event_checkbox = (CheckBox) findViewById(R.id.event_checkBox);
         event_checkbox.setChecked(is_show_event);
+        sweets_checkbox = (CheckBox) findViewById(R.id.sweets_checkBox);
+        sweets_checkbox.setChecked(is_show_sweets);
 
         hinanjo_checkbox = (CheckBox) findViewById(R.id.hinanjo_checkbox);
         hinanjo_checkbox.setChecked(is_show_hinanjo);
@@ -189,6 +194,17 @@ public class DisplaySettingActivity extends Activity {
             }
         });
 
+        TableRow sweets_row = (TableRow) findViewById(R.id.sweets_row);
+        sweets_row.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    //押したときの動作
+                    optionsTouchListener(R.id.sweets_row, R.id.sweets_checkBox);
+                }
+                return true;
+            }
+        });
+
         TableRow hinanjo_row = (TableRow) findViewById(R.id.hinanjo_row);
         hinanjo_row.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
@@ -252,6 +268,7 @@ public class DisplaySettingActivity extends Activity {
             is_show_kaimono = kaimono_checkbox.isChecked();
             is_show_onsen = onsen_checkbox.isChecked();
             is_show_event = event_checkbox.isChecked();
+            is_show_sweets = sweets_checkbox.isChecked();
             is_show_hinanjo = hinanjo_checkbox.isChecked();
             is_show_tsunamibuilding = tsunamibuilding_checkbox.isChecked();
             is_show_altitude = altitude_switch.isChecked();
@@ -263,6 +280,7 @@ public class DisplaySettingActivity extends Activity {
             intent.putExtra("is_show_kaimono", is_show_kaimono);
             intent.putExtra("is_show_onsen", is_show_onsen);
             intent.putExtra("is_show_event", is_show_event);
+            intent.putExtra("is_show_sweets", is_show_sweets);
             intent.putExtra("is_show_hinanjo", is_show_hinanjo);
             intent.putExtra("is_show_tsunamibuilding", is_show_tsunamibuilding);
             intent.putExtra("is_show_altitude", is_show_altitude);

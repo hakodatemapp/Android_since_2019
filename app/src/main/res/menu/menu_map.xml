@@ -5,16 +5,16 @@
         android:icon="@drawable/escape_button_off"
         android:showAsAction="always"
         android:title="避難モード" />
-    <!-- <item-->
+     <!--<item-->
         <!--android:id="@+id/menu_search"-->
         <!--android:orderInCategory="101"-->
         <!--android:icon="@drawable/action_search"-->
         <!--android:showAsAction="always"-->
-        <!--android:title="観光スポット検索" /> -->
+        <!--android:title="観光スポット検索" />-->
     <item
-        android:id="@+id/menu_displaysetting"
-        android:orderInCategory="102"
-        android:icon="@drawable/action_setting"
-        android:showAsAction="always"
-        android:title="表示設定" />
+    android:id="@+id/menu_displaysetting"
+    android:orderInCategory="102"
+    android:icon="@drawable/action_setting"
+    android:showAsAction="always"
+    android:title="表示設定" />
 </menu>
