@@ -305,31 +305,9 @@ public class SpotDetailActivity extends Activity {
             String queue_url=null;
             // SPARQLのクエリを準備する
             if(queue_category.equals("函館スイーツ")) {
-                String queue_parts1= "http://lod.per.c.fun.ac.jp:8080/sparql?default-graph-uri=http%3A%2F%2Flocalhost%3A8080%2FDAV%2Fhakodate_sweets&query=PREFIX+geo%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23%3E%0D%0APREFIX+dc%3A+%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Felements%2F1.1%2F%3E%0D%0APREFIX+schema%3A+%3Chttp%3A%2F%2Fschema.org%2F%3E%0D%0APREFIX+sweet%3A+%3Chttp%3A%2F%2Flod.fun.ac.jp%2Fhakobura%2Fterms%2Fsweet%23%3E%0D%0A%0D%0ASELECT+%3Fshopname+%3Fshopimage+%3Fshopdescription+%3Farea+%3Fmodified+%3Fpostcode+%3Faddress+%3Ftelephone+%3FfaxNumber+%3FopeningHoursSpecification+%3Fclosed+%3Fparking+%3Featin+%3Fid+%3Femail+%3Furl+%3Flat+%3Flong+%3Ffeaturedproductname+%3Ffeaturedproductprice+%3Ffeaturedproductimage+%3Ffeaturedproductdescription+%0D%0AWHERE+%7B%0D%0A%3Curn%3A";
-                String queue_parts2= "%3E+sweet%3Ashopname+%3Fshopname.%0D%0A%3Curn%3A";
-                String queue_parts3= "%3E+sweet%3Ashopimage+%3Fshopimage.%0D%0A%3Curn%3A";
-                String queue_parts4= "%3E+sweet%3Ashopdescription+%3Fshopdescription.%0D%0A%3Curn%3A";
-                String queue_parts5= "%3E+sweet%3Aarea+%3Farea.%0D%0A%3Curn%3A";
-                String queue_parts6= "%3E+dc%3Amodified+%3Fmodified.%0D%0A%3Curn%3A";
-                String queue_parts7= "%3E+sweet%3Apostcode+%3Fpostcode.%0D%0A%3Curn%3A";
-                String queue_parts8= "%3E+schema%3Aaddress+%3Faddress.%0D%0A%3Curn%3A";
-                String queue_parts9= "%3E+schema%3Atelephone+%3Ftelephone.%0D%0A%3Curn%3A";
-                String queue_parts10="%3E+schema%3AfaxNumber+%3FfaxNumber.%0D%0A%3Curn%3A";
-                String queue_parts11="%3E+schema%3AopeningHoursSpecification+%3FopeningHoursSpecification.%0D%0A%3Curn%3A";
-                String queue_parts12="%3E+sweet%3Aclosed+%3Fclosed.%0D%0A%3Curn%3A";
-                String queue_parts13="%3E+sweet%3Aparking+%3Fparking.%0D%0A%3Curn%3A";
-                String queue_parts14="%3E+sweet%3Aeatin+%3Featin.%0D%0A%3Curn%3A";
-                String queue_parts15="%3E+sweet%3Aid+%3Fid.%0D%0A%3Curn%3A";
-                String queue_parts16="%3E+schema%3Aemail+%3Femail.%0D%0A%3Curn%3A";
-                String queue_parts17="%3E+schema%3Aurl+%3Furl.%0D%0A%3Curn%3A";
-                String queue_parts18="%3E+geo%3Alat+%3Flat.%0D%0A%3Curn%3A";
-                String queue_parts19="%3E+geo%3Along+%3Flong.%0D%0A%3Curn%3A";
-                String queue_parts20="%3E+sweet%3Afeaturedproductname+%3Ffeaturedproductname.%0D%0A%3Curn%3A";
-                String queue_parts21="%3E+sweet%3Afeaturedproductprice+%3Ffeaturedproductprice.%0D%0A%3Curn%3A";
-                String queue_parts22="%3E+sweet%3Afeaturedproductimage+%3Ffeaturedproductimage.%0D%0A%3Curn%3A";
-                String queue_parts23="%3E+sweet%3Afeaturedproductdescription+%3Ffeaturedproductdescription.%0D%0AFILTER+%28lang%28%3Fshopname%29+%3D+%27ja%27%29%0D%0A%7D&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on";
-                queue_url = queue_parts1 +encoded_spot + queue_parts2 + encoded_spot + queue_parts3 + encoded_spot + queue_parts4 + encoded_spot + queue_parts5 + encoded_spot + queue_parts6 + encoded_spot + queue_parts7 + encoded_spot + queue_parts8 + encoded_spot + queue_parts9 + encoded_spot + queue_parts10 + encoded_spot + queue_parts11 + encoded_spot + queue_parts12 + encoded_spot + queue_parts13 + encoded_spot + queue_parts14 + encoded_spot + queue_parts15 + encoded_spot + queue_parts16 + encoded_spot + queue_parts17 + encoded_spot + queue_parts18 + encoded_spot + queue_parts19 + encoded_spot + queue_parts20 + encoded_spot + queue_parts21 + encoded_spot + queue_parts22 + encoded_spot + queue_parts23;
-                System.out.println("encoded_spot"+encoded_spot);
+                queue_url= "http://lod.per.c.fun.ac.jp:8080/sparql?default-graph-uri=&query=PREFIX+geo%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23%3E%0D%0APREFIX+sweets%3A+%3Chttp%3A%2F%2Flod.fun.ac.jp%2Fhakobura%2Fterms%2Fsweet%23%3E%0D%0APREFIX+dc%3A+%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Felements%2F1.1%2F%3E%0D%0APREFIX+schema%3A+%3Chttp%3A%2F%2Fschema.org%2F%3E%0D%0A%0D%0Aselect+distinct+%3Fprimarykey+%3Fshopname+%3Fshopimage+%3Fshopdescription+%3Farea+%3Fmodified++%3Fclosed+%3Fparking+%3Featin+%3Flat+%3Flong+%3Fid+%3Ffeaturedproductname+%3Ffeaturedproductprice+%3Ffeaturedproductimage+%3Ffeaturedproductdescription+%3Fhakodatesweetsurl+%3Faddress+%3Fpostcode+%3Ftelephone+%3FfaxNumber+%3FopeningHoursSpecification+%3Furl+%3Femail+where+%7B%0D%0A%0D%0A%3Fs+sweets%3Aprimarykey+%3Fprimarykey.%0D%0A%3Fs+sweets%3Ashopname+%3Fshopname.%0D%0A%3Fs+sweets%3Ashopimage+%3Fshopimage.%0D%0A%3Fs+sweets%3Ashopdescription+%3Fshopdescription.%0D%0A%3Fs+sweets%3Aarea+%3Farea.%0D%0A%3Fs+dc%3Amodified+%3Fmodified.%0D%0A%3Fs+sweets%3Aclosed+%3Fclosed.%0D%0A%3Fs+sweets%3Aparking+%3Fparking.%0D%0A%3Fs+sweets%3Aeatin+%3Featin.%0D%0A%3Fs+geo%3Alat+%3Flat.%0D%0A%3Fs+geo%3Along+%3Flong.%0D%0A%3Fs+sweets%3Aid+%3Fid.%0D%0A%3Fs+sweets%3Afeaturedproductname+%3Ffeaturedproductname.%0D%0A%3Fs+sweets%3Afeaturedproductprice+%3Ffeaturedproductprice.%0D%0A%3Fs+sweets%3Afeaturedproductimage+%3Ffeaturedproductimage.%0D%0A%3Fs+sweets%3Afeaturedproductdescription+%3Ffeaturedproductdescription.%0D%0A%3Fs+sweets%3Ahakodatesweetsurl+%3Fhakodatesweetsurl.%0D%0A%3Fs+schema%3Aaddress+%3Faddress.%0D%0A%3Fs+sweets%3Apostcode+%3Fpostcode.%0D%0A%3Fs+schema%3Atelephone+%3Ftelephone.%0D%0A%3Fs+schema%3AfaxNumber+%3FfaxNumber.%0D%0A%3Fs+schema%3AopeningHoursSpecification+%3FopeningHoursSpecification.%0D%0A%3Fs+schema%3Aurl+%3Furl.%0D%0A%3Fs+schema%3Aemail+%3Femail.%0D%0A%0D%0A%7D&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on";
+
+                System.out.println("encoded_spot"+queue_url);
             }else{
                 String queue_parts1 = "http://lod.per.c.fun.ac.jp:8000/sparql/?query=PREFIX%20rdf%3a%20%3chttp%3a%2f%2fwww%2ew3%2eorg%2f1999%2f02%2f22%2drdf%2dsyntax%2dns%23%3e%0d%0aPREFIX%20rdfs%3a%20%3chttp%3a%2f%2fwww%2ew3%2eorg%2f2000%2f01%2frdf%2dschema%23%3e%0d%0aPREFIX%20schema%3a%20%3chttp%3a%2f%2fschema%2eorg%2f%3e%0d%0aPREFIX%20dc%3a%20%3chttp%3a%2f%2fpurl%2eorg%2fdc%2felements%2f1%2e1%2f%3e%0d%0aPREFIX%20geo%3a%20%3chttp%3a%2f%2fwww%2ew3%2eorg%2f2003%2f01%2fgeo%2fwgs84_pos%23%3e%0d%0aPREFIX%20xsd%3a%20%3chttp%3a%2f%2fwww%2ew3%2eorg%2f2001%2fXMLSchema%23%3e%0d%0aPREFIX%20dcterms%3a%20%3chttp%3a%2f%2fpurl%2eorg%2fdc%2fterms%2f%3e%0d%0aPREFIX%20foaf%3a%20%3chttp%3a%2f%2fxmlns%2ecom%2ffoaf%2f0%2e1%2f%3e%0d%0a%0d%0aSELECT%20DISTINCT%20%3fdobokuname%20%3fdescription%20%3faccess%20%3farea%20%3fimage%20%3faddress%20%3ftelephone%20%3furl%20%3ffilmName%20%3fdirector%20%3factor%20%3ffilmdescription%20%3ffilmurl%20%3fbornDate%20%3fdobokudescription%20%3fdobokuurl%20%3fcreator%0d%0a%0d%0a%0d%0aFROM%20%3cfile%3a%2f%2f%2fvar%2flib%2f4store%2fhakobura_akiba%2erdf%3e%0d%0aFROM%20%3cfile%3a%2f%2f%2fvar%2flib%2f4store%2ffilm_akiba%2erdf%3e%0d%0aFROM%20%3cfile%3a%2f%2f%2fvar%2flib%2f4store%2fdoboku_akiba%2erdf%3e%0d%0a%0d%0a%0d%0a%0d%0aWHERE%20%7b%0d%0a%0d%0aGRAPH%20%3cfile%3a%2f%2f%2fvar%2flib%2f4store%2fhakobura_akiba%2erdf%3e%20%7b%0d%0a%20%3fhs%20rdfs%3alabel%20%22";
                 String queue_parts2 = "%22%3b%0d%0a%20dc%3adescription%20%3fdescription%3b%0d%0a%20schema%3adescription%20%3faccess%3b%0d%0a%20schema%3acontainedIn%20%3farea%3b%0d%0a%20schema%3aimage%20%3fimage%3b%0d%0a%20schema%3aaddress%20%3faddress%3b%0d%0a%20schema%3atelephone%20%3ftelephone%3b%0d%0a%20schema%3aurl%20%3furl%2e%0d%0a%7d%0d%0a%0d%0a%0d%0a%0d%0aOPTIONAL%20%7b%0d%0aGRAPH%20%3cfile%3a%2f%2f%2fvar%2flib%2f4store%2ffilm_akiba%2erdf%3e%7b%0d%0a%3ffss%20schema%3aname%20%22";
@@ -348,22 +326,33 @@ public class SpotDetailActivity extends Activity {
             try {
                 URL url = new URL(queue_url);
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
+
                 String str = InputStreamToString(con.getInputStream());
                 System.out.println("ここまでおｋ0");
-                System.out.println("str"+str);
+                System.out.println("str" + str);
+
 
                 // 受け取ったJSONをパースする
                 JSONObject json = new JSONObject(str);
                 System.out.println("ここまでおｋ１");
-                System.out.println("json"+json);
+                System.out.println("json" + json);
                 JSONObject json_results = json.getJSONObject("results");
                 System.out.println("ここまでおｋ２");
-                System.out.println("json_result"+json_results);
+                System.out.println("json_result" + json_results);
                 bindings = json_results.getJSONArray("bindings");
                 System.out.println("ここまでおｋ３");
                 System.out.println(bindings);
-
-                final JSONObject binding = bindings.getJSONObject(0);     // bindingはbindingsのゼロ番目であることに注意
+                JSONObject obj = bindings.getJSONObject(0);
+                if(queue_category.equals("函館スイーツ")) {
+                    for (int i = 0; i < bindings.length(); i++) {
+                        if (bindings.getJSONObject(i).optJSONObject("id").optString("value").equals(queue_id.toString())) {
+                            obj = bindings.getJSONObject(i);
+                            System.out.println("あったよ:" + bindings.getJSONObject(i).optJSONObject("id").optString("value"));
+                        }
+                    }
+                }
+                final JSONObject binding = obj;
+                System.out.println(binding);
                 System.out.println("ここまでおｋ４");
 
                 // 映画ロケ地である場合はその情報をパース
@@ -401,7 +390,6 @@ public class SpotDetailActivity extends Activity {
                 }catch(JSONException e){
                     System.out.println("遺産とか関係ないお");
                 }
-
                 final Collection<String> film_collection = film_spots_distinct;
                 final Collection<String> doboku_collection = doboku_spots_distinct;
 
