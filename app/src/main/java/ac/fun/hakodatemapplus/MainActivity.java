@@ -691,7 +691,7 @@ public class MainActivity extends FragmentActivity
                 //スイーツ情報の取得
                 if (encoded_course != null) {
                     System.out.println("スイーツ情報の呼び出し");
-                    String que_sweets_url="http://lod.per.c.fun.ac.jp:8080/sparql?default-graph-uri=http://localhost:8080/DAV/hakodate_sweets&format=json&query=PREFIX%20geo%3A%20%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23%3E%0APREFIX%20sweets%3A%20%3Chttp%3A%2F%2Flod.fun.ac.jp%2Fhakobura%2Fterms%2Fsweet%23%3E%0A%0Aselect%20%3Fid%20%3Fshopname%20%3Flat%20%3Flong%20where%20%7B%0A%3Fs%20sweets%3Aid%20%3Fid.%0A%3Fs%20sweets%3Ashopname%20%3Fshopname.%0A%3Fs%20geo%3Alat%20%3Flat.%0A%3Fs%20geo%3Along%20%3Flong.%0AFILTER%20(lang(%3Fshopname)%20%3D%20%27ja%27)%0A%7D";
+                    String que_sweets_url="http://lod.per.c.fun.ac.jp:8080/sparql?default-graph-uri=&query=PREFIX+geo%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23%3E%0D%0APREFIX+sweets%3A+%3Chttp%3A%2F%2Flod.fun.ac.jp%2Fhakobura%2Fterms%2Fsweet%23%3E%0D%0APREFIX+dc%3A+%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Felements%2F1.1%2F%3E%0D%0APREFIX+schema%3A+%3Chttp%3A%2F%2Fschema.org%2F%3E%0D%0A%0D%0Aselect+%3Fid+%3Fshopname+%3Flat+%3Flong+where+%7B%0D%0A%3Fs+sweets%3Aid+%3Fid.%0D%0A%3Fs+sweets%3Ashopname+%3Fshopname.%0D%0A%3Fs+geo%3Alat+%3Flat.%0D%0A%3Fs+geo%3Along+%3Flong.%0D%0A%7D&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on";
                     setSparqlResultFromQueue(spot_list,que_sweets_url);
                 }
 
