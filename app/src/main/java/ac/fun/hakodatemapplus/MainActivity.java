@@ -182,9 +182,14 @@ public class MainActivity extends FragmentActivity
         // 地図の初期表示位置を設定する
         CameraPosition Hakodate = new CameraPosition
                 .Builder()
-                .target(new LatLng(41.773746, 140.726399))
+                .target(new LatLng(myLocate.getLatitude(), myLocate.getLongitude()))
                 .zoom(13)
                 .build();
+        /*CameraPosition Hakodate = new CameraPosition
+                .Builder()
+                .target(new LatLng(41.773746, 140.726399))
+                .zoom(13)
+                .build();*/
 
         map.moveCamera(CameraUpdateFactory.newCameraPosition(Hakodate));    // 初期表示位置へ移動
 
