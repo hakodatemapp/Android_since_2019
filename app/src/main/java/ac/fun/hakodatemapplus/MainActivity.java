@@ -1,5 +1,6 @@
 package ac.fun.hakodatemapplus;
 
+import android.Manifest;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -9,15 +10,20 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.PermissionChecker;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -69,6 +75,12 @@ public class MainActivity extends FragmentActivity
     private String title;
     private int course_id;
     private GoogleMap gMap;
+    /*2019/10/08b1019116, 白戸作成*/
+    private final int REQUEST_PERMISSION = 1;//requestPermission実行時のrequestCode
+    private boolean isLocationEnable =false;//初期位置がGPSで利用可能か否か
+    private double latitude = 41.773746;//あらかじめ函館駅前の座標を入れておく
+    private double longitude = 140.726399;
+    //private boolean gpsEnabled = false;
 
     // スポット表示の初期設定
     private boolean is_show_taberu = true;
@@ -103,16 +115,23 @@ public class MainActivity extends FragmentActivity
                     (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
             mapFragment.getMapAsync(this);
         }
-        mLocationManager =
-                (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        //mLocationManager =
+        //        (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if(Build.VERSION.SDK_INT >= 23) {
+            Log.d("Debug3","API23以上");
+            isOriginalLocationEnable();
+        }else{
+            locationStart();
+        }
     }
+
 
     // Google Mapが利用できるとき
     @Override
     public void onMapReady(GoogleMap map) {
         gMap = map;
-
-        Location myLocate = mLocationManager.getLastKnownLocation("gps");
+        //コード作成のためにコメントアウト
+        //Location myLocate = mLocationManager.getLastKnownLocation("gps");
 
         map.setTrafficEnabled(false);
         map.setMyLocationEnabled(true);
@@ -178,18 +197,61 @@ public class MainActivity extends FragmentActivity
             }
         });
 
+        //isOriginalLocationEnable();
+
+        //if(getIsLocationEnable()) {
+          //  mLocationManager.requestLocationUpdates(mLocationManager.GPS_PROVIDER, 300, 1, this);
+            //mLocationManager.requestLocationUpdates(mLocationManager.NETWORK_PROVIDER, 300, 1, this);
+            //latitude = myLocate.getLatitude();
+            //longitude = myLocate.getLongitude();
+
+            //if (java.lang.Double.isNaN(latitude) || java.lang.Double.isNaN(longitude)) {
+            //    CameraPosition Hakodate = new CameraPosition
+            //            .Builder()
+            //            .target(new LatLng(41.773746, 140.726399))
+            //            .zoom(13)
+            //            .build();
+            //    map.moveCamera(CameraUpdateFactory.newCameraPosition(Hakodate));    // 初期表示位置へ移動
+            //
+            //} else {
+            //    CameraPosition Hakodate = new CameraPosition
+            //            .Builder()
+            //            .target(new LatLng(latitude, longitude))
+            //            .zoom(13)
+            //            .build();
+            //    map.moveCamera(CameraUpdateFactory.newCameraPosition(Hakodate));    // 初期表示位置へ移動
+            //}
+        //}else{
+        //    CameraPosition Hakodate = new CameraPosition
+        //            .Builder()
+        //            .target(new LatLng(41.773746, 140.726399))
+        //            .zoom(13)
+        //            .build();
+        //    map.moveCamera(CameraUpdateFactory.newCameraPosition(Hakodate));    // 初期表示位置へ移動
+        //}
+
 
         // 地図の初期表示位置を設定する
-        CameraPosition Hakodate = new CameraPosition
+        /*CameraPosition Hakodate = new CameraPosition
                 .Builder()
                 .target(new LatLng(myLocate.getLatitude(), myLocate.getLongitude()))
                 .zoom(13)
-                .build();
-        /*CameraPosition Hakodate = new CameraPosition
+                .build();*/
+       /* CameraPosition Hakodate = new CameraPosition
                 .Builder()
                 .target(new LatLng(41.773746, 140.726399))
                 .zoom(13)
                 .build();*/
+
+        //map.moveCamera(CameraUpdateFactory.newCameraPosition(Hakodate));    // 初期表示位置へ移動
+        Log.d("Debug", String.valueOf(latitude));
+        Log.d("Debug", String.valueOf(longitude));
+
+        CameraPosition Hakodate = new CameraPosition
+                .Builder()
+                .target(new LatLng(latitude, longitude))
+                .zoom(13)
+                .build();
 
         map.moveCamera(CameraUpdateFactory.newCameraPosition(Hakodate));    // 初期表示位置へ移動
 
@@ -213,6 +275,17 @@ public class MainActivity extends FragmentActivity
         getSPARQLInvoke();
         isMapReady = true;
     }
+
+    //
+    //@Override
+    //private void onLocationChange
+
+    //    CameraPosition Hakodate = new CameraPosition
+    //            .Builder()
+    //            .target(new LatLng(latitude, longitude))
+    //            .zoom(13)
+    //            .build();
+    //    map.moveCamera(CameraUpdateFactory.newCameraPosition(Hakodate));    // 初期表示位置へ移動
 
     // 別のActivityから戻ってきた場合
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -307,8 +380,100 @@ public class MainActivity extends FragmentActivity
             altitude_container.setVisibility(View.INVISIBLE);
         }
 
+
         super.onResume();
     }
+
+    /*2019/10/07,b1019116白戸拓作成,マップの初期位置を得るためにパーミッションリクエストを行う。*/
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults){
+        switch(requestCode){
+            case REQUEST_PERMISSION:
+                if(grantResults[0]/*PermissionChecker.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)*/ == PermissionChecker.PERMISSION_GRANTED){
+                    setIsLocationEnable(true);
+                    locationStart();
+                }
+            default:
+                setIsLocationEnable(false);
+        }
+        setIsLocationEnable(false);
+    }
+
+    private void isOriginalLocationEnable(){
+        /*2019/10/07,b1019116白戸拓作成,マップの初期位置を得るためにパーミッション確認を行う現在地を取得できればtrue、そうでなければfalseを返す*/
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            Log.d("Debug2","ひっかかった");
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)){
+
+                new AlertDialog.Builder(this)
+                        .setTitle("位置情報の承認")
+                        .setMessage("今の現在地を取得するためにはGPS機能に権限を与えてください。")
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSION);
+
+                            }
+                        })
+                        .create()
+                        .show();
+            }
+            setIsLocationEnable(false);
+
+        }else {
+            setIsLocationEnable(true);
+            locationStart();
+        }
+    }
+
+    /*2019/10/07,b1019116白戸拓作成,isLocationEnableのsetterとgetter*/
+    //setterは、isOriginalLocationEnable()と
+    private void setIsLocationEnable(boolean isTrue){
+        this.isLocationEnable = isTrue;
+    }
+    private boolean getIsLocationEnable(){
+        return this.isLocationEnable;
+    }
+
+    //2019/10/10白戸作成//パーミッションをクリアしたときにロケーションマネージャーのインスタンスを作りアップデート
+    private void locationStart(){
+        mLocationManager =
+                (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        //gpsEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        mLocationManager.requestLocationUpdates(mLocationManager.NETWORK_PROVIDER, 300, 1, this);
+        mLocationManager.requestLocationUpdates(mLocationManager.GPS_PROVIDER, 300, 1, this);
+
+        Location myLocate = mLocationManager.getLastKnownLocation("gps");
+        if(myLocate == null){
+            myLocate = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        }
+        if(myLocate != null){
+            Log.d("Debug4", String.valueOf(myLocate.getLatitude()));
+            Log.d("Debug4", String.valueOf(myLocate.getLongitude()));
+            latitude = myLocate.getLatitude();
+            longitude = myLocate.getLongitude();
+        }
+
+        if(mLocationManager != null && mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            Log.d("Debug","location manager Enabled");
+            //Log.d("Debug", String.valueOf(mLocationManager != null));
+        }else{
+            //GPSを設定するように促す
+           /* new AlertDialog.Builder(this)
+                    .setTitle("位置情報の有効化")
+                    .setMessage("位置情報をオンにすると、現在地を表示できます。\n位置情報の設定は\n[設定]→[位置情報]\nから行ってください。")
+                    .setPositiveButton(android.R.string.ok, null)
+                    .create()
+                    .show();*/
+            DialogFragment dialog = new NoLocationDialogFragment();
+            dialog.show(getFragmentManager(), null);
+
+
+
+        }
+
+    }
+
 
     @Override
     protected void onDestroy() {
@@ -420,22 +585,28 @@ public class MainActivity extends FragmentActivity
     // GPSの有効・無効をチェックしながら海抜の取得を開始する
     private void startGetAltitude() {
         // 位置情報が取得できるかどうか確認する
-        final boolean gpsEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        //2019/10/10白戸編集。gpsEnabledをグローバルに移行。初期化はfalse。変数の代入はlocationStartにて行う。
+        if(mLocationManager != null) {
+            final boolean gpsEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
-        if (!gpsEnabled) {
-            DialogFragment dialog = new NoLocationDialogFragment();
-            dialog.show(getFragmentManager(), null);
-        } else {
-            // 海抜の表示をリセットする
+            if (!gpsEnabled) {
+                DialogFragment dialog = new NoLocationDialogFragment();
+                dialog.show(getFragmentManager(), null);
+            } else {
+                // 海抜の表示をリセットする
+                TextView alt_val_tv = (TextView) findViewById(R.id.altitude_value);
+                alt_val_tv.setText("取得中");
+
+                mLocationManager.getProvider(LocationManager.GPS_PROVIDER);
+                mLocationManager.requestLocationUpdates(
+                        LocationManager.GPS_PROVIDER,
+                        2000,
+                        0,
+                        this);
+            }
+        }else{
             TextView alt_val_tv = (TextView) findViewById(R.id.altitude_value);
-            alt_val_tv.setText("取得中");
-
-            mLocationManager.getProvider(LocationManager.GPS_PROVIDER);
-            mLocationManager.requestLocationUpdates(
-                    LocationManager.GPS_PROVIDER,
-                    2000,
-                    0,
-                    this);
+            alt_val_tv.setText("利用不可");
         }
     }
 
@@ -444,6 +615,10 @@ public class MainActivity extends FragmentActivity
         double alt = location.getAltitude();
         TextView alt_val_tv = (TextView) findViewById(R.id.altitude_value);
         alt_val_tv.setText(String.format("%.1fm", alt));
+        //2019/10/10白戸追加
+        //latitude = location.getLatitude();
+        //longitude = location.getLongitude();
+
     }
 
     @Override

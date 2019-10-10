@@ -38,13 +38,7 @@
                 android:padding="3dp">
 
                 // 上
-                <TextView
-                    android:id="@+id/altitude_header"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="現在地の海抜は" />
 
-                // 下の二つ
                 <LinearLayout
                     android:id="@+id/altitude_footer_layout"
                     android:layout_width="wrap_content"
@@ -57,8 +51,8 @@
                         android:id="@+id/altitude_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:text="取得中" />
+                        android:text="取得中"
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
 
                     <TextView
                         android:id="@+id/altitude_value_footer"
@@ -66,6 +60,14 @@
                         android:layout_height="wrap_content"
                         android:text="です" />
                 </LinearLayout>
+
+                // 下の二つ
+
+                <TextView
+                    android:id="@+id/altitude_header"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="現在地の海抜は" />
             </LinearLayout>
 
             <LinearLayout
