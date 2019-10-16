@@ -112,10 +112,24 @@ public class MainActivity extends FragmentActivity
     public void onMapReady(GoogleMap map) {
         gMap = map;
 
-        Location myLocate = mLocationManager.getLastKnownLocation("gps");
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+        //
+        // 下の
+        // Location myLocate = mLocationManager.getLastKnownLocation("gps");
+        // map.setMyLocationEnabled(true);
+        // をコメントアウトすることでAPI29で確認されるパーミッション関係の不具合を回避しています。
+        //
+        // この状況を忘れると大変なことになりそうなので
+        // コメント処理を施しておきます。
+        //
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+
+        //Location myLocate = mLocationManager.getLastKnownLocation("gps");
 
         map.setTrafficEnabled(false);
-        map.setMyLocationEnabled(true);
+        //map.setMyLocationEnabled(true);
 
         // インフォウィンドウに触ったときの処理
         map.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
