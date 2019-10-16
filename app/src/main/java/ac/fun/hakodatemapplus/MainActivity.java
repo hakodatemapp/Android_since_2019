@@ -127,14 +127,14 @@ public class MainActivity extends FragmentActivity
 //        // API23(Android5.1)未満はそのまま位置情報の利用に進む。
 //        //※isOriginalLocationEnableに不具合があるため整備されるまでコメントアウト※
 //        //※強制的にlocationStartに進む。※
-//        if(Build.VERSION.SDK_INT >= 23) {
-//            Log.d("Debug3","API23以上");
-//            isOriginalLocationEnable();
-//        }else{
-//            Log.d("Debug3" , "API22以下");
+        if(Build.VERSION.SDK_INT >= 23) {
+            Log.d("Debug3","API23以上");
+            isOriginalLocationEnable();
+        }else{
+            Log.d("Debug3" , "API22以下");
             isLocationPermitted = true;
             locationStart();
-//        }
+        }
     }
 
 
@@ -349,58 +349,58 @@ public class MainActivity extends FragmentActivity
 
     /*2019/10/07,b1019116白戸拓作成,マップの初期位置を得るためにrequestPermissionの結果を受け取る。*/
     //※isOriginalLocationEnableに不具合があるため整備されるまでコメントアウト※
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults){
-//        switch(requestCode){
-//            case REQUEST_PERMISSION:
-//                if(grantResults[0]/*PermissionChecker.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)*/ == PermissionChecker.PERMISSION_GRANTED){
-//                    isLocationPermitted = true;
-//                    locationStart();
-//                }else{
-//                    isLocationPermitted = false;
-//                }
-//                break;
-//            default:
-//                isLocationPermitted = false;
-//                break;
-//        }
-//    }
-//
-//    //2019/10/11白戸。パーミッション許可の確認を行う。
-//     //しかし現段階では権限が付与されていないにもかかわらず位置情報が利用できるかのように動作している模様。
-//     //具体的には、メソッド内の一番上のif文で権限の有無にかかわらず常にtrueの判定になっている模様。原因不明。
-//     //この時、何事もなかったかのようにlocationStartが呼び出され、mLocationManagerがインスタンス化されるが、当然位置情報は取得できない。
-//     //整備されるまで上記のonRequestPermissionResultとともにコメントアウトする。
-//    private void isOriginalLocationEnable(){
-//        /*2019/10/07,b1019116白戸拓作成,マップの初期位置を得るためにパーミッション許可の確認を行う*/
-//        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-//            Log.d("Debug3", "Location is already permitted");
-//            isLocationPermitted = true;
-//            locationStart();
-//        }else {
-//            Log.d("Debug3","ひっかかった");
-//
-//            // 権限が与えられていないならば許可を申請する。
-//            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)){
-//
-//                new AlertDialog.Builder(this)
-//                        .setTitle("位置情報の承認")
-//                        .setMessage("今の現在地を取得するためにはGPS機能に権限を与えてください。")
-//                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSION);
-//
-//                            }
-//                        })
-//                        .create()
-//                        .show();
-//            }else {
-//                isLocationPermitted = false;
-//            }
-//
-//        }
-//    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults){
+        switch(requestCode){
+            case REQUEST_PERMISSION:
+                if(grantResults[0]/*PermissionChecker.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)*/ == PermissionChecker.PERMISSION_GRANTED){
+                    isLocationPermitted = true;
+                    locationStart();
+                }else{
+                    isLocationPermitted = false;
+                }
+                break;
+            default:
+                isLocationPermitted = false;
+                break;
+        }
+    }
+
+    //2019/10/11白戸。パーミッション許可の確認を行う。
+     //しかし現段階では権限が付与されていないにもかかわらず位置情報が利用できるかのように動作している模様。
+     //具体的には、メソッド内の一番上のif文で権限の有無にかかわらず常にtrueの判定になっている模様。原因不明。
+     //この時、何事もなかったかのようにlocationStartが呼び出され、mLocationManagerがインスタンス化されるが、当然位置情報は取得できない。
+     //整備されるまで上記のonRequestPermissionResultとともにコメントアウトする。
+    private void isOriginalLocationEnable(){
+        /*2019/10/07,b1019116白戸拓作成,マップの初期位置を得るためにパーミッション許可の確認を行う*/
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            Log.d("Debug3", "Location is already permitted");
+            isLocationPermitted = true;
+            locationStart();
+        }else {
+            Log.d("Debug3","ひっかかった");
+
+            // 権限が与えられていないならば許可を申請する。
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)){
+
+                new AlertDialog.Builder(this)
+                        .setTitle("位置情報の承認")
+                        .setMessage("今の現在地を取得するためにはGPS機能に権限を与えてください。")
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSION);
+
+                            }
+                        })
+                        .create()
+                        .show();
+            }else {
+                isLocationPermitted = false;
+            }
+
+        }
+    }
 
 
     //2019/10/10白戸作成//パーミッションをクリアしたときにロケーションマネージャーのインスタンスを作りアップデート
@@ -420,11 +420,21 @@ public class MainActivity extends FragmentActivity
             Log.d("Debug","Successfully acquired location from GPS");
         }
         //どちらかで現在地が取得できた場合は、latitudeとlongitudeの値をそれぞれ更新する。
+        //その際、現在地の座標が函館市外の場合、函館駅の座標から上書きしないこととする。
+        // 条件式に用いられている座標はgoogleマップ上から大体の座標を抜き出したものである。
+        //しかし、この方法はエリアを長方形状に切り出す方法なので、例えば大沼の東側あたりにいても現在地が表示されてしまう。
+        //これを克服する方法としては、函館市をもっと小さい長方形に分割し、それ造れの座標から条件式に書き出す方法か、
+        // なにかしらいいAPIを見つけてくることである。
         if(myLocate != null){
-            Log.d("Debug4", String.valueOf(myLocate.getLatitude()));
-            Log.d("Debug4", String.valueOf(myLocate.getLongitude()));
-            latitude = myLocate.getLatitude();
-            longitude = myLocate.getLongitude();
+            if(myLocate.getLongitude() >= 140.6924363 &&
+               myLocate.getLongitude() <= 141.1867893 &&
+               myLocate.getLatitude()  >= 41.708836   &&
+               myLocate.getLatitude()  <= 42.010086) {
+                Log.d("Debug4", String.valueOf(myLocate.getLatitude()));
+                Log.d("Debug4", String.valueOf(myLocate.getLongitude()));
+                latitude = myLocate.getLatitude();
+                longitude = myLocate.getLongitude();
+            }
         }
 
         // GPS使用可能時に表示するLog
