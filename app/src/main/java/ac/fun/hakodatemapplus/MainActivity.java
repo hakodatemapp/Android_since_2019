@@ -19,10 +19,12 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.PermissionChecker;
 import android.util.Log;
 import android.view.Menu;
@@ -52,6 +54,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -79,6 +82,7 @@ public class MainActivity extends FragmentActivity
     private final int REQUEST_PERMISSION = 1;//requestPermission実行時のrequestCode
     private double latitude = 41.773746;//あらかじめ函館駅前の座標を入れておく
     private double longitude = 140.726399;
+    private boolean isLocationPermitted = false; // 位置情報のパーミッションをほかのアクティビティに渡すときに使う
 
     // スポット表示の初期設定
     private boolean is_show_taberu = true;
@@ -115,20 +119,22 @@ public class MainActivity extends FragmentActivity
         }
 
         //2019/10/10白戸。コード作成のためにコメントアウト
-        //mLocationManager =
-        //        (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+//        mLocationManager =
+//                (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        //2019/10/10白戸。Permissionの確認を実行するか否かを判定。
-        // API23以降(Android6.0以降)はパーミッションの確認へ
-        // API23(Android5.1)未満はそのまま位置情報の利用に進む。
-        //※isOriginalLocationEnableに不具合があるため整備されるまでコメントアウト※
-        // 強制的にlocationStartに進む。
-        //        if(Build.VERSION.SDK_INT >= 23) {
-        //    Log.d("Debug3","API23以上");
-        //    isOriginalLocationEnable();
-        //}else{
+//        // 2019/10/10白戸。Permissionの確認を実行するか否かを判定。
+//        // API23以降(Android6.0以降)はパーミッションの確認へ
+//        // API23(Android5.1)未満はそのまま位置情報の利用に進む。
+//        //※isOriginalLocationEnableに不具合があるため整備されるまでコメントアウト※
+//        //※強制的にlocationStartに進む。※
+//        if(Build.VERSION.SDK_INT >= 23) {
+//            Log.d("Debug3","API23以上");
+//            isOriginalLocationEnable();
+//        }else{
+//            Log.d("Debug3" , "API22以下");
+            isLocationPermitted = true;
             locationStart();
-        //}
+//        }
     }
 
 
@@ -136,8 +142,8 @@ public class MainActivity extends FragmentActivity
     @Override
     public void onMapReady(GoogleMap map) {
         gMap = map;
-        //2019/10/10白戸。コード作成のためにコメントアウト
-        //Location myLocate = mLocationManager.getLastKnownLocation("gps");
+//        //2019/10/10白戸。コード作成のためにコメントアウト
+//        Location myLocate = mLocationManager.getLastKnownLocation("gps");
 
         map.setTrafficEnabled(false);
         map.setMyLocationEnabled(true);
@@ -148,10 +154,10 @@ public class MainActivity extends FragmentActivity
             public void onInfoWindowClick(Marker arg0) {
                 String marker_title = arg0.getTitle();
                 String marker_snippet = arg0.getSnippet();
-                String marker_id= arg0.getTag().toString();
+                String marker_id = arg0.getTag().toString();
 
                 Log.d("Title", marker_title);
-                Log.d("Snippet",marker_snippet);
+                Log.d("Snippet", marker_snippet);
                 if (!marker_title.equals("スタート") && !marker_snippet.equals("まちあるきコース")) {
                     Intent intent;
 
@@ -162,7 +168,7 @@ public class MainActivity extends FragmentActivity
                     }
                     intent.putExtra("spot_title", marker_title);    // 第二引数：マーカーのタイトル
                     intent.putExtra("spot_category", marker_snippet);
-                    intent.putExtra("spot_id",marker_id);
+                    intent.putExtra("spot_id", marker_id);
                     // 遷移先から返却されてくる際の識別コード
                     int requestCode = 1001;// 返却値を考慮したActivityの起動を行う
                     startActivityForResult(intent, requestCode);
@@ -203,14 +209,14 @@ public class MainActivity extends FragmentActivity
             }
         });
 
-        //2019/10/10白戸。コード作成のためにコメントアウト
-       /* CameraPosition Hakodate = new CameraPosition
-                .Builder()
-                .target(new LatLng(41.773746, 140.726399))
-                .zoom(13)
-                .build();*/
-
-        //map.moveCamera(CameraUpdateFactory.newCameraPosition(Hakodate));    // 初期表示位置へ移動
+//        //2019/10/10白戸。コード作成のためにコメントアウト
+//        CameraPosition Hakodate = new CameraPosition
+//                .Builder()
+//                .target(new LatLng(41.773746, 140.726399))
+//                .zoom(13)
+//                .build();
+//
+//        map.moveCamera(CameraUpdateFactory.newCameraPosition(Hakodate));    // 初期表示位置へ移動
 
         Log.d("Debug", String.valueOf(latitude));
         Log.d("Debug", String.valueOf(longitude));
@@ -268,7 +274,7 @@ public class MainActivity extends FragmentActivity
                     is_show_altitude = intent.getExtras().getBoolean("is_show_altitude");
 
                     // 観光スポットを非表示にし、避難所・避難ビル・海抜がすべて表示されたら避難モードにする
-                    if(is_show_taberu == false &&
+                    if (is_show_taberu == false &&
                             is_show_miru == false &&
                             is_show_asobu == false &&
                             is_show_kaimono == false &&
@@ -303,14 +309,14 @@ public class MainActivity extends FragmentActivity
         }
 
         // 避難モードのインジケータを設定する
-        if(is_escape_mode == true) {
+        if (is_escape_mode == true) {
             escape_menu.setIcon(R.drawable.escape_button_on);
         } else {
             escape_menu.setIcon(R.drawable.escape_button_off);
         }
 
         // 海抜を表示する設定なら取得を開始する
-        LinearLayout altitude_container  = (LinearLayout) findViewById(R.id.altitude_container);
+        LinearLayout altitude_container = (LinearLayout) findViewById(R.id.altitude_container);
         if (is_show_altitude == true) {
             altitude_container.setVisibility(View.VISIBLE);
             startGetAltitude();
@@ -327,9 +333,9 @@ public class MainActivity extends FragmentActivity
 
     public void onResume() {
         System.out.println("onResume");
-        
+
         // 海抜を表示する設定なら取得を開始する
-        LinearLayout altitude_container  = (LinearLayout) findViewById(R.id.altitude_container);
+        LinearLayout altitude_container = (LinearLayout) findViewById(R.id.altitude_container);
         if (is_show_altitude == true) {
             altitude_container.setVisibility(View.VISIBLE);
             startGetAltitude();
@@ -343,46 +349,58 @@ public class MainActivity extends FragmentActivity
 
     /*2019/10/07,b1019116白戸拓作成,マップの初期位置を得るためにrequestPermissionの結果を受け取る。*/
     //※isOriginalLocationEnableに不具合があるため整備されるまでコメントアウト※
-    //@Override
-    //public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults){
-    //    switch(requestCode){
-    //        case REQUEST_PERMISSION:
-    //            if(grantResults[0]/*PermissionChecker.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)*/ == PermissionChecker.PERMISSION_GRANTED){
-    //                locationStart();
-    //            }
-    //            break;
-    //        default:
-    //            break;
-    //    }
-    //}
-
-    //2019/10/11白戸。パーミッション許可の確認を行う。
-    // しかし現段階では権限が付与されていないにもかかわらず位置情報が利用できるかのように動作している模様。
-    // 整備されるまで上記のonRequestPermissionResultとともにコメントアウトする。
-    //private void isOriginalLocationEnable(){
-    //    /*2019/10/07,b1019116白戸拓作成,マップの初期位置を得るためにパーミッション許可の確認を行う現在地を取得できればtrue、そうでなければfalseを返す*/
-    //    if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-    //        Log.d("Debug2","ひっかかった");
-    //        // 権限が与えられていないならば許可を申請する。
-    //        if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)){
-    //
-    //            new AlertDialog.Builder(this)
-    //                    .setTitle("位置情報の承認")
-    //                    .setMessage("今の現在地を取得するためにはGPS機能に権限を与えてください。")
-    //                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-    //                        @Override
-    //                        public void onClick(DialogInterface dialog, int which) {
-    //                            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSION);
-    //
-    //                        }
-    //                    })
-    //                    .create()
-    //                    .show();
-    //        }
-    //    }else {
-    //        locationStart();
-    //    }
-    //}
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults){
+//        switch(requestCode){
+//            case REQUEST_PERMISSION:
+//                if(grantResults[0]/*PermissionChecker.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)*/ == PermissionChecker.PERMISSION_GRANTED){
+//                    isLocationPermitted = true;
+//                    locationStart();
+//                }else{
+//                    isLocationPermitted = false;
+//                }
+//                break;
+//            default:
+//                isLocationPermitted = false;
+//                break;
+//        }
+//    }
+//
+//    //2019/10/11白戸。パーミッション許可の確認を行う。
+//     //しかし現段階では権限が付与されていないにもかかわらず位置情報が利用できるかのように動作している模様。
+//     //具体的には、メソッド内の一番上のif文で権限の有無にかかわらず常にtrueの判定になっている模様。原因不明。
+//     //この時、何事もなかったかのようにlocationStartが呼び出され、mLocationManagerがインスタンス化されるが、当然位置情報は取得できない。
+//     //整備されるまで上記のonRequestPermissionResultとともにコメントアウトする。
+//    private void isOriginalLocationEnable(){
+//        /*2019/10/07,b1019116白戸拓作成,マップの初期位置を得るためにパーミッション許可の確認を行う*/
+//        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+//            Log.d("Debug3", "Location is already permitted");
+//            isLocationPermitted = true;
+//            locationStart();
+//        }else {
+//            Log.d("Debug3","ひっかかった");
+//
+//            // 権限が与えられていないならば許可を申請する。
+//            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)){
+//
+//                new AlertDialog.Builder(this)
+//                        .setTitle("位置情報の承認")
+//                        .setMessage("今の現在地を取得するためにはGPS機能に権限を与えてください。")
+//                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSION);
+//
+//                            }
+//                        })
+//                        .create()
+//                        .show();
+//            }else {
+//                isLocationPermitted = false;
+//            }
+//
+//        }
+//    }
 
 
     //2019/10/10白戸作成//パーミッションをクリアしたときにロケーションマネージャーのインスタンスを作りアップデート
@@ -394,9 +412,14 @@ public class MainActivity extends FragmentActivity
         // GPSでmLocateの変数に位置情報が取得されなければ。インターネットからの位置情報の取得を試す。
         // どちらかで位置情報が取得されれば現在地に緯度経度が更新。そうでなければ緯度経度初期化時の函館駅前の座標が入ったまま。
         Location myLocate = mLocationManager.getLastKnownLocation("gps");
+        //GPSによる取得ができなかった場合はインターネットから現在地の更新を試みる。
         if(myLocate == null){
             myLocate = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            Log.d("Debug","GPS location failed and trying to acquire location from network");
+        }else{
+            Log.d("Debug","Successfully acquired location from GPS");
         }
+        //どちらかで現在地が取得できた場合は、latitudeとlongitudeの値をそれぞれ更新する。
         if(myLocate != null){
             Log.d("Debug4", String.valueOf(myLocate.getLatitude()));
             Log.d("Debug4", String.valueOf(myLocate.getLongitude()));
@@ -404,14 +427,10 @@ public class MainActivity extends FragmentActivity
             longitude = myLocate.getLongitude();
         }
 
+        // GPS使用可能時に表示するLog
         if(mLocationManager != null && mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
             Log.d("Debug","location manager Enabled");
-        }else{
-            //GPSを設定するように促す
-            DialogFragment dialog = new NoLocationDialogFragment();
-            dialog.show(getFragmentManager(), null);
         }
-
     }
 
 
@@ -472,6 +491,9 @@ public class MainActivity extends FragmentActivity
                 intent.putExtra("is_show_tsunamibuilding", is_show_tsunamibuilding);
                 intent.putExtra("is_show_altitude", is_show_altitude);
 
+                //2019/10/14白戸作成。GPSが利用可能ならばtrue, そうでなければfalseを設定画面に渡す。
+                intent.putExtra("is_Location_Permitted", isLocationPermitted);
+
                 // 遷移先から返却されてくる際の識別コード
                 int requestCode = 1002;// 返却値を考慮したActivityの起動を行う
                 startActivityForResult(intent, requestCode);
@@ -493,8 +515,26 @@ public class MainActivity extends FragmentActivity
                 is_show_sweets = false;
                 is_show_hinanjo= true;
                 is_show_tsunamibuilding = true;
-                is_show_altitude = true;
+
                 is_escape_mode = true;
+
+                //2019/10/12 白戸編集。位置情報がOFFの時トーストで通知。Permissionが通ってないときはそっちも通知。
+                if(isLocationPermitted != true && Build.VERSION.SDK_INT >= 23){
+                    Toast toastLocationNotPermitted = Toast.makeText(this, "位置情報を使用する権限がありません。\n本体の[設定]→[アプリ]→[許可]→[位置情報]からこのアプリに位置情報の権限を与えてください。", Toast.LENGTH_LONG);
+                    toastLocationNotPermitted.show();
+                // さらに、GPSがOFFの場合もトーストで通知。
+                }else if(!(mLocationManager != null && mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))){
+                    Toast toastLocationDisabled= Toast.makeText(this, "GPSがOFFになっています。\nGPSをONにすると、現在地の海抜を表示できます。", Toast.LENGTH_LONG);
+                    toastLocationDisabled.show();
+                // GPSのPermissionが通って、GPSもきちんとONの場合のみ海抜表示をONに。
+                }else{
+                    Log.d("Debug","location manager Enabled");
+                    //GPSが使用可能の時のみ海抜を表示する。
+                    is_show_altitude = true;
+
+                }
+
+
 
                 mapRepaint();
             } else {
@@ -521,20 +561,22 @@ public class MainActivity extends FragmentActivity
         return super.onOptionsItemSelected(item);
     }
 
-
     // GPSの有効・無効をチェックしながら海抜の取得を開始する
     private void startGetAltitude() {
         // 位置情報が取得できるかどうか確認する
         //2019/10/10白戸編集。permissionをクリアしてmLocationManagerがインスタンス化されたら以前と同じ動作
-        //mLocationManagerがインスタンス化されていなければ海抜は「利用不可」と表示
-        if(mLocationManager != null) {
-            final boolean gpsEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        //mLocationManagerがインスタンス化されていなければ海抜は「----」と表示。
+        final boolean gpsEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        if(mLocationManager != null && gpsEnabled) {
 
-            if (!gpsEnabled) {
-                DialogFragment dialog = new NoLocationDialogFragment();
-                dialog.show(getFragmentManager(), null);
-            } else {
+            //2019/10/11白戸編集。
+            //if (!gpsEnabled) {
+            //    DialogFragment dialog = new NoLocationDialogFragment();
+            //    dialog.show(getFragmentManager(), null);
+            //} else {
                 // 海抜の表示をリセットする
+            //GPSが有効の時、今までと同じ動作。
+            if (gpsEnabled) {
                 TextView alt_val_tv = (TextView) findViewById(R.id.altitude_value);
                 alt_val_tv.setText("取得中");
 
@@ -547,7 +589,7 @@ public class MainActivity extends FragmentActivity
             }
         }else{
             TextView alt_val_tv = (TextView) findViewById(R.id.altitude_value);
-            alt_val_tv.setText("利用不可");
+            alt_val_tv.setText("----");
         }
     }
 
