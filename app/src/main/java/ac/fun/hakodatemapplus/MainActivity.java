@@ -1,6 +1,7 @@
 package ac.fun.hakodatemapplus;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -23,6 +24,7 @@ import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.AppLaunchChecker;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.PermissionChecker;
@@ -82,7 +84,6 @@ public class MainActivity extends FragmentActivity
     private final int REQUEST_PERMISSION = 1;//requestPermission実行時のrequestCode
     private double latitude = 41.773746;//あらかじめ函館駅前の座標を入れておく
     private double longitude = 140.726399;
-    private boolean isLocationPermitted = false; // 位置情報のパーミッションをほかのアクティビティに渡すときに使う
 
     // スポット表示の初期設定
     private boolean is_show_taberu = true;
@@ -108,6 +109,7 @@ public class MainActivity extends FragmentActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("Debug","onCreate is called");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -122,32 +124,37 @@ public class MainActivity extends FragmentActivity
 //        mLocationManager =
 //                (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-//        // 2019/10/10白戸。Permissionの確認を実行するか否かを判定。
+//        //2019/10/10白戸。Permissionの確認を実行するか否かを判定。
 //        // API23以降(Android6.0以降)はパーミッションの確認へ
 //        // API23(Android5.1)未満はそのまま位置情報の利用に進む。
 //        //※isOriginalLocationEnableに不具合があるため整備されるまでコメントアウト※
 //        //※強制的にlocationStartに進む。※
-        if(Build.VERSION.SDK_INT >= 23) {
-            Log.d("Debug3","API23以上");
+        if (Build.VERSION.SDK_INT >= 23) {
+            Log.d("Debug3", "API23以上");
             isOriginalLocationEnable();
-        }else{
-            Log.d("Debug3" , "API22以下");
-            isLocationPermitted = true;
+        } else {
+            Log.d("Debug3", "API22以下");
             locationStart();
         }
+
     }
 
 
     // Google Mapが利用できるとき
     @Override
     public void onMapReady(GoogleMap map) {
+        Log.d("Debug","onMapReady is called");
         gMap = map;
 //        //2019/10/10白戸。コード作成のためにコメントアウト
 //        Location myLocate = mLocationManager.getLastKnownLocation("gps");
 
         map.setTrafficEnabled(false);
-        map.setMyLocationEnabled(true);
-
+        //2019-10-16白戸　位置情報の使用が許可されたときのみ位置情報を表示。
+//        map.setMyLocationEnabled(true);
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            Log.d("Debug","onMapReady is called");
+            map.setMyLocationEnabled(true);
+        }
         // インフォウィンドウに触ったときの処理
         map.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
             @Override
@@ -218,8 +225,8 @@ public class MainActivity extends FragmentActivity
 //
 //        map.moveCamera(CameraUpdateFactory.newCameraPosition(Hakodate));    // 初期表示位置へ移動
 
-        Log.d("Debug", String.valueOf(latitude));
-        Log.d("Debug", String.valueOf(longitude));
+        Log.d("Debug", "camera is moving to the following latitude: " + String.valueOf(latitude));
+        Log.d("Debug", "camera is moving to the following longitude:" + String.valueOf(longitude));
 
         CameraPosition Hakodate = new CameraPosition
                 .Builder()
@@ -252,6 +259,7 @@ public class MainActivity extends FragmentActivity
 
     // 別のActivityから戻ってきた場合
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        Log.d("Debug","onActivityResult");
         System.out.println("onActivityResult");
         int enable_spoticons = 0;   // 観光スポットが有効にされた数
         int enable_escapeitems = 0; // 避難所・避難ビル・海抜が有効にされた数
@@ -288,12 +296,98 @@ public class MainActivity extends FragmentActivity
                     } else {
                         is_escape_mode = false;
                     }
+
+                    // 以下2019/10/21白戸作成。
+                    //パーミッションが切れた状態で海抜スイッチがONになっているという状況を防ぐため、スイッチとパーミッションを確認する。
+                    if(Build.VERSION.SDK_INT >= 23) {
+                        if (is_show_altitude == true && (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+                            Log.d("Debug","例外発生:Permission 海抜スイッチをオフに");
+                            is_show_altitude = false;
+                        }
+                    }
+
+                    //パーミッションが許可されていた場合locationStart()を実行
+                    // 2019/10/20 白戸作成。SDKバージョンとパーミッションを再度確認し、許可が通っていれば、現在地の表示を行うためのもの。
+                    // 海抜表示がオンになっていれば、現在地にカメラを移動する。
+                    if(Build.VERSION.SDK_INT >= 23){
+                        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+                            locationStart();
+
+                            //ユーザーが海抜スイッチをONにした後にGPSをOFFにすると、スイッチはONなのに海抜は取得できないという状態が発生する。
+                            //本来、GPSがOFFの場合海抜スイッチは入らないことを想定している。したがって、
+                            // これを防ぐために、もう一度GPSのON/OFFを確認し、スイッチがONでかつGPSが取得できない場合は海抜表示を自動的にOFFにする。
+                            if (is_show_altitude == true && !(mLocationManager != null && mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))) {
+                                Log.d("Debug", "例外発生:GPS 海抜スイッチをオフに");
+                                is_show_altitude = false;
+                            }
+
+                            Log.d("Debug","location is permitted at DisplaySettingActivity, so calling locationStart, and then location will be showed and camera will move to the location");
+                            //今まではonCreate()内にて現在地を表示していたが、ここでも現在地の表示を求めることにより、途中からパーミッション許可をした場合も現在地を表示できるようにする。
+                            //しかし、onMapReadyが呼ばれていない（gMapがnullの状態）でこれを呼び出すとヌルポが発生するので、きちんとif文を通してからおこなう。ゆえに初回起動時（onMapReadyがまだ呼ばれてない状態）
+                            // ではここではなくonMapReadyの同メソッドを使用する。
+                            if(gMap != null) {
+                                Log.d("Debug", "現在地を表示（途中からパーミッションを許可した）");
+                                gMap.setMyLocationEnabled(true);
+                            }
+
+                            if(is_show_altitude){
+                                Log.d("Debug","is_show_altitude is true");
+
+                                //同じく、onCreate内だけでなくここでもカメラ移動を行うことで、途中からパーミッション許可をした場合も現在地へカメラ移動できるようにする。
+                                //しかし、onMapReadyが呼ばれていない状態（gMapがnullの状態）でこれを呼び出すとヌルポが発生するので、きちんとif文を通してからおこなう。ゆえに初回起動時（onMapReadyがまだ呼ばれてない状態）
+                                // ではここではなくonMapReadyの同じ部分を使う。
+                                if(gMap != null) {
+                                    Log.d("Debug", "camera is moving to the following latitude: " + String.valueOf(latitude));
+                                    Log.d("Debug", "camera is moving to the following longitude:" + String.valueOf(longitude));
+
+                                    CameraPosition Hakodate = new CameraPosition
+                                            .Builder()
+                                            .target(new LatLng(latitude, longitude)) //2019/10/10白戸。変数に緯度経度の情報が入る。
+                                            .zoom(13)
+                                            .build();
+
+                                    gMap.moveCamera(CameraUpdateFactory.newCameraPosition(Hakodate));    // 初期表示位置へ移動
+                                }
+                            }
+                        }
+                    }else{
+                        Log.d("Debug","location is permitted at DisplaySettingActivity, so calling locationStart, and then location will be showed and camera will move to the location");
+                        //今まではonCreate()内にて現在地を表示していたが、ここでも現在地の表示を求めることにより、途中からパーミッション許可をした場合も現在地を表示できるようにする。
+                        //しかし、onMapReadyが呼ばれていない（gMapがnullの状態）でこれを呼び出すとヌルポが発生するので、きちんとif文を通してからおこなう。ゆえに初回起動時（onMapReadyがまだ呼ばれてない状態）
+                        // ではここではなくonMapReadyの同メソッドを使用する。
+                        if(gMap != null) {
+                            Log.d("Debug", "現在地を表示（途中からパーミッションを許可した）");
+                            gMap.setMyLocationEnabled(true);
+                        }
+
+                        if(is_show_altitude){
+                            Log.d("Debug","is_show_altitude is true");
+
+                            //同じく、onCreate内だけでなくここでもカメラ移動を行うことで、途中からパーミッション許可をした場合も現在地へカメラ移動できるようにする。
+                            //しかし、onMapReadyが呼ばれていない状態（gMapがnullの状態）でこれを呼び出すとヌルポが発生するので、きちんとif文を通してからおこなう。ゆえに初回起動時（onMapReadyがまだ呼ばれてない状態）
+                            // ではここではなくonMapReadyの同じ部分を使う。
+                            if(gMap != null) {
+                                Log.d("Debug", "camera is moving to the following latitude: " + String.valueOf(latitude));
+                                Log.d("Debug", "camera is moving to the following longitude:" + String.valueOf(longitude));
+
+                                CameraPosition Hakodate = new CameraPosition
+                                        .Builder()
+                                        .target(new LatLng(latitude, longitude)) //2019/10/10白戸。変数に緯度経度の情報が入る。
+                                        .zoom(13)
+                                        .build();
+
+                                gMap.moveCamera(CameraUpdateFactory.newCameraPosition(Hakodate));    // 初期表示位置へ移動
+                            }
+                        }
+                    }
+
                     mapRepaint();
                 }
             }
         }
 
     }
+
 
     // 観光スポットのピンを再描画する
     private void mapRepaint() {
@@ -315,6 +409,8 @@ public class MainActivity extends FragmentActivity
             escape_menu.setIcon(R.drawable.escape_button_off);
         }
 
+
+
         // 海抜を表示する設定なら取得を開始する
         LinearLayout altitude_container = (LinearLayout) findViewById(R.id.altitude_container);
         if (is_show_altitude == true) {
@@ -334,6 +430,7 @@ public class MainActivity extends FragmentActivity
     public void onResume() {
         System.out.println("onResume");
 
+
         // 海抜を表示する設定なら取得を開始する
         LinearLayout altitude_container = (LinearLayout) findViewById(R.id.altitude_container);
         if (is_show_altitude == true) {
@@ -348,76 +445,78 @@ public class MainActivity extends FragmentActivity
     }
 
     /*2019/10/07,b1019116白戸拓作成,マップの初期位置を得るためにrequestPermissionの結果を受け取る。*/
-    //※isOriginalLocationEnableに不具合があるため整備されるまでコメントアウト※
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults){
-        switch(requestCode){
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
             case REQUEST_PERMISSION:
-                if(grantResults[0]/*PermissionChecker.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)*/ == PermissionChecker.PERMISSION_GRANTED){
-                    isLocationPermitted = true;
+                if (grantResults[0]/*PermissionChecker.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)*/ == PermissionChecker.PERMISSION_GRANTED) {
+                    Log.d("Debug3", "Location is just permitted");
                     locationStart();
-                }else{
-                    isLocationPermitted = false;
+
+                    //今まではonCreate()内にて現在地を表示していたが、ここでも現在地の表示を求めることにより、途中からパーミッション許可をした場合も現在地を表示できるようにする。
+                    //しかし、onMapReadyが呼ばれていない（gMapがnullの状態）でこれを呼び出すとヌルポが発生するので、きちんとif文を通してからおこなう。ゆえに初回起動時（onMapReadyがまだ呼ばれてない状態）
+                    // ではここではなくonMapReadyの同メソッドを使用する。
+                    if(gMap != null) {
+                        Log.d("Debug", "現在地を表示（途中からパーミッションを許可した）");
+                        gMap.setMyLocationEnabled(true);
+                    }
+                    //同じく、onCreate内だけでなくここでもカメラ移動を行うことで、途中からパーミッション許可をした場合も現在地へカメラ移動できるようにする。
+                    //しかし、onMapReadyが呼ばれていない状態（gMapがnullの状態）でこれを呼び出すとヌルポが発生するので、きちんとif文を通してからおこなう。ゆえに初回起動時（onMapReadyがまだ呼ばれてない状態）
+                    // ではここではなくonMapReadyの同じ部分を使う。
+                    if(gMap != null) {
+                        Log.d("Debug", "camera is moving to the following latitude: " + String.valueOf(latitude));
+                        Log.d("Debug", "camera is moving to the following longitude:" + String.valueOf(longitude));
+
+                        CameraPosition Hakodate = new CameraPosition
+                                .Builder()
+                                .target(new LatLng(latitude, longitude)) //2019/10/10白戸。変数に緯度経度の情報が入る。
+                                .zoom(13)
+                                .build();
+
+                        gMap.moveCamera(CameraUpdateFactory.newCameraPosition(Hakodate));    // 初期表示位置へ移動
+                    }
+                } else {
+                    Log.d("Debug3", "Location is just refused");
                 }
                 break;
             default:
-                isLocationPermitted = false;
+                Log.d("Debug3","Location is just refused");
                 break;
         }
     }
 
     //2019/10/11白戸。パーミッション許可の確認を行う。
-     //しかし現段階では権限が付与されていないにもかかわらず位置情報が利用できるかのように動作している模様。
-     //具体的には、メソッド内の一番上のif文で権限の有無にかかわらず常にtrueの判定になっている模様。原因不明。
-     //この時、何事もなかったかのようにlocationStartが呼び出され、mLocationManagerがインスタンス化されるが、当然位置情報は取得できない。
-     //整備されるまで上記のonRequestPermissionResultとともにコメントアウトする。
-    private void isOriginalLocationEnable(){
+    private void isOriginalLocationEnable() {
         /*2019/10/07,b1019116白戸拓作成,マップの初期位置を得るためにパーミッション許可の確認を行う*/
-        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             Log.d("Debug3", "Location is already permitted");
-            isLocationPermitted = true;
             locationStart();
-        }else {
-            Log.d("Debug3","ひっかかった");
-
+        } else {
+            Log.d("Debug3", "ひっかかった");
             // 権限が与えられていないならば許可を申請する。
-            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)){
-
-                new AlertDialog.Builder(this)
-                        .setTitle("位置情報の承認")
-                        .setMessage("今の現在地を取得するためにはGPS機能に権限を与えてください。")
-                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSION);
-
-                            }
-                        })
-                        .create()
-                        .show();
-            }else {
-                isLocationPermitted = false;
-            }
-
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSION);
         }
     }
 
 
     //2019/10/10白戸作成//パーミッションをクリアしたときにロケーションマネージャーのインスタンスを作りアップデート
-    private void locationStart(){
+    @SuppressLint("MissingPermission")
+    private void locationStart() {
+        Log.d("Debug3","locationStart is called");
         //今まではonCreate内でmLocationManagerをインスタンス化したが、今回はパーミッションをクリアしないとインスタンス化されないようにした。
         mLocationManager =
                 (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
+
         // GPSでmLocateの変数に位置情報が取得されなければ。インターネットからの位置情報の取得を試す。
         // どちらかで位置情報が取得されれば現在地に緯度経度が更新。そうでなければ緯度経度初期化時の函館駅前の座標が入ったまま。
-        Location myLocate = mLocationManager.getLastKnownLocation("gps");
+        @SuppressLint("MissingPermission") Location myLocate = mLocationManager.getLastKnownLocation("gps");
         //GPSによる取得ができなかった場合はインターネットから現在地の更新を試みる。
-        if(myLocate == null){
+        if (myLocate == null) {
             myLocate = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-            Log.d("Debug","GPS location failed and trying to acquire location from network");
-        }else{
-            Log.d("Debug","Successfully acquired location from GPS");
+            Log.d("Debug", "GPS location failed and trying to acquire location from network");
+        } else {
+            Log.d("Debug", "Successfully acquired location from GPS");
         }
         //どちらかで現在地が取得できた場合は、latitudeとlongitudeの値をそれぞれ更新する。
         //その際、現在地の座標が函館市外の場合、函館駅の座標から上書きしないこととする。
@@ -425,22 +524,23 @@ public class MainActivity extends FragmentActivity
         //しかし、この方法はエリアを長方形状に切り出す方法なので、例えば大沼の東側あたりにいても現在地が表示されてしまう。
         //これを克服する方法としては、函館市をもっと小さい長方形に分割し、それ造れの座標から条件式に書き出す方法か、
         // なにかしらいいAPIを見つけてくることである。
-        if(myLocate != null){
-            if(myLocate.getLongitude() >= 140.6924363 &&
-               myLocate.getLongitude() <= 141.1867893 &&
-               myLocate.getLatitude()  >= 41.708836   &&
-               myLocate.getLatitude()  <= 42.010086) {
-                Log.d("Debug4", String.valueOf(myLocate.getLatitude()));
-                Log.d("Debug4", String.valueOf(myLocate.getLongitude()));
+        if (myLocate != null) {
+            if (myLocate.getLongitude() >= 140.6924363 &&
+                    myLocate.getLongitude() <= 141.1867893 &&
+                    myLocate.getLatitude() >= 41.708836 &&
+                    myLocate.getLatitude() <= 42.010086) {
+                Log.d("Debug4", "acquired latitude is " + String.valueOf(myLocate.getLatitude()));
+                Log.d("Debug4", "acquired longitude is" + String.valueOf(myLocate.getLongitude()));
                 latitude = myLocate.getLatitude();
                 longitude = myLocate.getLongitude();
             }
         }
 
         // GPS使用可能時に表示するLog
-        if(mLocationManager != null && mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-            Log.d("Debug","location manager Enabled");
+        if (mLocationManager != null && mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            Log.d("Debug", "location manager Enabled");
         }
+
     }
 
 
@@ -502,7 +602,7 @@ public class MainActivity extends FragmentActivity
                 intent.putExtra("is_show_altitude", is_show_altitude);
 
                 //2019/10/14白戸作成。GPSが利用可能ならばtrue, そうでなければfalseを設定画面に渡す。
-                intent.putExtra("is_Location_Permitted", isLocationPermitted);
+//                intent.putExtra("is_Location_Permitted", isLocationPermitted);
 
                 // 遷移先から返却されてくる際の識別コード
                 int requestCode = 1002;// 返却値を考慮したActivityの起動を行う
@@ -514,8 +614,8 @@ public class MainActivity extends FragmentActivity
             return true;
 
             // 避難モードボタンを押したときの処理
-        } else if(id == R.id.menu_escape) {
-            if(is_escape_mode == false) {
+        } else if (id == R.id.menu_escape) {
+            if (is_escape_mode == false) {
                 is_show_taberu = false;
                 is_show_miru = false;
                 is_show_asobu = false;
@@ -523,27 +623,30 @@ public class MainActivity extends FragmentActivity
                 is_show_onsen = false;
                 is_show_event = false;
                 is_show_sweets = false;
-                is_show_hinanjo= true;
+                is_show_hinanjo = true;
                 is_show_tsunamibuilding = true;
 
                 is_escape_mode = true;
 
                 //2019/10/12 白戸編集。位置情報がOFFの時トーストで通知。Permissionが通ってないときはそっちも通知。
-                if(isLocationPermitted != true && Build.VERSION.SDK_INT >= 23){
-                    Toast toastLocationNotPermitted = Toast.makeText(this, "位置情報を使用する権限がありません。\n本体の[設定]→[アプリ]→[許可]→[位置情報]からこのアプリに位置情報の権限を与えてください。", Toast.LENGTH_LONG);
-                    toastLocationNotPermitted.show();
-                // さらに、GPSがOFFの場合もトーストで通知。
-                }else if(!(mLocationManager != null && mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))){
-                    Toast toastLocationDisabled= Toast.makeText(this, "GPSがOFFになっています。\nGPSをONにすると、現在地の海抜を表示できます。", Toast.LENGTH_LONG);
+                if (Build.VERSION.SDK_INT >= 23 && (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+                    is_show_altitude = false;
+                        Log.d("Debug", "GPSがパーミットされてないときののトーストを表示");
+                        Toast toastLocationNotPermitted = Toast.makeText(this, "このアプリにGPSによる位置情報の使用を許可すると、現在地の海抜を表示できます。\n本体の[設定]→[アプリ]→[はこだてMap+]→[許可]→[位置情報]から設定できます。", Toast.LENGTH_LONG);
+                        toastLocationNotPermitted.show();
+                        // さらに、GPSがOFFの場合もトーストで通知。
+                } else if (!(mLocationManager != null && mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))) {
+                    is_show_altitude = false;
+                    Log.d("Debug", "GPSOFF時のトーストを表示");
+                    Toast toastLocationDisabled = Toast.makeText(this, "GPSがOFFになっています。\nGPSをONにすると、現在地の海抜を表示できます。", Toast.LENGTH_LONG);
                     toastLocationDisabled.show();
-                // GPSのPermissionが通って、GPSもきちんとONの場合のみ海抜表示をONに。
-                }else{
-                    Log.d("Debug","location manager Enabled");
+                    // GPSのPermissionが通って、GPSもきちんとONの場合のみ海抜表示をONに。
+                } else {
+                    Log.d("Debug", "location manager Enabled");
                     //GPSが使用可能の時のみ海抜を表示する。
                     is_show_altitude = true;
 
                 }
-
 
 
                 mapRepaint();
@@ -555,7 +658,7 @@ public class MainActivity extends FragmentActivity
                 is_show_onsen = true;
                 is_show_event = true;
                 is_show_sweets = true;
-                is_show_hinanjo= false;
+                is_show_hinanjo = false;
                 is_show_tsunamibuilding = false;
                 is_show_altitude = false;
                 is_escape_mode = false;
@@ -572,32 +675,39 @@ public class MainActivity extends FragmentActivity
     }
 
     // GPSの有効・無効をチェックしながら海抜の取得を開始する
+    @SuppressLint("MissingPermission")
     private void startGetAltitude() {
         // 位置情報が取得できるかどうか確認する
         //2019/10/10白戸編集。permissionをクリアしてmLocationManagerがインスタンス化されたら以前と同じ動作
         //mLocationManagerがインスタンス化されていなければ海抜は「----」と表示。
-        final boolean gpsEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        if(mLocationManager != null && gpsEnabled) {
+        if(mLocationManager != null) {
+            final boolean gpsEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            if (mLocationManager != null && gpsEnabled) {
 
-            //2019/10/11白戸編集。
-            //if (!gpsEnabled) {
-            //    DialogFragment dialog = new NoLocationDialogFragment();
-            //    dialog.show(getFragmentManager(), null);
-            //} else {
+                //2019/10/11白戸編集。
+                //if (!gpsEnabled) {
+                //    DialogFragment dialog = new NoLocationDialogFragment();
+                //    dialog.show(getFragmentManager(), null);
+                //} else {
                 // 海抜の表示をリセットする
-            //GPSが有効の時、今までと同じ動作。
-            if (gpsEnabled) {
-                TextView alt_val_tv = (TextView) findViewById(R.id.altitude_value);
-                alt_val_tv.setText("取得中");
+                //GPSが有効の時、今までと同じ動作。
+                if (gpsEnabled) {
+                    TextView alt_val_tv = (TextView) findViewById(R.id.altitude_value);
+                    alt_val_tv.setText("取得中");
 
-                mLocationManager.getProvider(LocationManager.GPS_PROVIDER);
-                mLocationManager.requestLocationUpdates(
-                        LocationManager.GPS_PROVIDER,
-                        2000,
-                        0,
-                        this);
+                    mLocationManager.getProvider(LocationManager.GPS_PROVIDER);
+                    mLocationManager.requestLocationUpdates(
+                            LocationManager.GPS_PROVIDER,
+                            2000,
+                            0,
+                            this);
+                }
+            } else {
+                TextView alt_val_tv = (TextView) findViewById(R.id.altitude_value);
+                alt_val_tv.setText("----");
             }
-        }else{
+        }else {
+
             TextView alt_val_tv = (TextView) findViewById(R.id.altitude_value);
             alt_val_tv.setText("----");
         }
@@ -861,7 +971,7 @@ public class MainActivity extends FragmentActivity
                 //スイーツ情報の取得
                 if (encoded_course != null) {
                     System.out.println("スイーツ情報の呼び出し");
-                    String que_sweets_url="http://lod.per.c.fun.ac.jp:8080/sparql?default-graph-uri=http://localhost:8080/DAV/hakodate_sweets&format=json&query=PREFIX%20geo%3A%20%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23%3E%0APREFIX%20sweets%3A%20%3Chttp%3A%2F%2Flod.fun.ac.jp%2Fhakobura%2Fterms%2Fsweet%23%3E%0A%0Aselect%20%3Fid%20%3Fshopname%20%3Flat%20%3Flong%20where%20%7B%0A%3Fs%20sweets%3Aid%20%3Fid.%0A%3Fs%20sweets%3Ashopname%20%3Fshopname.%0A%3Fs%20geo%3Alat%20%3Flat.%0A%3Fs%20geo%3Along%20%3Flong.%0AFILTER%20(lang(%3Fshopname)%20%3D%20%27ja%27)%0A%7D";
+                    String que_sweets_url="http://lod.per.c.fun.ac.jp:8080/sparql?default-graph-uri=&query=PREFIX+geo%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23%3E%0D%0APREFIX+sweets%3A+%3Chttp%3A%2F%2Flod.fun.ac.jp%2Fhakobura%2Fterms%2Fsweet%23%3E%0D%0APREFIX+dc%3A+%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Felements%2F1.1%2F%3E%0D%0APREFIX+schema%3A+%3Chttp%3A%2F%2Fschema.org%2F%3E%0D%0A%0D%0Aselect+%3Fid+%3Fshopname+%3Flat+%3Flong+where+%7B%0D%0A%3Fs+sweets%3Aid+%3Fid.%0D%0A%3Fs+sweets%3Ashopname+%3Fshopname.%0D%0A%3Fs+geo%3Alat+%3Flat.%0D%0A%3Fs+geo%3Along+%3Flong.%0D%0A%7D&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on";
                     setSparqlResultFromQueue(spot_list,que_sweets_url);
                 }
 
