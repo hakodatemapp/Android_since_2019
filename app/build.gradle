@@ -34,4 +34,5 @@ android {
 dependencies {
     implementation 'com.android.support:support-v4:25.3.1'
     implementation 'com.google.android.gms:play-services:+'
+    implementation 'com.google.maps.android:android-maps-utils:0.5+'
 }
