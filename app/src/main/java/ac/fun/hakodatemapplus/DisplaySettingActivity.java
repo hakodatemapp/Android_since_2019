@@ -59,7 +59,7 @@ public class DisplaySettingActivity extends Activity {
     private CheckBox tsunamibuilding_checkbox;
     private Switch altitude_switch;
 
-    // 2019白戸LocationManagerのインスタンスを入れる。
+    // LocationManagerのインスタンスを入れる。
     private LocationManager mLocationManager;
 
 
@@ -85,9 +85,9 @@ public class DisplaySettingActivity extends Activity {
 
 
 
-        //2019/10/14 白戸　位置情報の使用がパーミットされたかどうかMainActivityから結果を受け取る。許可されていたらLocationManagerのインスタンスを作成。
-        //許可されていない場合は設定を促すダイアログを表示するのみ。ここで権限を与えてもタイトル画面から再びマップを読み込まなければ現在地は取得されない。
-
+        // 位置情報の使用がパーミットされたかどうか調べる。
+        //海抜表示スイッチがONに切り替えられたときに作動する。
+        //許可されていない場合は設定を促すダイアログを表示するのみ。
         altitude_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -102,6 +102,7 @@ public class DisplaySettingActivity extends Activity {
         });
     }
 
+    //位置情報が許可されていない場合、ダイアログを表示。「はい」をタップで本体設定のはこだてMap+に飛ぶ。
     public void checkLocationPermitted(){
         if ( altitude_switch.isChecked() &&(ActivityCompat.checkSelfPermission(DisplaySettingActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
             altitude_switch.setChecked(false);// 位置情報の権限が下りていないのでまずはスイッチをオフに
@@ -112,7 +113,6 @@ public class DisplaySettingActivity extends Activity {
             alertDialog.setTitle("位置情報の使用権限がありません");
             alertDialog.setMessage("海抜を表示するには、\n[許可]→[位置情報]から\nこのアプリに位置情報の使用を許可してください。");
 
-            //ここではDialogが入れ子状になっている
             alertDialog.setPositiveButton("はい", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -126,17 +126,16 @@ public class DisplaySettingActivity extends Activity {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     Log.d("AlertDialog", "Negative which:" + which);
-
                 }
             });
-
             alertDialog.show();
 
         } else {
             checkLocationEnabled();
         }
     }
-    //2019/10/12白戸編集。ユーザが海抜を表示しようとしたとき、GPSがOFFならばスイッチを入れられないようにし、ダイアログにてGPSの設定画面に飛ばす。
+
+    //ユーザが海抜を表示しようとしたとき、GPSがOFFならばスイッチを入れられないようにし、ダイアログにてGPSの設定画面に飛ばす。
     public void checkLocationEnabled(){
 
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -162,7 +161,6 @@ public class DisplaySettingActivity extends Activity {
                     Log.d("AlertDialog", "Negative which:" + which);
                 }
             });
-
             alertDialog.show();
         }
     }
