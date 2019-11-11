@@ -120,9 +120,6 @@ public class MainActivity extends FragmentActivity
             mapFragment.getMapAsync(this);
         }
 
-        //コード作成のためにコメントアウト
-//        mLocationManager =
-//                (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
 //        //Permissionの確認を実行するか否かを判定。
 //        // API23以降(Android6.0以降)はパーミッションの確認へ
@@ -252,8 +249,6 @@ public class MainActivity extends FragmentActivity
         isOnMapReadyCalled = true;
         Log.d("Debug", "onMapReady is called");
         gMap = map;
-//        //コード作成のためにコメントアウト
-//        Location myLocate = mLocationManager.getLastKnownLocation("gps");
 
         //位置情報のパーミッションがすでに許可されている場合は、locationStart()を実行する。
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -261,8 +256,6 @@ public class MainActivity extends FragmentActivity
         }
 
         map.setTrafficEnabled(false);
-//        //コード作成のためにコメントアウト
-//        map.setMyLocationEnabled(true);
 
         // インフォウィンドウに触ったときの処理
         map.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
@@ -325,14 +318,6 @@ public class MainActivity extends FragmentActivity
             }
         });
 
-//        //コード作成のためにコメントアウト
-//        CameraPosition Hakodate = new CameraPosition
-//                .Builder()
-//                .target(new LatLng(41.773746, 140.726399))
-//                .zoom(13)
-//                .build();
-//
-//        map.moveCamera(CameraUpdateFactory.newCameraPosition(Hakodate));    // 初期表示位置へ移動
 
         //すでに位置情報のパーミッションが許可されている場合はカメラ移動が二重に起こることになる。
         Log.d("Debug", "camera is moving to the following latitude: " + String.valueOf(latitude));
@@ -639,11 +624,6 @@ public class MainActivity extends FragmentActivity
             final boolean gpsEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
             if (mLocationManager != null && gpsEnabled) {
 
-                //コード作成のためにコメントアウト
-                //if (!gpsEnabled) {
-                //    DialogFragment dialog = new NoLocationDialogFragment();
-                //    dialog.show(getFragmentManager(), null);
-                //} else {
                 // 海抜の表示をリセットする
                 //GPSが有効の時、今までと同じ動作。
                 if (gpsEnabled) {
