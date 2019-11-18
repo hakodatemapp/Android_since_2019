@@ -1,5 +1,7 @@
 package ac.fun.hakodatemapplus;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -9,15 +11,20 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.PermissionChecker;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -69,6 +76,10 @@ public class MainActivity extends FragmentActivity
     private String title;
     private int course_id;
     private GoogleMap gMap;
+    private final int REQUESTCODE_OF_PERMISSION = 1;//requestPermission実行時のrequestCode
+    private double latitude = 41.773746;//緯度　あらかじめ函館駅前の座標を入れておく
+    private double longitude = 140.726399;//経度
+    private boolean isOnMapReadyCalled = false; // 設定画面での海抜スイッチ操作の事情で必要。
 
     // スポット表示の初期設定
     private boolean is_show_taberu = true;
@@ -94,6 +105,7 @@ public class MainActivity extends FragmentActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("Debug", "onCreate is called");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -103,19 +115,143 @@ public class MainActivity extends FragmentActivity
                     (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
             mapFragment.getMapAsync(this);
         }
+
+
+//        //Permissionの確認を実行するか否かを判定。
+//        // API23以降(Android6.0以降)はパーミッションの確認へ
+        if (Build.VERSION.SDK_INT >= 23) {
+            Log.d("Debug3", "API23以上");
+            checkLocationPermitted();
+        } else {
+            Log.d("Debug3", "API22以下");
+        }
+
+    }
+
+    //パーミッション許可の確認を行う。
+    private void checkLocationPermitted() {
+        //マップの初期位置を得るためにパーミッション許可の確認を行う
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            Log.d("Debug3", "Location is already permitted");
+        } else {
+            Log.d("Debug3", "Location is not permitted and Request permission");
+            // 権限が与えられていないならば許可を申請する。
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUESTCODE_OF_PERMISSION);
+        }
+    }
+
+    //マップの初期位置を得るためにrequestPermissionの結果を受け取る。
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUESTCODE_OF_PERMISSION:
+                if (grantResults[0] == PermissionChecker.PERMISSION_GRANTED) {  //位置情報の使用が許可された場合
+                    Log.d("Debug3", "Location is just permitted");
+                    locationStart();
+                } else {
+                    Log.d("Debug3", "Location is just refused");    //位置情報の仕様が拒否された場合
+                }
+                break;
+            default:
+                Log.d("Debug3", "Location is just refused");
+                break;
+        }
+    }
+
+    //パーミッションをクリアしたときにロケーションマネージャーのインスタンスを作りアップデート
+    // このメソッドの機能は以下の通りである。
+    // ・LocationManagerのインスタンスを取得
+    // ・現在地の緯度経度をGPS→インターネットの順で取得
+    // ・函館市内にいれば、緯度経度のフィールドを上記データで上書き
+    // ・現在地のピンを表示
+    // ・初期位置にカメラを移動
+    //このメソッドは3つの場合において動作する
+    // １．マップ起動時から位置情報がすでに許可されているとき
+    // ２．マップ起動時のダイアログで位置情報の使用を始めて許可したとき
+    // ３．表示設定画面にて位置情報の使用を許可したとき
+    @SuppressLint("MissingPermission")
+    private void locationStart() {
+        Log.d("Debug3", "locationStart is called");
+        //今まではonCreate内でmLocationManagerをインスタンス化したが、今回はパーミッションをクリアしないとインスタンス化されないようにした。
         mLocationManager =
                 (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+
+        // GPSでmLocateの変数に位置情報が取得されなければ。インターネットからの位置情報の取得を試す。
+        // どちらかで位置情報が取得されれば現在地に緯度経度が更新。そうでなければ緯度経度初期化時の函館駅前の座標が入ったまま。
+        @SuppressLint("MissingPermission") Location myLocate = mLocationManager.getLastKnownLocation("gps");
+        //GPSによる取得ができなかった場合はインターネットから現在地の更新を試みる。
+        if (myLocate == null) {
+            myLocate = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            Log.d("Debug", "GPS location failed and trying to acquire location from network");
+        } else {
+            Log.d("Debug", "Successfully acquired location from GPS");
+        }
+
+        //GPSかネットワーク、どちらかで現在地が取得できた場合は、latitudeとlongitudeの値をそれぞれ更新する。
+        //函館市外にいる場合は、値の更新は行われない。
+        if (myLocate != null) {
+            if (myLocate.getLongitude() >= 140.6924363 &&
+                    myLocate.getLongitude() <= 141.1867893 &&
+                    myLocate.getLatitude() >= 41.708836 &&
+                    myLocate.getLatitude() <= 42.010086) {
+                Log.d("Debug", "acquired latitude is " + String.valueOf(myLocate.getLatitude()));
+                Log.d("Debug", "acquired longitude is" + String.valueOf(myLocate.getLongitude()));
+                latitude = myLocate.getLatitude();
+                longitude = myLocate.getLongitude();
+            }else{
+                Log.d("Debug", "Could not acquire Original Location.");
+            }
+        }
+
+        //gMapのオブジェクトが取得できていれば、現在位置を表示する。並びに、カメラを現在位置へ移動する。
+        if (gMap != null) {
+            gMap.setMyLocationEnabled(true);
+
+            //位置情報がOFFの状態で現在位置に飛ぼうとした場合は通知する。
+            gMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+                @Override
+                public boolean onMyLocationButtonClick() {
+                    if(!(mLocationManager != null && mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))) {
+                        Toast.makeText(getApplicationContext(), "現在地を表示するには位置情報をONにしてください。", Toast.LENGTH_LONG).show();
+                    }
+                    return false;
+                }
+            });
+
+            Log.d("Debug", "camera is moving to the following latitude: " + String.valueOf(latitude));
+            Log.d("Debug", "camera is moving to the following longitude:" + String.valueOf(longitude));
+
+            CameraPosition Hakodate = new CameraPosition
+                    .Builder()
+                    .target(new LatLng(latitude, longitude)) //2019/10/10白戸。変数に緯度経度の情報が入る。
+                    .zoom(13)
+                    .build();
+
+            gMap.moveCamera(CameraUpdateFactory.newCameraPosition(Hakodate));    // 初期表示位置へ移動
+        }
+        // GPS使用可能時に表示するLog
+        if (mLocationManager != null && mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            Log.d("Debug", "location manager Enabled");
+        }
+
     }
+
+
 
     // Google Mapが利用できるとき
     @Override
     public void onMapReady(GoogleMap map) {
+        isOnMapReadyCalled = true;
+        Log.d("Debug", "onMapReady is called");
         gMap = map;
 
-        Location myLocate = mLocationManager.getLastKnownLocation("gps");
+        //位置情報のパーミッションがすでに許可されている場合は、locationStart()を実行する。
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            locationStart();
+        }
 
         map.setTrafficEnabled(false);
-        map.setMyLocationEnabled(true);
 
         // インフォウィンドウに触ったときの処理
         map.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
@@ -123,10 +259,10 @@ public class MainActivity extends FragmentActivity
             public void onInfoWindowClick(Marker arg0) {
                 String marker_title = arg0.getTitle();
                 String marker_snippet = arg0.getSnippet();
-                String marker_id= arg0.getTag().toString();
+                String marker_id = arg0.getTag().toString();
 
                 Log.d("Title", marker_title);
-                Log.d("Snippet",marker_snippet);
+                Log.d("Snippet", marker_snippet);
                 if (!marker_title.equals("スタート") && !marker_snippet.equals("まちあるきコース")) {
                     Intent intent;
 
@@ -137,7 +273,7 @@ public class MainActivity extends FragmentActivity
                     }
                     intent.putExtra("spot_title", marker_title);    // 第二引数：マーカーのタイトル
                     intent.putExtra("spot_category", marker_snippet);
-                    intent.putExtra("spot_id",marker_id);
+                    intent.putExtra("spot_id", marker_id);
                     // 遷移先から返却されてくる際の識別コード
                     int requestCode = 1001;// 返却値を考慮したActivityの起動を行う
                     startActivityForResult(intent, requestCode);
@@ -179,10 +315,13 @@ public class MainActivity extends FragmentActivity
         });
 
 
-        // 地図の初期表示位置を設定する
+        //すでに位置情報のパーミッションが許可されている場合はカメラ移動が二重に起こることになる。
+        Log.d("Debug", "camera is moving to the following latitude: " + String.valueOf(latitude));
+        Log.d("Debug", "camera is moving to the following longitude:" + String.valueOf(longitude));
+
         CameraPosition Hakodate = new CameraPosition
                 .Builder()
-                .target(new LatLng(41.773746, 140.726399))
+                .target(new LatLng(latitude, longitude)) //変数に緯度経度の情報が入る。
                 .zoom(13)
                 .build();
 
@@ -211,6 +350,7 @@ public class MainActivity extends FragmentActivity
 
     // 別のActivityから戻ってきた場合
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        Log.d("Debug", "onActivityResult");
         System.out.println("onActivityResult");
         int enable_spoticons = 0;   // 観光スポットが有効にされた数
         int enable_escapeitems = 0; // 避難所・避難ビル・海抜が有効にされた数
@@ -233,7 +373,7 @@ public class MainActivity extends FragmentActivity
                     is_show_altitude = intent.getExtras().getBoolean("is_show_altitude");
 
                     // 観光スポットを非表示にし、避難所・避難ビル・海抜がすべて表示されたら避難モードにする
-                    if(is_show_taberu == false &&
+                    if (is_show_taberu == false &&
                             is_show_miru == false &&
                             is_show_asobu == false &&
                             is_show_kaimono == false &&
@@ -247,19 +387,51 @@ public class MainActivity extends FragmentActivity
                     } else {
                         is_escape_mode = false;
                     }
-                    mapRepaint();
+
+                    //パーミッションが切れた状態で海抜スイッチがONになっているという状況を防ぐため、スイッチとパーミッションを確認する。
+                    if (Build.VERSION.SDK_INT >= 23) {
+                        if (is_show_altitude == true && (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+                            Log.d("Debug", "例外発生:Permission 海抜スイッチをオフに");
+                            is_show_altitude = false;
+                        }
+                    }
+
+                    //パーミッションが許可されていた場合locationStart()を実行
+                    // APIレベルとパーミッションを再度確認し、許可が通っていれば、現在地の表示を行う。
+                    // 海抜表示がオンになっていれば、現在地にカメラを移動する。現在地の表示も行う。
+                    if (Build.VERSION.SDK_INT >= 23) {
+                        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                            locationStart();
+
+                            //ユーザーが海抜スイッチをONにした後にGPSをOFFにすることによって、スイッチはONなのに海抜は取得できないという状態を防ぐ。
+                            if (is_show_altitude == true && !(mLocationManager != null && mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))) {
+                                Log.d("Debug", "例外発生:GPS 海抜スイッチをオフに");
+                                is_show_altitude = false;
+                            }
+
+                        }
+                    }
+                    Log.d("Debug","siOnMapReadyCalled is " + isOnMapReadyCalled);
+                    if(isOnMapReadyCalled) {
+                        mapRepaint();
+                    }
                 }
             }
         }
 
     }
 
+
     // 観光スポットのピンを再描画する
     private void mapRepaint() {
+        Log.d("Debug", "mapRepaint is called");
         // 表示するピンを反映するために地図上のOverlayを全消去
         try {
             // GoogleMapオブジェクトの取得
-            gMap.clear();
+            //2019/10/28白戸追加。
+            if (gMap != null) {
+                gMap.clear();
+            }
         }
         // GoogleMapが使用不可・Overlayをクリアできなかったとき
         catch (Exception e) {
@@ -268,14 +440,15 @@ public class MainActivity extends FragmentActivity
         }
 
         // 避難モードのインジケータを設定する
-        if(is_escape_mode == true) {
+        if (is_escape_mode == true) {
             escape_menu.setIcon(R.drawable.escape_button_on);
         } else {
             escape_menu.setIcon(R.drawable.escape_button_off);
         }
 
+
         // 海抜を表示する設定なら取得を開始する
-        LinearLayout altitude_container  = (LinearLayout) findViewById(R.id.altitude_container);
+        LinearLayout altitude_container = (LinearLayout) findViewById(R.id.altitude_container);
         if (is_show_altitude == true) {
             altitude_container.setVisibility(View.VISIBLE);
             startGetAltitude();
@@ -292,15 +465,18 @@ public class MainActivity extends FragmentActivity
 
     public void onResume() {
         System.out.println("onResume");
-        
+        Log.d("Debug","onResume is called");
+
+
         // 海抜を表示する設定なら取得を開始する
-        LinearLayout altitude_container  = (LinearLayout) findViewById(R.id.altitude_container);
+        LinearLayout altitude_container = (LinearLayout) findViewById(R.id.altitude_container);
         if (is_show_altitude == true) {
             altitude_container.setVisibility(View.VISIBLE);
             startGetAltitude();
         } else {
             altitude_container.setVisibility(View.INVISIBLE);
         }
+
 
         super.onResume();
     }
@@ -372,8 +548,8 @@ public class MainActivity extends FragmentActivity
             return true;
 
             // 避難モードボタンを押したときの処理
-        } else if(id == R.id.menu_escape) {
-            if(is_escape_mode == false) {
+        } else if (id == R.id.menu_escape) {
+            if (is_escape_mode == false) {
                 is_show_taberu = false;
                 is_show_miru = false;
                 is_show_asobu = false;
@@ -381,10 +557,31 @@ public class MainActivity extends FragmentActivity
                 is_show_onsen = false;
                 is_show_event = false;
                 is_show_sweets = false;
-                is_show_hinanjo= true;
+                is_show_hinanjo = true;
                 is_show_tsunamibuilding = true;
-                is_show_altitude = true;
+
                 is_escape_mode = true;
+
+                //位置情報がOFFの時トーストで通知。Permissionが通ってないときはそっちも通知。
+                if (Build.VERSION.SDK_INT >= 23 && (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+                    //パーミッションが通っていないとき
+                    is_show_altitude = false;
+                    Log.d("Debug", "GPSがパーミットされてないときののトーストを表示");
+                    Toast toastLocationNotPermitted = Toast.makeText(this, "GPSによる位置情報の使用を許可すると、現在地の海抜を表示できます。\n端末の[設定]→[アプリ]→[はこだてMap+]→[許可]→[位置情報]から設定できます。", Toast.LENGTH_LONG);
+                    toastLocationNotPermitted.show();
+                    // さらに、GPSがOFFの場合もトーストで通知。
+                } else if (!(mLocationManager != null && mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))) {
+                    is_show_altitude = false;
+                    Log.d("Debug", "GPSOFF時のトーストを表示");
+                    Toast toastLocationDisabled = Toast.makeText(this, "GPSがOFFになっています。\nGPSをONにすると、現在地の海抜を表示できます。", Toast.LENGTH_LONG);
+                    toastLocationDisabled.show();
+                    // GPSのPermissionが通って、GPSもきちんとONの場合のみ海抜表示をONに。
+                } else {
+                    Log.d("Debug", "location manager Enabled");
+                    is_show_altitude = true;
+
+                }
+
 
                 mapRepaint();
             } else {
@@ -395,7 +592,7 @@ public class MainActivity extends FragmentActivity
                 is_show_onsen = true;
                 is_show_event = true;
                 is_show_sweets = true;
-                is_show_hinanjo= false;
+                is_show_hinanjo = false;
                 is_show_tsunamibuilding = false;
                 is_show_altitude = false;
                 is_escape_mode = false;
@@ -411,26 +608,38 @@ public class MainActivity extends FragmentActivity
         return super.onOptionsItemSelected(item);
     }
 
-
     // GPSの有効・無効をチェックしながら海抜の取得を開始する
+    @SuppressLint("MissingPermission")
     private void startGetAltitude() {
         // 位置情報が取得できるかどうか確認する
-        final boolean gpsEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        //permissionをクリアしてmLocationManagerがインスタンス化されたら以前と同じ動作
+        //mLocationManagerがインスタンス化されていなければ海抜は「----」と表示。
+        // ※パーミッションが通っていないとき（mLocationManagerのインスタンスがnullの時）は、海抜スイッチはOFFになるはずなので、
+        // 「----」と表示される場合は、万が一位置情報が利用できないのに海抜スイッチがONになっている場合のためにある。
+        if (mLocationManager != null &&  (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+            final boolean gpsEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            if (mLocationManager != null && gpsEnabled) {
 
-        if (!gpsEnabled) {
-            DialogFragment dialog = new NoLocationDialogFragment();
-            dialog.show(getFragmentManager(), null);
+                // 海抜の表示をリセットする
+                //GPSが有効の時、今までと同じ動作。
+                if (gpsEnabled) {
+                    TextView alt_val_tv = (TextView) findViewById(R.id.altitude_value);
+                    alt_val_tv.setText("取得中");
+
+                    mLocationManager.getProvider(LocationManager.GPS_PROVIDER);
+                    mLocationManager.requestLocationUpdates(
+                            LocationManager.GPS_PROVIDER,
+                            2000,
+                            0,
+                            this);
+                }
+            } else {
+                TextView alt_val_tv = (TextView) findViewById(R.id.altitude_value);
+                alt_val_tv.setText("----");
+            }
         } else {
-            // 海抜の表示をリセットする
             TextView alt_val_tv = (TextView) findViewById(R.id.altitude_value);
-            alt_val_tv.setText("取得中");
-
-            mLocationManager.getProvider(LocationManager.GPS_PROVIDER);
-            mLocationManager.requestLocationUpdates(
-                    LocationManager.GPS_PROVIDER,
-                    2000,
-                    0,
-                    this);
+            alt_val_tv.setText("----");
         }
     }
 
@@ -439,6 +648,7 @@ public class MainActivity extends FragmentActivity
         double alt = location.getAltitude();
         TextView alt_val_tv = (TextView) findViewById(R.id.altitude_value);
         alt_val_tv.setText(String.format("%.1fm", alt));
+
     }
 
     @Override
@@ -477,14 +687,21 @@ public class MainActivity extends FragmentActivity
         progressDialog.show();
 
         // SPARQLのクエリで使う形式に変換する(半角・全角スペース除去)
-        String search_title = title.replaceAll("[ 　]", "");
+        // 2019/10/28白戸
 
-        if (course_id != 0) {
-            SparqlGetThread st = new SparqlGetThread(gMap, search_title);
-            st.start();
-        } else {
-            SparqlGetThread st = new SparqlGetThread(gMap, "");
-            st.start();
+//        String search_title = title.replaceAll("[ 　]", "");
+        if(title != null) {
+            String search_title = title.replaceAll("[ 　]", "");
+
+            if(gMap != null) {
+                if (course_id != 0) {
+                    SparqlGetThread st = new SparqlGetThread(gMap, search_title);
+                    st.start();
+                } else {
+                    SparqlGetThread st = new SparqlGetThread(gMap, "");
+                    st.start();
+                }
+            }
         }
     }
 
@@ -560,10 +777,10 @@ public class MainActivity extends FragmentActivity
                 } catch (JSONException e) {
                     spot_detail.add(1, null);
                 }
-                try{
+                try {
                     spot_detail.add(2, binding.getJSONObject("spotName").getString("value"));
-                } catch (JSONException e){
-                    spot_detail.add(2,  binding.getJSONObject("shopname").getString("value"));
+                } catch (JSONException e) {
+                    spot_detail.add(2, binding.getJSONObject("shopname").getString("value"));
                 }
 
                 try {
@@ -574,15 +791,15 @@ public class MainActivity extends FragmentActivity
                 spot_detail.add(4, binding.getJSONObject("lat").getString("value"));
                 spot_detail.add(5, binding.getJSONObject("long").getString("value"));
 
-                if(spot_detail.get(3)=="函館スイーツ"){
+                if (spot_detail.get(3) == "函館スイーツ") {
                     spot_detail.add(6, binding.getJSONObject("id").getString("value"));
-                }else{
-                    spot_detail.add(6,null);
+                } else {
+                    spot_detail.add(6, null);
                 }
 
                 spot_list.add(spot_detail);
             }
-        //System.out.println("ここだよ！！"+spot_list);
+            //System.out.println("ここだよ！！"+spot_list);
         } catch (Exception ex) {
             ex.printStackTrace();
             return false;
@@ -691,8 +908,8 @@ public class MainActivity extends FragmentActivity
                 //スイーツ情報の取得
                 if (encoded_course != null) {
                     System.out.println("スイーツ情報の呼び出し");
-                    String que_sweets_url="http://lod.per.c.fun.ac.jp:8080/sparql?default-graph-uri=&query=PREFIX+geo%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23%3E%0D%0APREFIX+sweets%3A+%3Chttp%3A%2F%2Flod.fun.ac.jp%2Fhakobura%2Fterms%2Fsweet%23%3E%0D%0APREFIX+dc%3A+%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Felements%2F1.1%2F%3E%0D%0APREFIX+schema%3A+%3Chttp%3A%2F%2Fschema.org%2F%3E%0D%0A%0D%0Aselect+%3Fid+%3Fshopname+%3Flat+%3Flong+where+%7B%0D%0A%3Fs+sweets%3Aid+%3Fid.%0D%0A%3Fs+sweets%3Ashopname+%3Fshopname.%0D%0A%3Fs+geo%3Alat+%3Flat.%0D%0A%3Fs+geo%3Along+%3Flong.%0D%0A%7D&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on";
-                    setSparqlResultFromQueue(spot_list,que_sweets_url);
+                    String que_sweets_url = "http://lod.per.c.fun.ac.jp:8080/sparql?default-graph-uri=&query=PREFIX+geo%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23%3E%0D%0APREFIX+sweets%3A+%3Chttp%3A%2F%2Flod.fun.ac.jp%2Fhakobura%2Fterms%2Fsweet%23%3E%0D%0APREFIX+dc%3A+%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Felements%2F1.1%2F%3E%0D%0APREFIX+schema%3A+%3Chttp%3A%2F%2Fschema.org%2F%3E%0D%0A%0D%0Aselect+%3Fid+%3Fshopname+%3Flat+%3Flong+where+%7B%0D%0A%3Fs+sweets%3Aid+%3Fid.%0D%0A%3Fs+sweets%3Ashopname+%3Fshopname.%0D%0A%3Fs+geo%3Alat+%3Flat.%0D%0A%3Fs+geo%3Along+%3Flong.%0D%0A%7D&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on";
+                    setSparqlResultFromQueue(spot_list, que_sweets_url);
                 }
 
                 //避難所の取得
@@ -885,7 +1102,7 @@ public class MainActivity extends FragmentActivity
                             options.icon(event);
                             options.snippet("観光イベント");
                             is_pin_show = is_show_event;
-                           // System.out.println("ここで判定！観光イベント"+is_pin_show);
+                            // System.out.println("ここで判定！観光イベント"+is_pin_show);
                             break;
                         case "函館スイーツ":
                             options.icon(sweets);
@@ -907,10 +1124,10 @@ public class MainActivity extends FragmentActivity
                 Marker marker = gm.addMarker(options);
                 //println("id:"+final_list.get(i).get(6));
 
-                String thisId=final_list.get(i).get(6);
-                if(thisId==null){
+                String thisId = final_list.get(i).get(6);
+                if (thisId == null) {
                     marker.setTag("");
-                }else{
+                } else {
                     marker.setTag(thisId);
                 }
 

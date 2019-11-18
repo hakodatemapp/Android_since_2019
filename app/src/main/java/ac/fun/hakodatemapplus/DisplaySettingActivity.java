@@ -2,16 +2,23 @@ package ac.fun.hakodatemapplus;
 
 //import android.support.v7.app.AppCompatActivity;
 
+import android.Manifest;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -20,11 +27,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class DisplaySettingActivity extends Activity {
 
@@ -50,6 +59,9 @@ public class DisplaySettingActivity extends Activity {
     private CheckBox tsunamibuilding_checkbox;
     private Switch altitude_switch;
 
+    // LocationManagerのインスタンスを入れる。
+    private LocationManager mLocationManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +82,89 @@ public class DisplaySettingActivity extends Activity {
         actionBar.setLogo(R.drawable.mapplus_icon);
         actionBar.setDisplayUseLogoEnabled(true);
         actionBar.setTitle("表示設定");
+
+
+
+        // 位置情報の使用がパーミットされたかどうか調べる。
+        //海抜表示スイッチがONに切り替えられたときに作動する。
+        //許可されていない場合は設定を促すダイアログを表示するのみ。
+        altitude_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(altitude_switch.isChecked()) {
+                    if (Build.VERSION.SDK_INT >= 23) {
+                        checkLocationPermitted();
+                    }else{
+                        checkLocationEnabled();
+                    }
+                }
+            }
+        });
     }
+
+    //位置情報が許可されていない場合、ダイアログを表示。「はい」をタップで本体設定のはこだてMap+に飛ぶ。
+    public void checkLocationPermitted(){
+        if ( altitude_switch.isChecked() &&(ActivityCompat.checkSelfPermission(DisplaySettingActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+            altitude_switch.setChecked(false);// 位置情報の権限が下りていないのでまずはスイッチをオフに
+
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(DisplaySettingActivity.this);
+
+            // 位置情報のパーミッションが通っていないときのダイアログ。本体設定のはこだてMap+に飛ばす。
+            alertDialog.setTitle("位置情報の使用権限がありません");
+            alertDialog.setMessage("海抜を表示するには、\n[許可]→[位置情報]から\nこのアプリに位置情報の使用を許可してください。");
+
+            alertDialog.setPositiveButton("はい", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent locationSettingsIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);//位置情報の設定画面を開く
+                    locationSettingsIntent.setData(Uri.parse("package:ac.fun.hakodatemapplus"));
+                    startActivity(locationSettingsIntent);
+                }
+            });
+
+            alertDialog.setNegativeButton("いいえ", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Log.d("AlertDialog", "Negative which:" + which);
+                }
+            });
+            alertDialog.show();
+
+        } else {
+            checkLocationEnabled();
+        }
+    }
+
+    //ユーザが海抜を表示しようとしたとき、GPSがOFFならばスイッチを入れられないようにし、ダイアログにてGPSの設定画面に飛ばす。
+    public void checkLocationEnabled(){
+
+        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if(altitude_switch.isChecked() &&!(mLocationManager != null && mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))){
+            altitude_switch.setChecked(false);
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(DisplaySettingActivity.this);
+
+            // ユーザにGPSのONを促すダイアログ。GPSの設定画面に飛ばす。
+            alertDialog.setTitle("GPSがOFFになっています");
+            alertDialog.setMessage("海抜を表示するには、位置情報の設定からGPSをONにしてください。\n位置情報の設定を開きますか？\n\nヒント：\n位置情報をONにしてもこのダイアログが表示される場合、GPS以外の方法で位置情報を取得している可能性があります。取得方法がGPSになっているかお確かめください。" );
+
+            alertDialog.setPositiveButton("はい", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent settingsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);//位置情報の設定画面を開く
+                    startActivity(settingsIntent);
+                }
+            });
+
+            alertDialog.setNegativeButton("いいえ", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Log.d("AlertDialog", "Negative which:" + which);
+                }
+            });
+            alertDialog.show();
+        }
+    }
+
 
     // デバイスの物理キーが押されたとき
     @Override
@@ -101,6 +195,7 @@ public class DisplaySettingActivity extends Activity {
         is_show_hinanjo = intent.getExtras().getBoolean("is_show_hinanjo");
         is_show_tsunamibuilding = intent.getExtras().getBoolean("is_show_tsunamibuilding");
         is_show_altitude = intent.getExtras().getBoolean("is_show_altitude");
+
 
         // 現在の状態をチェックボックスへ反映させる
         taberu_checkbox = (CheckBox) findViewById(R.id.eat_checkBox);

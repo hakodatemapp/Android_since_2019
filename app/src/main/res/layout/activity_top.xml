@@ -5,13 +5,15 @@
     tools:context="ac.fun.hakodatemapplus.TopActivity" >
 
 	<ImageView
-	    android:id="@+id/ImageView"
-	    android:layout_width="match_parent"
-	    android:layout_height="match_parent"
-	    android:layout_alignParentLeft="true"
-	    android:layout_alignParentRight="true"
-	    android:scaleType="fitXY"
-	    android:src="@drawable/top_image" />
+		android:id="@+id/ImageView"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_alignParentLeft="true"
+		android:layout_alignParentRight="true"
+		android:layout_marginLeft="0dp"
+		android:layout_marginRight="0dp"
+		android:scaleType="fitXY"
+		android:src="@drawable/top_image" />
 		         
 	<Button
 	    android:id="@+id/button_info"
